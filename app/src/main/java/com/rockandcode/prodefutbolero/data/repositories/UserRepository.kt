@@ -20,12 +20,11 @@ class UserRepository(
             if (response.isSuccessful) {
                 return response.body()?.token ?: throw Exception("Token vacío")
             } else {
-                Log.d("UserRepository", "${response.message()}")
                 when (response.code()) {
                     400 -> throw Exception("Usuario o contraseña incorrectos")
                     401 -> throw Exception("Usuario o contraseña incorrectos")
                     500, 502, 503 -> throw Exception("Servidor temporalmente no disponible")
-                    else -> throw Exception("Error del servidor ${response.code()}")
+                    else -> throw Exception("Error del servidor ${response.code()} del servidor ${response.code()}")
                 }
             }
         } catch (e: IOException) {
@@ -33,11 +32,25 @@ class UserRepository(
         }
     }
 
-    override suspend fun getUserProfile(): User =
+    override suspend fun getUserProfile(): User {
         try {
-            val responseDto = apiService.getUserProfile()
-            responseDto.toDomain()
+            val response = apiService.getUserProfile() // Asumo que devuelve Response<UserResponseDto> ahora
+            if (response.isSuccessful) {
+                return response.body()?.toDomain() ?: throw Exception("Perfil de usuario vacío")
+            } else {
+                Log.e("UserRepositoryImpl", "Get user profile failed: ${response.code()} - ${response.message()}")
+                when (response.code()) {
+                    401 -> throw Exception("Token expirado o no válido")
+                    in 500..599 -> throw Exception("Servidor temporalmente no disponible")
+                    else -> throw Exception("Error del servidor ${response.code()} del servidor ${response.code()}")
+                }
+            }
+        } catch (e: IOException) {
+            Log.e("UserRepositoryImpl", "Network error getting user profile", e)
+            throw Exception("Error de red")
         } catch (e: Exception) {
-            throw e
+            Log.e("UserRepositoryImpl", "An unexpected error occurred getting user profile", e)
+            throw Exception("Error desconocido: ${e.message}")
         }
+    }
 }

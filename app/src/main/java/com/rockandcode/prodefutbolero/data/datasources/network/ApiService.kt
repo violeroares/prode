@@ -16,7 +16,7 @@ interface ApiService {
     ): Response<LoginResponse>
 
     @GET("api/auth/currentAuthUser")
-    suspend fun getUserProfile(): UserProfileResponseDto
+    suspend fun getUserProfile(): Response<UserProfileResponseDto>
 
     @GET("api/Tournaments/GetTournamentsForHeader")
     suspend fun getTournaments(): List<TournamentResponseDto>
