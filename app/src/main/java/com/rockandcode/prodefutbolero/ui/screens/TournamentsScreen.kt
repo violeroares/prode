@@ -1,5 +1,6 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,10 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
 
 @Composable
@@ -47,20 +50,6 @@ fun TournamentsScreen(
 ) {
     val uiState by tournamentsViewModel.uiState.collectAsState()
 
-//    Box(
-//        modifier =
-//            Modifier
-//                .fillMaxSize()
-//                .background(
-//                    Brush.verticalGradient(
-//                        colors =
-//                            listOf(
-//                                MaterialTheme.colorScheme.primary.copy(alpha = 0.11f),
-//                                MaterialTheme.colorScheme.background.copy(alpha = 0.1f),
-//                            ),
-//                    ),
-//                ),
-//    ) {
     when (uiState) {
         is TournamentsUiState.Loading -> {
             Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -94,11 +83,32 @@ fun TournamentsScreen(
                     contentPadding = paddingValues,
                 ) {
                     item {
+                        Spacer(Modifier.height(16.dp))
+                    }
+                    item {
                         AppHeader(
-                            title = "Torneos",
+                            title = "Torneos activos",
                             onBack = { },
                             showBackButton = false,
+                            subTitle = "Seleccione un torneo",
                         )
+                    }
+                    item {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo_chico),
+                                contentDescription = "LogoTorneo",
+                                Modifier
+                                    .size(140.dp)
+                                    .padding(bottom = 24.dp),
+                            )
+                        }
                     }
                     items(tournaments) { tournament ->
                         TournamentCard(
@@ -115,7 +125,6 @@ fun TournamentsScreen(
         }
     }
 }
-// }
 
 @Composable
 fun TournamentCard(

@@ -103,6 +103,18 @@ fun HomeScreen(
                     stats = stats,
                 )
             }
+
+            item {
+                TodayMatchesCard()
+            }
+
+            item {
+                RankingCard()
+            }
+
+            item {
+                CalendarCard()
+            }
         }
     }
 }
@@ -145,7 +157,7 @@ fun TournamentStatsCard(
                     .padding(horizontal = 16.dp),
             colors =
                 CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                 ),
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -235,6 +247,75 @@ fun StatRowItem(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal,
                 color = MaterialTheme.colorScheme.secondary,
+            )
+        }
+    }
+}
+
+@Composable
+fun TodayMatchesCard() {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Partidos de hoy",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Ver todos",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
+    }
+}
+
+@Composable
+fun RankingCard() {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Mi ranking",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Ver ranking",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
+    }
+}
+
+@Composable
+fun CalendarCard() {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Calendario",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Ver todos",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
     }

@@ -107,7 +107,7 @@ fun ProfileScreen(
                         Modifier
                             .size(120.dp)
                             .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.background, CircleShape),
                 )
 
                 Spacer(Modifier.height(16.dp))
