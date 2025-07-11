@@ -43,8 +43,8 @@ fun LoginScreen(
     onGoToForgot: () -> Unit,
     loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
-    var email by remember { mutableStateOf("violeroares@hotmail.com") }
-    var password by remember { mutableStateOf("golaudi95") }
+    var email by remember { mutableStateOf("user@hotmail.com") }
+    var password by remember { mutableStateOf("123456") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val isLoading by loginViewModel.isLoading
