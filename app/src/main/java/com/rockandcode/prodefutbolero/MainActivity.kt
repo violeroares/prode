@@ -9,10 +9,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.rockandcode.prodefutbolero.ui.navigation.AppStack
+import com.rockandcode.prodefutbolero.ui.navigation.AuthStack
+import com.rockandcode.prodefutbolero.ui.screens.MainViewModel
 import com.rockandcode.prodefutbolero.ui.theme.ProdeFutboleroTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,8 +43,19 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val controller = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
-    AppStack(
-        snackbarHostState = snackbarHostState,
-        controller = controller,
-    )
+
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val isAuthenticated by mainViewModel.isAuthenticated.collectAsState()
+
+    if (isAuthenticated) {
+        AppStack(
+            navController = controller,
+            snackbarHostState = snackbarHostState,
+            mainViewModel = mainViewModel,
+        )
+    } else {
+        AuthStack(
+            navController = controller,
+        )
+    }
 }

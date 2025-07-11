@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true" includeSubdomains="false">
+        <domain includeSubdomains="TODO">200.32.43.207</domain>
+    </domain-config>
+</network-security-config>

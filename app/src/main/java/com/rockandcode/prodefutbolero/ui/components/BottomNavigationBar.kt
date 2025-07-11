@@ -2,9 +2,10 @@ package com.rockandcode.prodefutbolero.ui.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.AddChart
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.PersonOutline
+import androidx.compose.material.icons.outlined.Tour
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
 data class BottomNavItem(
     val label: String,
@@ -28,9 +30,10 @@ data class BottomNavItem(
 fun BottomNavigationBar(navController: NavHostController) {
     val items =
         listOf(
-            BottomNavItem("Home", Icons.Default.Home, "home"),
-            BottomNavItem("Perfil", Icons.Default.Person, "profile"),
-            BottomNavItem("Favoritos", Icons.Default.Favorite, "favorites"),
+            BottomNavItem("Home", Icons.Outlined.Home, Routes.Home.route),
+            BottomNavItem("Predicciones", Icons.Outlined.AddChart, Routes.MyPredictions.route),
+            BottomNavItem("Mis Torneos", Icons.Outlined.Tour, Routes.MyTournaments.route),
+            BottomNavItem("Mi Perfil", Icons.Outlined.PersonOutline, Routes.Profile.route),
         )
 
     val currentDestination by navController.currentBackStackEntryAsState()
@@ -49,7 +52,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
+                            popUpTo(Routes.Home.route) {
                                 saveState = true
                             }
                             launchSingleTop = true
