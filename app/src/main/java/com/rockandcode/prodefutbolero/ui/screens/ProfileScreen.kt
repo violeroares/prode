@@ -1,8 +1,11 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +20,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleRight
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,11 +43,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
@@ -53,8 +59,10 @@ fun ProfileScreen(
     viewModel: MainViewModel,
     controller: NavHostController,
 ) {
+    val isDark = isSystemInDarkTheme()
     val user by viewModel.user.collectAsState()
     var displayedUser by remember { mutableStateOf(user) }
+    val buttonColor = if (isDark) Color(0xFFF1FD72) else Color(0xFF4270F6)
 
     // Actualizar displayedUser solo si user no es null
     LaunchedEffect(user) {
@@ -63,20 +71,6 @@ fun ProfileScreen(
         }
     }
 
-//    Box(
-//        modifier =
-//            Modifier
-//                .fillMaxSize()
-//                .background(
-//                    Brush.verticalGradient(
-//                        colors =
-//                            listOf(
-//                                MaterialTheme.colorScheme.primary.copy(alpha = 0.11f),
-//                                MaterialTheme.colorScheme.background.copy(alpha = 0.1f),
-//                            ),
-//                    ),
-//                ),
-//    ) {
     Scaffold(
         topBar = {
             AppHeader(
@@ -113,7 +107,7 @@ fun ProfileScreen(
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = displayedUser?.name ?: "Desconocido",
+                    text = displayedUser?.firstName ?: "Desconocido",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -136,6 +130,7 @@ fun ProfileScreen(
                     onClick = {},
                     title = "Editar Perfil",
                     description = "Cambiar datos personales",
+                    isDark = isDark,
                 )
             }
             item {
@@ -143,7 +138,8 @@ fun ProfileScreen(
                     icon = Icons.Outlined.Info,
                     onClick = {},
                     title = "Instrucciones",
-                    description = "Instrucciones sobre partidos, realizar predicciones y sistema de puntuación",
+                    description = "Guía de juego, realizar predicciones y sistema de puntuación",
+                    isDark = isDark,
                 )
             }
 
@@ -153,6 +149,7 @@ fun ProfileScreen(
                     onClick = {},
                     title = "Mis aciertos",
                     description = "Historial de aciertos",
+                    isDark = isDark,
                 )
             }
 
@@ -162,6 +159,7 @@ fun ProfileScreen(
                     onClick = {},
                     title = "Cambiar contraseña",
                     description = "Cambiar la contraseña de inicio de sesión",
+                    isDark = isDark,
                 )
             }
 
@@ -170,17 +168,24 @@ fun ProfileScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
                 ) {
                     Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                        shape = RoundedCornerShape(24.dp),
                         onClick = { viewModel.logout() },
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = buttonColor,
+                            ),
                     ) {
                         Text(
                             "Cerrar sesión",
-                            fontWeight = FontWeight.SemiBold,
                             style = MaterialTheme.typography.bodyLarge,
+                            color = if (isDark) Color.Black else Color.White,
                         )
                     }
                 }
@@ -195,61 +200,84 @@ fun ProfileOptionCard(
     icon: ImageVector,
     title: String,
     description: String,
+    isDark: Boolean,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    val cardColor = if (isDark) Color(0xFF27292D) else Color.White
+    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
+    val shadowSpot = shadowAmbient
+    val iconColor = if (isDark) Color(0xFFF1FD72) else Color(0xFF4270F6)
     Card(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-            ),
+                .padding(horizontal = 16.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onClick)
+                .shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(36.dp),
+                    ambientColor = shadowAmbient,
+                    spotColor = shadowSpot,
+                ),
+        shape = RoundedCornerShape(36.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.Top, // <-- Esto es clave
+                    .padding(start = 12.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically, // <-- Esto es clave
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(top = 4.dp),
+                tint = iconColor,
+                // modifier = Modifier.padding(top = 4.dp),
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
             ) {
                 Text(
                     title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Normal,
                 )
-                Spacer(modifier = Modifier.height(2.dp))
-
                 Text(
                     description,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 18.sp,
+                        ),
+                    color =
+                        MaterialTheme.colorScheme.onSurface.copy
+                            (alpha = 0.5f),
                 )
             }
 
-            Icon(
-                imageVector = Icons.Filled.ArrowCircleRight,
-                contentDescription = "ir-a-$title",
-                tint = MaterialTheme.colorScheme.onBackground,
+            Box(
                 modifier =
                     Modifier
-                        .padding(top = 4.dp),
-            )
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = onClick)
+                        .background(
+                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+                            shape = CircleShape,
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "ir-a-$title",
+                    tint = if (isDark) Color.White else Color.Black,
+                )
+            }
         }
     }
 }

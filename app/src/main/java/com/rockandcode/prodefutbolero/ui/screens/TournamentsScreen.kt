@@ -1,7 +1,9 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +18,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleRight
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,11 +36,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.R
@@ -60,10 +68,22 @@ fun TournamentsScreen(
         is TournamentsUiState.Error -> {
             val message = (uiState as TournamentsUiState.Error).message
             Box(
-                Modifier.fillMaxSize(),
+                Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("Error: $message")
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("Error: $message")
+                    IconButton(onClick = { tournamentsViewModel.loadTournaments() }) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Actualizar",
+                        )
+                    }
+                }
             }
         }
 
@@ -79,7 +99,7 @@ fun TournamentsScreen(
                     modifier =
                         Modifier
                             .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = paddingValues,
                 ) {
                     item {
@@ -87,10 +107,10 @@ fun TournamentsScreen(
                     }
                     item {
                         AppHeader(
-                            title = "Torneos activos",
+                            title = "Torneos",
                             onBack = { },
                             showBackButton = false,
-                            subTitle = "Seleccione un torneo",
+                            // subTitle = "Seleccione un torneo",
                         )
                     }
                     item {
@@ -130,25 +150,35 @@ fun TournamentsScreen(
 fun TournamentCard(
     pictureUrl: String,
     title: String,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    val isDark = isSystemInDarkTheme()
+    val cardColor = if (isDark) Color(0xFF27292D) else Color.White
+    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
+    val shadowSpot = shadowAmbient
+
     Card(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-            ),
+                .padding(horizontal = 16.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onClick)
+                .shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(36.dp),
+                    ambientColor = shadowAmbient,
+                    spotColor = shadowSpot,
+                ),
+        shape = RoundedCornerShape(36.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 12.dp),
+                    .padding(start = 12.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
@@ -158,25 +188,44 @@ fun TournamentCard(
                 contentScale = ContentScale.Crop,
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Column {
+
+            Column(
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
+            ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Normal,
                 )
-                Spacer(modifier = Modifier.height(1.dp))
+
                 Text(
                     text = "Seleccionar este torneo",
-                    style = MaterialTheme.typography.titleSmall,
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 18.sp,
+                        ),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = Icons.Filled.ArrowCircleRight,
-                contentDescription = "ir-a-$title",
-                tint = MaterialTheme.colorScheme.onBackground,
-            )
+
+            Box(
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = onClick)
+                        .background(
+                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+                            shape = CircleShape,
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Icono",
+                    tint = if (isDark) Color.White else Color.Black,
+                )
+            }
         }
     }
 }

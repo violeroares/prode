@@ -1,24 +1,25 @@
 package com.rockandcode.prodefutbolero.data.models
 
+import com.google.gson.annotations.SerializedName
 import com.rockandcode.prodefutbolero.domain.user.models.User
 
 data class UserProfileResponseDto(
-    val userId: String,
+    @SerializedName("userId")
+    val id: String,
     val firstName: String,
     val lastName: String,
-    val document: String,
-    val userName: String,
-    val pictureUrl: String,
-    val fullName: String,
+    @SerializedName("userName")
+    val email: String,
+    @SerializedName("pictureUrl")
+    val avatarUrl: String,
     val phoneNumber: String,
-    val userRoles: String,
-    val pictureId: String,
 ) {
     fun toDomain() =
         User(
-            id = userId,
-            name = fullName,
-            email = userName,
-            avatarUrl = pictureUrl,
+            id = id,
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            avatarUrl = avatarUrl,
         )
 }

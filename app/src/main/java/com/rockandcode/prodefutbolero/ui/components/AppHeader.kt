@@ -83,7 +83,7 @@ fun AppHeader(
                                             if (!isDarkTheme) {
                                                 MaterialTheme.colorScheme.primaryContainer
                                             } else {
-                                                Color.LightGray
+                                                Color(0xFFFAFAFA)
                                             },
                                             shape = CircleShape,
                                         ),

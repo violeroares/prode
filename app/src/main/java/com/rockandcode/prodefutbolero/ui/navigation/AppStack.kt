@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.rockandcode.prodefutbolero.ui.components.BottomNavigationBar
+import com.rockandcode.prodefutbolero.ui.components.FloatingBottomNavigationBar
 import com.rockandcode.prodefutbolero.ui.screens.HomeScreen
 import com.rockandcode.prodefutbolero.ui.screens.MainViewModel
 import com.rockandcode.prodefutbolero.ui.screens.MyPredictionsScreen
@@ -30,7 +30,6 @@ fun AppStack(
     val bottomBarRoutes =
         listOf(
             Routes.Home.route,
-            // Routes.Profile.route,
         )
 
     val showBottomBar = currentRoute in bottomBarRoutes
@@ -39,7 +38,7 @@ fun AppStack(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (showBottomBar) {
-                BottomNavigationBar(navController)
+                FloatingBottomNavigationBar(navController)
             }
         },
     ) { innerPadding ->

@@ -4,31 +4,20 @@ import com.google.gson.annotations.SerializedName
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 
 data class TournamentResponseDto(
-    @SerializedName("TournamentId")
-    val tournamentId: String,
-    @SerializedName("Name")
+    @SerializedName("tournamentId")
+    val id: Int,
+    @SerializedName("name")
     val name: String,
-    @SerializedName("PictureId")
-    val pictureId: Int,
-    @SerializedName("Active")
-    val active: Int,
-    @SerializedName("TournamentTypeId")
-    val tournamentTypeId: Int,
-    @SerializedName("DisplayOrder")
-    val displayOrder: Int,
-    @SerializedName("Teams")
-    val teams: Int,
-    @SerializedName("Groups")
-    val groups: Int,
-    @SerializedName("Dates")
-    val dates: Int,
-    @SerializedName("PictureUrl")
+    @SerializedName("tournamentTypeName")
+    val tournamentTypeName: String,
+    @SerializedName("pictureUrl")
     val pictureUrl: String,
 ) {
     fun toDomain() =
         Tournament(
-            id = tournamentId,
+            id = id,
             name = name,
+            tournamentTypeName = tournamentTypeName,
             pictureUrl = pictureUrl,
         )
 }
