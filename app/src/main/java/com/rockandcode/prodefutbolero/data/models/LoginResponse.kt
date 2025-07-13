@@ -1,7 +1,6 @@
 package com.rockandcode.prodefutbolero.data.models
 
 data class LoginResponse(
-    val name: String,
-    val email: String,
+    val expiration: String,
     val token: String,
 )

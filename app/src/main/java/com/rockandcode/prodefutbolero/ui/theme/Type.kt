@@ -37,12 +37,20 @@ import com.rockandcode.prodefutbolero.R
 //     */
 //    )
 
+// val UrbanistFontFamily =
+//    FontFamily(
+//        Font(R.font.urbanist_regular, weight = FontWeight.Normal),
+//        Font(R.font.urbanist_light, weight = FontWeight.Light),
+//        Font(R.font.urbanist_medium, weight = FontWeight.Medium),
+//        Font(R.font.urbanist_bold, weight = FontWeight.Bold),
+//    )
+
 val UrbanistFontFamily =
     FontFamily(
-        Font(R.font.urbanist_regular, weight = FontWeight.Normal),
-        Font(R.font.urbanist_light, weight = FontWeight.Light),
-        Font(R.font.urbanist_medium, weight = FontWeight.Medium),
-        Font(R.font.urbanist_bold, weight = FontWeight.Bold),
+        Font(R.font.lufga_regular, weight = FontWeight.Normal),
+        Font(R.font.lufga_light, weight = FontWeight.Light),
+        Font(R.font.lufga_medium, weight = FontWeight.Medium),
+        Font(R.font.lufga_semi_bold, weight = FontWeight.SemiBold),
     )
 
 val Typography =
@@ -99,8 +107,8 @@ val Typography =
             TextStyle(
                 fontFamily = UrbanistFontFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 22.sp,
-                lineHeight = 28.sp,
+                fontSize = 20.sp,
+                lineHeight = 26.sp,
                 letterSpacing = 0.sp,
             ),
         titleMedium =

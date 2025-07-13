@@ -1,7 +1,10 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,16 +14,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Sports
 import androidx.compose.material.icons.filled.SportsSoccer
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,9 +49,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.domain.tournament.models.Match
+import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
+import com.rockandcode.prodefutbolero.ui.components.HomeCalendarCard
 import com.rockandcode.prodefutbolero.ui.components.HomeHeader
+import com.rockandcode.prodefutbolero.ui.components.HomeMatchCard
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
+import com.rockandcode.prodefutbolero.utils.dateAsLocalDateTime
+import java.time.LocalDate
 
 data class StatItem(
     val icon: ImageVector,
@@ -53,19 +69,18 @@ data class StatItem(
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel,
+    homeViewModel: HomeViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {
     val tournament by viewModel.selectedTournament.collectAsState()
     val user by viewModel.user.collectAsState()
-
     var displayedUser by remember { mutableStateOf(user) }
+    val state by homeViewModel.uiState.collectAsState()
+    val isDark = isSystemInDarkTheme()
 
-    val stats =
-        listOf(
-            StatItem(Icons.Default.SportsSoccer, "Partidos", "14"),
-            StatItem(Icons.Default.Sports, "Locales", "8 victorias"),
-            StatItem(Icons.Default.Sports, "Visitantes", "6 victorias"),
-        )
+    LaunchedEffect(tournament?.id) {
+        tournament?.id?.let { homeViewModel.loadTournamentHome(it.toInt()) }
+    }
 
     // Actualizar displayedUser solo si user no es null
     LaunchedEffect(user) {
@@ -74,46 +89,247 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets.statusBars,
-        containerColor = Color.Transparent,
-    ) { paddingValues ->
-        LazyColumn(
-            modifier =
+    when (val uiState = state) {
+        is HomeUiState.Loading -> {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is HomeUiState.Error -> {
+            Box(
                 Modifier
-                    .fillMaxSize(),
-            contentPadding = paddingValues,
-        ) {
-            item {
-                HomeHeader(
-                    user = displayedUser,
-                    onSearchClick = {
-                        navController.navigate(Routes.TournamentSelect.route) {
-                            popUpTo(Routes.Home.route) { inclusive = true }
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("Error: ${uiState.message}")
+                    IconButton(onClick = { tournament?.id?.let { homeViewModel.loadTournamentHome(it.toInt()) } }) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Actualizar",
+                        )
+                    }
+                }
+            }
+        }
+
+        is HomeUiState.Success -> {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                contentWindowInsets = WindowInsets.systemBars,
+                containerColor = Color.Transparent,
+            ) { paddingValues ->
+                LazyColumn(
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                    contentPadding = paddingValues,
+                ) {
+                    item {
+                        HomeHeader(
+                            user = displayedUser,
+                            onSearchClick = {
+                                navController.navigate(Routes.TournamentSelect.route) {
+                                    popUpTo(Routes.Home.route) { inclusive = true }
+                                }
+                            },
+                            isDark = isDark,
+                        )
+                    }
+                    item {
+                        HomeAverageByDateCard(
+                            title = uiState.data.tournamentName,
+                            averageList = uiState.data.averageByDate,
+                            myPosition = uiState.data.myPosition,
+                            onMoreClick = { },
+                        )
+                    }
+
+                    item {
+                        HomeCalendarCard(
+                            matches = uiState.data.matches,
+                            onMoreClick = { },
+                        )
+                    }
+
+                    item {
+                        TournamentStatsCard(
+                            tournamentName = uiState.data.tournamentName,
+                            currentDate = uiState.data.activeDateName,
+                            stats =
+                                listOf(
+                                    StatItem(
+                                        Icons.Default.SportsSoccer,
+                                        "Partidos",
+                                        uiState.data.matches.size
+                                            .toString(),
+                                    ),
+                                    StatItem(Icons.Default.Sports, "Locales", "8 victorias"),
+                                    StatItem(Icons.Default.Sports, "Visitantes", "6 victorias"),
+                                ),
+                        )
+                    }
+
+                    val partidosDelDia =
+                        uiState.data.matches.filter {
+                            it.dateAsLocalDateTime().toLocalDate() == LocalDate.now()
                         }
-                    },
-                )
+
+                    if (partidosDelDia.isNotEmpty()) {
+                        item {
+                            TodayMatchesCard(matches = partidosDelDia)
+                        }
+                    }
+
+                    item {
+                        // RankingCard(ranking = uiState.data.ranking)
+                        RankingInfoSection(
+                            myPosition = uiState.data.myPosition,
+                            topUserName =
+                                uiState.data.leaderName,
+                            myPoints = uiState.data.myPoints,
+                        )
+                    }
+
+                    item {
+                        CalendarCard()
+                    }
+
+                    if (uiState.data.matches.isNotEmpty()) {
+                        item {
+                            TodayMatchesCard(matches = uiState.data.matches)
+                        }
+                    }
+
+                    item {
+                        Spacer(Modifier.height(96.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RankingInfoSection(
+    myPosition: String,
+    topUserName: String,
+    myPoints: String,
+    modifier: Modifier = Modifier,
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Ranking",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Ver ranking",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
+        Row(
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            // Mi puesto
+            Card(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .height(100.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+            ) {
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.EmojiEvents,
+                        contentDescription = "Ícono de ranking",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp),
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // Texto "Mi puesto: X" y "Puntos: Y"
+                    Column {
+                        Text(
+                            text = "Mi Puesto: $myPosition",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Puntos: $myPoints",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
             }
 
-            item {
-                TournamentStatsCard(
-                    tournamentName = tournament?.name ?: "Ninguno",
-                    currentDate = "Resumen Fecha 1",
-                    stats = stats,
-                )
-            }
+            // Primer puesto
+            Card(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .height(100.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+            ) {
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.EmojiEvents,
+                        contentDescription = "Ícono de ranking",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp),
+                    )
 
-            item {
-                TodayMatchesCard()
-            }
+                    Spacer(modifier = Modifier.width(16.dp))
 
-            item {
-                RankingCard()
-            }
-
-            item {
-                CalendarCard()
+                    // Texto "Mi puesto: X" y "Puntos: Y"
+                    Column {
+                        Text(
+                            text = "Primer Puesto",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = topUserName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
             }
         }
     }
@@ -253,7 +469,7 @@ fun StatRowItem(
 }
 
 @Composable
-fun TodayMatchesCard() {
+fun TodayMatchesCard(matches: List<Match>) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -272,31 +488,54 @@ fun TodayMatchesCard() {
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
-    }
-}
-
-@Composable
-fun RankingCard() {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Text(
-                text = "Mi ranking",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "Ver ranking",
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
+            items(matches) { match ->
+                // HomeMatchCard(match)
+                // MatchScoreCard(match)
+                HomeMatchCard(match)
+            }
         }
     }
 }
+
+// @Composable
+// fun RankingCard(ranking: Ranking?) {
+//    Column {
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Text(
+//                text = "Mi ranking",
+//                style = MaterialTheme.typography.titleLarge,
+//                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+//            )
+//            Spacer(modifier = Modifier.weight(1f))
+//            Text(
+//                text = "Ver ranking",
+//                style = MaterialTheme.typography.titleSmall,
+//                modifier = Modifier.padding(horizontal = 16.dp),
+//            )
+//        }
+//        if (ranking == null) {
+//            Text("Sin ranking disponible", modifier = Modifier.padding(16.dp))
+//        } else {
+//            Text(
+//                text = "Posición: ${ranking.position} - Puntos: ${ranking.points}",
+//                modifier = Modifier.padding(16.dp),
+//            )
+//            Text(
+//                text = "Líder: ${ranking.leaderName ?: "N/A"} - Puntos: ${ranking.leaderPoints}",
+//                modifier = Modifier.padding(horizontal = 16.dp),
+//            )
+//        }
+//    }
+// }
 
 @Composable
 fun CalendarCard() {
