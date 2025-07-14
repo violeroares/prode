@@ -54,7 +54,7 @@ fun FloatingBottomNavigationBar(
     val currentDestination by navController.currentBackStackEntryAsState()
     val currentRoute = currentDestination?.destination?.route
     val isDark = isSystemInDarkTheme()
-    val backgroundColor = if (isDark) Color(0xFF2C2C2E) else Color(0xFFF8F8F8)
+    val backgroundColor = if (isDark) Color(0xFF2C2C2E) else Color(0xFFFFFFFF)
     val selectedColor = if (isDark) Color.White else Color.Black
     val unselectedColor = Color.Gray
 
