@@ -13,6 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rockandcode.prodefutbolero.ui.components.FloatingBottomNavigationBar
 import com.rockandcode.prodefutbolero.ui.screens.HomeScreen
 import com.rockandcode.prodefutbolero.ui.screens.MainViewModel
+import com.rockandcode.prodefutbolero.ui.screens.MatchesScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyPredictionsScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyTournamentsScreen
 import com.rockandcode.prodefutbolero.ui.screens.ProfileScreen
@@ -72,6 +73,10 @@ fun AppStack(
 
             composable(Routes.MyPredictions.route) {
                 MyPredictionsScreen(navController = navController)
+            }
+
+            composable(Routes.Matches.route) {
+                MatchesScreen(mainViewModel = mainViewModel)
             }
         }
     }

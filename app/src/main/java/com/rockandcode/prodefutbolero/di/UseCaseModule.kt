@@ -1,6 +1,7 @@
 package com.rockandcode.prodefutbolero.di
 
 import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
+import com.rockandcode.prodefutbolero.domain.tournament.usecases.GetMatchesUseCase
 import com.rockandcode.prodefutbolero.domain.tournament.usecases.GetTournamentHomeUseCase
 import com.rockandcode.prodefutbolero.domain.tournament.usecases.GetTournamentsUseCase
 import com.rockandcode.prodefutbolero.domain.user.repository.ISessionRepository
@@ -42,6 +43,6 @@ object UseCaseModule {
     @Provides
     fun provideGetTournamentHomeUseCase(repo: ITournamentRepository): GetTournamentHomeUseCase = GetTournamentHomeUseCase(repo)
 
-//    @Provides
-//    fun provideGetMatchesUseCase(repo: IMatchRepository): GetMatchesUseCase = GetMatchesUseCase(repo)
+    @Provides
+    fun provideGetMatchesUseCase(repo: ITournamentRepository): GetMatchesUseCase = GetMatchesUseCase(repo)
 }
