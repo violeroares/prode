@@ -109,7 +109,7 @@ fun HomeMatchCard(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
-                                text = "0",
+                                text = "${match.localGoals ?: ""}",
                                 style = MaterialTheme.typography.headlineLarge,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,
@@ -123,7 +123,7 @@ fun HomeMatchCard(
                             )
 
                             Text(
-                                text = "2",
+                                text = "${match.visitorGoals ?: ""}",
                                 style = MaterialTheme.typography.headlineLarge,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,

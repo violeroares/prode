@@ -76,7 +76,7 @@ fun AppStack(
             }
 
             composable(Routes.Matches.route) {
-                MatchesScreen(mainViewModel = mainViewModel)
+                MatchesScreen(mainViewModel = mainViewModel, navController = navController)
             }
         }
     }

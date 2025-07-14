@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -66,13 +67,14 @@ fun HomeAverageByDateCard(
                     .padding(bottom = 16.dp),
         ) {
             HeaderCard(
+                leftIcon = Icons.Outlined.EmojiEvents,
                 rightIcon = Icons.AutoMirrored.Filled.ArrowForward,
                 title = title,
                 subTitle = "Mis estadísticas",
                 onClick = { onMoreClick() },
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Spacer(modifier = Modifier.height(16.dp))
 
             val maxFecha = averageList.maxByOrNull { it.points }
             val maxPoints = maxFecha?.points ?: 0
@@ -193,7 +195,7 @@ fun ScoreItem(
             text = value,
             modifier = Modifier.width(80.dp),
             style = MaterialTheme.typography.headlineLarge,
-            // fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
         Text(

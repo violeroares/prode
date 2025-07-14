@@ -25,7 +25,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HeaderCard(
-    rightIcon: ImageVector,
+    leftIcon: ImageVector? = null,
+    rightIcon: ImageVector? = null,
     title: String,
     subTitle: String = "",
     onClick: () -> Unit,
@@ -35,8 +36,28 @@ fun HeaderCard(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
     ) {
+        if (leftIcon != null) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = { onClick })
+                        .background(
+                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+                            shape = CircleShape,
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    leftIcon,
+                    contentDescription = "Icono",
+                    tint = if (isDark) Color(0xFFA9F582) else Color.Black,
+                )
+            }
+        }
         Column(
             modifier =
                 Modifier
@@ -47,6 +68,7 @@ fun HeaderCard(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium,
+                color = if (isDark) Color.White else Color.Black,
             )
             if (subTitle.isNotEmpty()) {
                 Text(
@@ -56,23 +78,25 @@ fun HeaderCard(
                 )
             }
         }
-        Box(
-            modifier =
-                Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .clickable(onClick = { onClick })
-                    .background(
-                        if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
-                        shape = CircleShape,
-                    ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                rightIcon,
-                contentDescription = "Icono",
-                tint = if (isDark) Color(0xFFA9F582) else Color.Black,
-            )
+        if (rightIcon != null) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = { onClick })
+                        .background(
+                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+                            shape = CircleShape,
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    rightIcon,
+                    contentDescription = "Icono",
+                    tint = if (isDark) Color(0xFFA9F582) else Color.Black,
+                )
+            }
         }
     }
 }

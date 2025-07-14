@@ -1,5 +1,7 @@
 package com.rockandcode.prodefutbolero.ui.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,17 +31,28 @@ import com.rockandcode.prodefutbolero.utils.formatFechaHora
 
 @Composable
 fun MatchCard(
-    match: Match,
     modifier: Modifier = Modifier,
+    match: Match,
+    onClick: () -> Unit,
 ) {
+    val isDark = isSystemInDarkTheme()
+    val cardColor = if (isDark) Color(0xFF27292D) else Color.White
+    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
+    val shadowSpot = shadowAmbient
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp),
-        // colors = CardDefaults.cardColors(containerColor = color),
-        shape = RoundedCornerShape(32.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(36.dp),
+                    ambientColor = shadowAmbient,
+                    spotColor = shadowSpot,
+                ),
+        shape = RoundedCornerShape(36.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             // Contenido principal: logos + estado + goles + fecha

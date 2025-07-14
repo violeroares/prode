@@ -37,21 +37,21 @@ import com.rockandcode.prodefutbolero.R
 //     */
 //    )
 
-// val UrbanistFontFamily =
-//    FontFamily(
-//        Font(R.font.urbanist_regular, weight = FontWeight.Normal),
-//        Font(R.font.urbanist_light, weight = FontWeight.Light),
-//        Font(R.font.urbanist_medium, weight = FontWeight.Medium),
-//        Font(R.font.urbanist_bold, weight = FontWeight.Bold),
-//    )
-
 val UrbanistFontFamily =
     FontFamily(
-        Font(R.font.lufga_regular, weight = FontWeight.Normal),
-        Font(R.font.lufga_light, weight = FontWeight.Light),
-        Font(R.font.lufga_medium, weight = FontWeight.Medium),
-        Font(R.font.lufga_semi_bold, weight = FontWeight.SemiBold),
+        Font(R.font.urbanist_regular, weight = FontWeight.Normal),
+        Font(R.font.urbanist_light, weight = FontWeight.Light),
+        Font(R.font.urbanist_medium, weight = FontWeight.Medium),
+        Font(R.font.urbanist_bold, weight = FontWeight.Bold),
     )
+
+// val UrbanistFontFamily =
+//    FontFamily(
+//        Font(R.font.lufga_regular, weight = FontWeight.Normal),
+//        Font(R.font.lufga_light, weight = FontWeight.Light),
+//        Font(R.font.lufga_medium, weight = FontWeight.Medium),
+//        Font(R.font.lufga_semi_bold, weight = FontWeight.SemiBold),
+//    )
 
 val Typography =
     Typography(

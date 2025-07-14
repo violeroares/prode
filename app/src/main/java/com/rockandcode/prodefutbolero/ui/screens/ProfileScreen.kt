@@ -1,11 +1,9 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
@@ -53,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
+import com.rockandcode.prodefutbolero.ui.components.RoundButton
 
 @Composable
 fun ProfileScreen(
@@ -259,25 +257,25 @@ fun ProfileOptionCard(
                             (alpha = 0.5f),
                 )
             }
-
-            Box(
-                modifier =
-                    Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .clickable(onClick = onClick)
-                        .background(
-                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
-                            shape = CircleShape,
-                        ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "ir-a-$title",
-                    tint = if (isDark) Color.White else Color.Black,
-                )
-            }
+            RoundButton(onClick = onClick)
+//            Box(
+//                modifier =
+//                    Modifier
+//                        .size(48.dp)
+//                        .clip(CircleShape)
+//                        .clickable(onClick = onClick)
+//                        .background(
+//                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+//                            shape = CircleShape,
+//                        ),
+//                contentAlignment = Alignment.Center,
+//            ) {
+//                Icon(
+//                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                    contentDescription = "ir-a-$title",
+//                    tint = if (isDark) Color.White else Color.Black,
+//                )
+//            }
         }
     }
 }
