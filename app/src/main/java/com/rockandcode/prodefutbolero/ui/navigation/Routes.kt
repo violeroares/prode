@@ -19,4 +19,6 @@ sealed class Routes(
     object MyTournaments : Routes("mytournaments")
 
     object Profile : Routes("profile")
+
+    object Matches : Routes("matches")
 }

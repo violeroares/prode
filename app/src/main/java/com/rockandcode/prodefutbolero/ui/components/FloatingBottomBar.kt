@@ -45,7 +45,7 @@ fun FloatingBottomNavigationBar(
     val bottomItems =
         listOf(
             FloatingBottomNavItem("Inicio", Icons.Outlined.Home, Routes.Home.route),
-            FloatingBottomNavItem("Predicciones", Icons.Outlined.AddChart, Routes.MyPredictions.route),
+            FloatingBottomNavItem("Matches", Icons.Outlined.AddChart, Routes.Matches.route),
             FloatingBottomNavItem("Torneos", Icons.Outlined.Tour, Routes.MyTournaments.route),
             FloatingBottomNavItem("Favoritos", Icons.Outlined.StarOutline, Routes.MyTournaments.route),
             FloatingBottomNavItem("Perfil", Icons.Outlined.PersonOutline, Routes.Profile.route),
