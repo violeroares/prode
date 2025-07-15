@@ -56,7 +56,7 @@ fun HomeScreen(
     val isDark = isSystemInDarkTheme()
 
     LaunchedEffect(tournament?.id) {
-        tournament?.id?.let { homeViewModel.loadTournamentHome(it.toInt()) }
+        tournament?.id?.let { homeViewModel.loadTournamentHome(it, user!!.id) }
     }
 
     // Actualizar displayedUser solo si user no es null
@@ -69,6 +69,7 @@ fun HomeScreen(
     when (val uiState = state) {
         is HomeUiState.Loading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
                 CircularProgressIndicator()
             }
         }
@@ -86,7 +87,7 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text("Error: ${uiState.message}")
-                    IconButton(onClick = { tournament?.id?.let { homeViewModel.loadTournamentHome(it.toInt()) } }) {
+                    IconButton(onClick = { tournament?.id?.let { homeViewModel.loadTournamentHome(it, user!!.id) } }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Actualizar",
@@ -97,6 +98,9 @@ fun HomeScreen(
         }
 
         is HomeUiState.Success -> {
+            val myRanking = uiState.myRanking
+            // val topRanking = uiState.topRanking
+
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 contentWindowInsets = WindowInsets.systemBars,
@@ -126,7 +130,7 @@ fun HomeScreen(
                         HomeAverageByDateCard(
                             title = uiState.data.tournamentName,
                             averageList = uiState.data.averageByDate,
-                            myPosition = uiState.data.myPosition,
+                            myPosition = myRanking?.position.toString(),
                             onMoreClick = {
                                 navController.navigate(Routes.TournamentSelect.route) {
                                     popUpTo(Routes.Home.route) { inclusive = true }

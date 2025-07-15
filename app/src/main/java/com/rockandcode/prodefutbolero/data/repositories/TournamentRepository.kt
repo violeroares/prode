@@ -4,8 +4,12 @@ import android.util.Log
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
 import com.rockandcode.prodefutbolero.data.models.PaginatedMatchesDto
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
+import com.rockandcode.prodefutbolero.domain.tournament.models.PageResult
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedMatches
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedRanking
+import com.rockandcode.prodefutbolero.domain.tournament.models.Pagination
+import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
+import com.rockandcode.prodefutbolero.domain.tournament.models.RankingRequest
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 import com.rockandcode.prodefutbolero.domain.tournament.models.TournamentHome
 import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
@@ -13,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import retrofit2.HttpException
 import java.time.LocalDate
 
 class TournamentRepository(
@@ -103,6 +108,32 @@ class TournamentRepository(
             return body.toDomain()
         } else {
             throw Exception("Cuerpo de la respuesta nulo")
+        }
+    }
+
+    override suspend fun getRankingToPage(
+        filter: RankingRequest,
+        pageIndex: Int,
+        pageSize: Int,
+        sort: String,
+    ): PageResult<Ranking> {
+        val pagination = Pagination(filter, pageIndex, pageSize, sort)
+        val response = apiService.getRankingToPage(pagination)
+
+        if (response.isSuccessful) {
+            val body = response.body() ?: throw Exception("Empty response body")
+
+            return PageResult(
+                pageSize = body.pageSize,
+                pageIndex = body.pageIndex,
+                totalCount = body.totalCount,
+                totalPages = body.totalPages,
+                hasNextPage = body.hasNextPage,
+                hasPreviousPage = body.hasPreviousPage,
+                result = body.result.map { it.toDomain() },
+            )
+        } else {
+            throw HttpException(response)
         }
     }
 }

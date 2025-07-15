@@ -5,9 +5,13 @@ import com.rockandcode.prodefutbolero.data.models.LoginResponse
 import com.rockandcode.prodefutbolero.data.models.MatchDateDto
 import com.rockandcode.prodefutbolero.data.models.PaginatedMatchesDto
 import com.rockandcode.prodefutbolero.data.models.PaginatedRankingDto
+import com.rockandcode.prodefutbolero.data.models.RankingDto
 import com.rockandcode.prodefutbolero.data.models.TournamentHomeResponseDto
 import com.rockandcode.prodefutbolero.data.models.TournamentResponseDto
 import com.rockandcode.prodefutbolero.data.models.UserProfileResponseDto
+import com.rockandcode.prodefutbolero.domain.tournament.models.PageResult
+import com.rockandcode.prodefutbolero.domain.tournament.models.Pagination
+import com.rockandcode.prodefutbolero.domain.tournament.models.RankingRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,15 +28,15 @@ interface ApiService {
     @GET("api/auth/currentAuthUser")
     suspend fun getUserProfile(): Response<UserProfileResponseDto>
 
-    @GET("api/mobile/Tournaments/GetTournaments")
+    @GET("api/MobileV3/GetTournaments")
     suspend fun getTournaments(): List<TournamentResponseDto>
 
-    @GET("api/mobile/tournaments/{id}/home")
+    @GET("api/MobileV3/{id}/home")
     suspend fun getTournamentHome(
         @Path("id") tournamentId: Int,
     ): Response<TournamentHomeResponseDto>
 
-    @GET("api/mobile/tournaments/GetMatchesAsync")
+    @GET("api/MobileV3/GetMatchesAsync")
     suspend fun getMatches(
         @Query("page") page: Int,
         @Query("size") size: Int,
@@ -41,12 +45,12 @@ interface ApiService {
         @Query("dateId") dateId: Int?,
     ): PaginatedMatchesDto
 
-    @GET("api/mobile/tournaments/{id}/dates")
+    @GET("api/MobileV3/{id}/dates")
     suspend fun getDates(
         @Path("id") tournamentId: Int,
     ): List<MatchDateDto>
 
-    @GET("api/mobile/tournaments/GetRankingAsync")
+    @GET("api/MobileV3/GetRankingAsync")
     suspend fun getRanking(
         @Query("page") page: Int,
         @Query("size") size: Int,
@@ -60,4 +64,9 @@ interface ApiService {
         @Query("fechaHasta") fechaHasta: String? = null,
         @Query("userId") userId: Int? = null,
     ): Response<PaginatedRankingDto>
+
+    @POST("api/predictions/GetRankingToPage")
+    suspend fun getRankingToPage(
+        @Body input: Pagination<RankingRequest>,
+    ): Response<PageResult<RankingDto>>
 }

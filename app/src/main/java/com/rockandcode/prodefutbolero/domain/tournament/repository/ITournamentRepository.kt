@@ -1,8 +1,11 @@
 package com.rockandcode.prodefutbolero.domain.tournament.repository
 
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
+import com.rockandcode.prodefutbolero.domain.tournament.models.PageResult
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedMatches
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedRanking
+import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
+import com.rockandcode.prodefutbolero.domain.tournament.models.RankingRequest
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 import com.rockandcode.prodefutbolero.domain.tournament.models.TournamentHome
 import kotlinx.coroutines.flow.Flow
@@ -36,4 +39,11 @@ interface ITournamentRepository {
         fechaHasta: LocalDate? = null,
         userId: Int? = null,
     ): PaginatedRanking
+
+    suspend fun getRankingToPage(
+        filter: RankingRequest,
+        pageIndex: Int,
+        pageSize: Int,
+        sort: String,
+    ): PageResult<Ranking>
 }
