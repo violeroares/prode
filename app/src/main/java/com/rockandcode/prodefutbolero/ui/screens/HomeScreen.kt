@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
-import com.rockandcode.prodefutbolero.ui.components.HomeCalendarCard
 import com.rockandcode.prodefutbolero.ui.components.HomeHeader
 import com.rockandcode.prodefutbolero.ui.components.TestCard
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
@@ -112,32 +111,39 @@ fun HomeScreen(
                     item {
                         HomeHeader(
                             user = displayedUser,
-                            onSearchClick = {
-                                navController.navigate(Routes.TournamentSelect.route) {
-                                    popUpTo(Routes.Home.route) { inclusive = true }
-                                }
-                            },
+//                            onSearchClick = {
+//                                navController.navigate(Routes.TournamentSelect.route) {
+//                                    popUpTo(Routes.Home.route) { inclusive = true }
+//                                }
+//                            },
                             isDark = isDark,
                         )
+                    }
+                    item {
+                        Spacer(Modifier.height(8.dp))
                     }
                     item {
                         HomeAverageByDateCard(
                             title = uiState.data.tournamentName,
                             averageList = uiState.data.averageByDate,
                             myPosition = uiState.data.myPosition,
-                            onMoreClick = { },
+                            onMoreClick = {
+                                navController.navigate(Routes.TournamentSelect.route) {
+                                    popUpTo(Routes.Home.route) { inclusive = true }
+                                }
+                            },
                         )
                     }
 
-                    item {
-                        HomeCalendarCard(
-                            matches = uiState.data.matches,
-                            onMoreClick = { },
-                        )
-                    }
+//                    item {
+//                        HomeCalendarCard(
+//                            matches = uiState.data.matches,
+//                            onMoreClick = { },
+//                        )
+//                    }
 
                     item {
-                        TestCard(onMoreClick = {})
+                        TestCard(user = displayedUser)
                     }
 
 //                    item {

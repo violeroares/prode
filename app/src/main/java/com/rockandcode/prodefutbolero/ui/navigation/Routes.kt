@@ -21,4 +21,6 @@ sealed class Routes(
     object Profile : Routes("profile")
 
     object Matches : Routes("matches")
+
+    object Ranking : Routes("ranking")
 }

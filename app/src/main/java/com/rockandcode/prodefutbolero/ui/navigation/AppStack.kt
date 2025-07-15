@@ -17,6 +17,7 @@ import com.rockandcode.prodefutbolero.ui.screens.MatchesScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyPredictionsScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyTournamentsScreen
 import com.rockandcode.prodefutbolero.ui.screens.ProfileScreen
+import com.rockandcode.prodefutbolero.ui.screens.RankingScreen
 import com.rockandcode.prodefutbolero.ui.screens.TournamentsScreen
 
 @Composable
@@ -31,6 +32,7 @@ fun AppStack(
     val bottomBarRoutes =
         listOf(
             Routes.Home.route,
+            Routes.Ranking.route,
         )
 
     val showBottomBar = currentRoute in bottomBarRoutes
@@ -77,6 +79,10 @@ fun AppStack(
 
             composable(Routes.Matches.route) {
                 MatchesScreen(mainViewModel = mainViewModel, navController = navController)
+            }
+
+            composable(Routes.Ranking.route) {
+                RankingScreen(mainViewModel = mainViewModel, navController = navController)
             }
         }
     }

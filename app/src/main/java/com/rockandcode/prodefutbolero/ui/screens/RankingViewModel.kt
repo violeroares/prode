@@ -1,12 +1,8 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rockandcode.prodefutbolero.domain.tournament.models.Match
-import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
+import com.rockandcode.prodefutbolero.domain.tournament.models.RankingUser
 import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,99 +15,68 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed interface MatchesUiState {
-    object Loading : MatchesUiState
+sealed interface RankingUiState {
+    object Loading : RankingUiState
 
     data class Success(
-        val matches: List<Match>,
+        val rankings: List<RankingUser>,
         val currentPage: Int,
         val totalPages: Int,
-    ) : MatchesUiState
+    ) : RankingUiState
 
     data class Error(
         val message: String,
-    ) : MatchesUiState
+    ) : RankingUiState
 }
 
-data class MatchesScreenState(
-    val uiState: MatchesUiState = MatchesUiState.Loading,
-    val dates: List<MatchDate> = emptyList(),
+data class RankingScreenState(
+    val uiState: RankingUiState = RankingUiState.Loading,
     val isRefreshing: Boolean = false,
 )
 
-sealed class MatchesUiEvent {
+sealed class RankingUiEvent {
     data class ShowSnackbar(
         val message: String,
-    ) : MatchesUiEvent()
+    ) : RankingUiEvent()
 
     data class Navigate(
         val route: String,
-    ) : MatchesUiEvent()
+    ) : RankingUiEvent()
 
-    object PopBackStack : MatchesUiEvent()
+    object PopBackStack : RankingUiEvent()
 }
 
 @HiltViewModel
-class MatchesViewModel
+class RankingViewModel
     @Inject
     constructor(
         private val tournamentRepository: ITournamentRepository,
     ) : ViewModel() {
-        private val _screenState = MutableStateFlow(MatchesScreenState())
-        val screenState: StateFlow<MatchesScreenState> = _screenState.asStateFlow()
+        private val _screenState = MutableStateFlow(RankingScreenState())
+        val screenState: StateFlow<RankingScreenState> = _screenState.asStateFlow()
 
-        private val _eventFlow = MutableSharedFlow<MatchesUiEvent>()
-        val eventFlow: SharedFlow<MatchesUiEvent> = _eventFlow.asSharedFlow()
+        private val _eventFlow = MutableSharedFlow<RankingUiEvent>()
+        val eventFlow: SharedFlow<RankingUiEvent> = _eventFlow.asSharedFlow()
 
         var currentPage = 1
             private set
         internal var totalPages = 1
 
+//        var isLoading = false
+//            private set
         var isPaginating = false
             private set
 
-        var selectedDateId by mutableStateOf<Int?>(null)
-        var searchQuery by mutableStateOf("")
-            private set
-
-        fun loadDates(tournamentId: Int) {
-            viewModelScope.launch {
-                val dates = tournamentRepository.getDates(tournamentId)
-
-                // Buscar la fecha activa
-                val activeDate = dates.find { it.active }
-
-                // Guardar el selectedDateId si hay una activa
-                selectedDateId = activeDate?.id
-
-                _screenState.update { it.copy(dates = dates) }
-
-                // Si hay una fecha activa, cargar los partidos automáticamente
-                getMatches(tournamentId = tournamentId, dateId = selectedDateId)
-            }
-        }
-
-        fun onSearchQueryChanged(
-            newQuery: String,
-            tournamentId: Int?,
-        ) {
-            searchQuery = newQuery
-            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
-                getMatches(tournamentId, teamName = searchQuery, dateId = selectedDateId)
-            }
-        }
-
-        fun getMatches(
-            tournamentId: Int?,
-            teamName: String? = null,
-            dateId: Int? = selectedDateId,
+        fun getRanking(
+            tournamentId: Int,
+            dateId: Int? = null,
             isPullToRefresh: Boolean = false,
         ) {
             viewModelScope.launch {
                 if (isPullToRefresh) {
                     _screenState.update { it.copy(isRefreshing = true) }
                 } else {
-                    _screenState.update { it.copy(uiState = MatchesUiState.Loading) }
+                    _screenState.update { it.copy(uiState = RankingUiState.Loading) }
                 }
 
                 currentPage = 1
@@ -119,20 +84,19 @@ class MatchesViewModel
 
                 try {
                     val result =
-                        tournamentRepository.getMatches(
+                        tournamentRepository.getRanking(
                             tournamentId = tournamentId,
                             page = currentPage,
-                            teamName = teamName,
                             dateId = dateId,
                         )
-
                     currentPage = result.currentPage + 1
                     totalPages = result.totalPages
+
                     _screenState.update {
                         it.copy(
                             uiState =
-                                MatchesUiState.Success(
-                                    matches = result.matches,
+                                RankingUiState.Success(
+                                    rankings = result.rankings,
                                     currentPage = result.currentPage,
                                     totalPages = result.totalPages,
                                 ),
@@ -142,33 +106,30 @@ class MatchesViewModel
                 } catch (e: Exception) {
                     _screenState.update {
                         it.copy(
-                            uiState = MatchesUiState.Error(e.message ?: "Error desconocido"),
+                            uiState = RankingUiState.Error(e.message ?: "Error desconocido"),
                             isRefreshing = false,
                         )
                     }
-                    _eventFlow.emit(MatchesUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
+                    _eventFlow.emit(RankingUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
                 }
             }
         }
 
         fun loadNextPage(
-            tournamentId: Int?,
-            teamName: String? = null,
-            dateId: Int? = selectedDateId,
+            tournamentId: Int,
+            dateId: Int? = null,
         ) {
             val state = _screenState.value.uiState
-            if (state !is MatchesUiState.Success) return
+            if (state !is RankingUiState.Success) return
             if (currentPage > totalPages || isPaginating) return
-            if (dateId != selectedDateId) return
 
             viewModelScope.launch {
                 isPaginating = true
                 try {
                     val result =
-                        tournamentRepository.getMatches(
+                        tournamentRepository.getRanking(
                             tournamentId = tournamentId,
                             page = currentPage,
-                            teamName = teamName,
                             dateId = dateId,
                         )
 
@@ -178,30 +139,24 @@ class MatchesViewModel
                     _screenState.update {
                         it.copy(
                             uiState =
-                                MatchesUiState.Success(
-                                    matches = state.matches + result.matches,
+                                RankingUiState.Success(
+                                    rankings = state.rankings + result.rankings,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
                                 ),
                         )
                     }
                 } catch (e: Exception) {
-                    _eventFlow.emit(MatchesUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
+                    _eventFlow.emit(RankingUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
                 } finally {
                     isPaginating = false
                 }
             }
         }
 
-        fun onMatchClick(match: Match) {
-            viewModelScope.launch {
-                _eventFlow.emit(MatchesUiEvent.Navigate("matchDetail/${match.matchId}"))
-            }
-        }
-
         fun onBackPressed() {
             viewModelScope.launch {
-                _eventFlow.emit(MatchesUiEvent.PopBackStack)
+                _eventFlow.emit(RankingUiEvent.PopBackStack)
             }
         }
     }
