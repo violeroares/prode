@@ -1,6 +1,7 @@
 package com.rockandcode.prodefutbolero.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,13 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddChart
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PersonOutline
-import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material.icons.outlined.Tour
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -45,52 +46,83 @@ fun FloatingBottomNavigationBar(
     val bottomItems =
         listOf(
             FloatingBottomNavItem("Inicio", Icons.Outlined.Home, Routes.Home.route),
-            FloatingBottomNavItem("Matches", Icons.Outlined.AddChart, Routes.Matches.route),
-            FloatingBottomNavItem("Torneos", Icons.Outlined.Tour, Routes.MyTournaments.route),
-            FloatingBottomNavItem("Favoritos", Icons.Outlined.StarOutline, Routes.MyTournaments.route),
+            FloatingBottomNavItem("Matches", Icons.Outlined.CalendarToday, Routes.Matches.route),
+            FloatingBottomNavItem("Ranking", Icons.Outlined.EmojiEvents, Routes.Ranking.route),
+            FloatingBottomNavItem("Favoritos", Icons.Outlined.BarChart, Routes.MyTournaments.route),
             FloatingBottomNavItem("Perfil", Icons.Outlined.PersonOutline, Routes.Profile.route),
         )
 
     val currentDestination by navController.currentBackStackEntryAsState()
     val currentRoute = currentDestination?.destination?.route
     val isDark = isSystemInDarkTheme()
-    val backgroundColor = if (isDark) Color(0xFF2C2C2E) else Color(0xFFFFFFFF)
-    val selectedColor = if (isDark) Color.White else Color.Black
+    val backgroundColor = if (isDark) Color(0xFF27292C) else Color(0xFFFFFFFF)
+    val selectedColor = if (isDark) Color(0xFFA2F7A1) else Color(0xFF4270F6)
     val unselectedColor = Color.Gray
 
     Box(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 24.dp, vertical = 24.dp),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .height(70.dp)
-                    .shadow(8.dp, RoundedCornerShape(24.dp), clip = true)
-                    .clip(RoundedCornerShape(24.dp))
+                    .shadow(8.dp, RoundedCornerShape(28.dp), clip = true)
+                    .clip(RoundedCornerShape(28.dp))
                     .background(backgroundColor)
-                    .padding(horizontal = 16.dp),
+                    .padding(4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             bottomItems.forEach { item ->
                 val selected = currentRoute == item.route
-                IconButton(
-                    onClick = {
-                        if (!selected) {
-                            navController.navigate(item.route) {
-                                popUpTo(Routes.Home.route) {
-                                    saveState = true
+//                IconButton(
+//                    onClick = {
+//                        if (!selected) {
+//                            navController.navigate(item.route) {
+//                                popUpTo(Routes.Home.route) {
+//                                    saveState = true
+//                                }
+//                                launchSingleTop = true
+//                                restoreState = true
+//                            }
+//                        }
+//                    },
+//                    modifier = Modifier.size(68.dp),
+//                ) {
+//                    Icon(
+//                        imageVector = item.icon,
+//                        contentDescription = item.label,
+//                        tint = if (selected) selectedColor else unselectedColor,
+//                    )
+//                }
+
+                Box(
+                    modifier =
+                        Modifier
+                            .size(66.dp)
+                            // .clip(CircleShape)
+                            .clip(RoundedCornerShape(24.dp))
+                            .clickable(onClick = {
+                                if (!selected) {
+                                    navController.navigate(item.route) {
+                                        popUpTo(Routes.Home.route) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    },
-                    modifier = Modifier.size(48.dp),
+                            })
+                            .background(
+                                if (isDark) Color(0xFF2E3033) else MaterialTheme.colorScheme.background,
+                                // shape = CircleShape,
+                                shape = RoundedCornerShape(24.dp),
+                            ),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = item.icon,

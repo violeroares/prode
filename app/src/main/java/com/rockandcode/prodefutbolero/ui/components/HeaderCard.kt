@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -36,15 +35,15 @@ fun HeaderCard(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(4.dp),
     ) {
         if (leftIcon != null) {
             Box(
                 modifier =
                     Modifier
-                        .size(48.dp)
+                        .size(68.dp)
                         .clip(CircleShape)
-                        .clickable(onClick = { onClick })
+                        .clickable(onClick = onClick)
                         .background(
                             if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
                             shape = CircleShape,
@@ -54,7 +53,7 @@ fun HeaderCard(
                 Icon(
                     leftIcon,
                     contentDescription = "Icono",
-                    tint = if (isDark) Color(0xFFA9F582) else Color.Black,
+                    tint = if (isDark) Color(0xFFA2F7A1) else Color.Black,
                 )
             }
         }
@@ -62,12 +61,13 @@ fun HeaderCard(
             modifier =
                 Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 16.dp),
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.headlineSmall,
+                // fontSize = 22.sp,
+                // fontWeight = FontWeight.Medium,
                 color = if (isDark) Color.White else Color.Black,
             )
             if (subTitle.isNotEmpty()) {
@@ -82,9 +82,9 @@ fun HeaderCard(
             Box(
                 modifier =
                     Modifier
-                        .size(48.dp)
+                        .size(68.dp)
                         .clip(CircleShape)
-                        .clickable(onClick = { onClick })
+                        .clickable(onClick = onClick)
                         .background(
                             if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
                             shape = CircleShape,
@@ -94,7 +94,8 @@ fun HeaderCard(
                 Icon(
                     rightIcon,
                     contentDescription = "Icono",
-                    tint = if (isDark) Color(0xFFA9F582) else Color.Black,
+                    // tint = if (isDark) Color(0xFFA9F582) else Color.Black,
+                    tint = if (isDark) Color(0xFFA2F7A1) else Color.Black,
                 )
             }
         }

@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,7 +31,7 @@ import com.rockandcode.prodefutbolero.utils.obtenerSaludo
 @Composable
 fun HomeHeader(
     user: User?,
-    onSearchClick: () -> Unit,
+    onNotificationsClick: () -> Unit = {},
     isDark: Boolean,
 ) {
     val iconBackgroundColor = Color.White
@@ -44,29 +44,11 @@ fun HomeHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        // Parte izquierda
-//        Column {
-//            Text(
-//                text = "Hola ${user?.firstName},",
-//                style = MaterialTheme.typography.headlineMedium,
-//                fontWeight = FontWeight.Medium,
-//                color = if (isDark) Color.White else MaterialTheme.colorScheme.primary,
-//            )
-//            Text(
-//                text = "Bienvenido de nuevo",
-//                style = MaterialTheme.typography.titleMedium,
-//                fontWeight = FontWeight.Normal,
-//                // color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-//                color = Color(0xFF747D8B),
-//            )
-//        }
-
         Column {
             Text(
                 text = "Hola ${user?.firstName},",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Normal,
-                // color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 color = Color(0xFF747D8B),
             )
             Text(
@@ -76,45 +58,16 @@ fun HomeHeader(
                 color = if (isDark) Color.White else MaterialTheme.colorScheme.primary,
             )
         }
-
-        // Parte derecha
-//        val boxHeight = 56.dp // Altura suficiente para los íconos
-
-//        Box(
-//            modifier =
-//                Modifier
-//                    .height(boxHeight)
-//                    .background(
-//                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-//                        shape = RoundedCornerShape(36.dp),
-//                    ).padding(4.dp),
-//        ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-//            IconButton(onClick = onSearchClick) {
-//                Box(
-//                    modifier =
-//                        Modifier
-//                            .size(48.dp)
-//                            .background(iconBackgroundColor, shape = CircleShape),
-//                    contentAlignment = Alignment.Center,
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Search,
-//                        contentDescription = "Buscar",
-//                        tint = Color.Black,
-//                    )
-//                }
-//            }
-
             Box(
                 modifier =
                     Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .clickable(onClick = onSearchClick)
+                        .clickable(onClick = onNotificationsClick)
                         .background(
                             iconBackgroundColor,
                             shape = CircleShape,
@@ -122,7 +75,7 @@ fun HomeHeader(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    Icons.Default.KeyboardArrowDown,
+                    Icons.Outlined.Notifications,
                     contentDescription = "Icono",
                     tint = Color.Black,
                 )
@@ -135,6 +88,5 @@ fun HomeHeader(
                 contentScale = ContentScale.Crop,
             )
         }
-//        }
     }
 }
