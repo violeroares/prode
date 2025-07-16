@@ -5,9 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rockandcode.prodefutbolero.domain.tournament.models.Match
+import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
+import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
+import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
-import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,50 +20,51 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed interface MatchesUiState {
-    object Loading : MatchesUiState
+sealed interface HitsUiState {
+    object Loading : HitsUiState
 
     data class Success(
-        val matches: List<Match>,
+        val hits: List<Hit>,
         val currentPage: Int,
         val totalPages: Int,
-    ) : MatchesUiState
+    ) : HitsUiState
 
     data class Error(
         val message: String,
-    ) : MatchesUiState
+    ) : HitsUiState
 }
 
-data class MatchesScreenState(
-    val uiState: MatchesUiState = MatchesUiState.Loading,
+data class HitsScreenState(
+    val uiState: HitsUiState = HitsUiState.Loading,
     val dates: List<MatchDate> = emptyList(),
     val isRefreshing: Boolean = false,
 )
 
-sealed class MatchesUiEvent {
+sealed class HitsUiEvent {
     data class ShowSnackbar(
         val message: String,
-    ) : MatchesUiEvent()
+    ) : HitsUiEvent()
 
     data class Navigate(
         val route: String,
-    ) : MatchesUiEvent()
+    ) : HitsUiEvent()
 
-    object PopBackStack : MatchesUiEvent()
+    object PopBackStack : HitsUiEvent()
 }
 
 @HiltViewModel
-class MatchesViewModel
+class MyHitsViewModel
     @Inject
     constructor(
-        private val tournamentRepository: ITournamentRepository,
+        private val predictionRepository: IPredictionRepository,
     ) : ViewModel() {
-        private val _screenState = MutableStateFlow(MatchesScreenState())
-        val screenState: StateFlow<MatchesScreenState> = _screenState.asStateFlow()
+        private val _screenState = MutableStateFlow(HitsScreenState())
+        val screenState: StateFlow<HitsScreenState> = _screenState.asStateFlow()
 
-        private val _eventFlow = MutableSharedFlow<MatchesUiEvent>()
-        val eventFlow: SharedFlow<MatchesUiEvent> = _eventFlow.asSharedFlow()
+        private val _eventFlow = MutableSharedFlow<HitsUiEvent>()
+        val eventFlow: SharedFlow<HitsUiEvent> = _eventFlow.asSharedFlow()
 
+        private var userId: String? = null
         private var tournamentId: Int? = null
 
         var currentPage = 1
@@ -76,18 +78,22 @@ class MatchesViewModel
         var searchQuery by mutableStateOf("")
             private set
 
-        fun setContext(tournamentId: Int?) {
-            this.tournamentId = tournamentId
-        }
-
         fun onSearchQueryChanged(newQuery: String) {
             searchQuery = newQuery
             if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
-                getMatches(teamName = searchQuery, dateId = selectedDateId)
+                getHits(teamName = searchQuery, dateId = selectedDateId)
             }
         }
 
-        fun getMatches(
+        fun setContext(
+            userId: String?,
+            tournamentId: Int?,
+        ) {
+            this.userId = userId
+            this.tournamentId = tournamentId
+        }
+
+        fun getHits(
             teamName: String? = null,
             dateId: Int? = selectedDateId,
             isPullToRefresh: Boolean = false,
@@ -96,29 +102,38 @@ class MatchesViewModel
                 if (isPullToRefresh) {
                     _screenState.update { it.copy(isRefreshing = true) }
                 } else {
-                    _screenState.update { it.copy(uiState = MatchesUiState.Loading) }
+                    _screenState.update { it.copy(uiState = HitsUiState.Loading) }
                 }
 
                 currentPage = 1
                 totalPages = 1
 
                 try {
-                    val result =
-                        tournamentRepository.getMatches(
-                            tournamentId = tournamentId,
-                            page = currentPage,
+                    val filter =
+                        HitFilter(
+                            userId = userId,
+                            tournamentId = tournamentId?.toString(),
                             teamName = teamName,
-                            dateId = dateId,
+                            dateId = dateId?.toString(),
                         )
 
-                    currentPage = result.currentPage + 1
+                    val result =
+                        predictionRepository.getHitsToPage(
+                            filter = filter,
+                            pageIndex = currentPage,
+                            pageSize = 20,
+                            sort = "",
+                        )
+
+                    currentPage = result.pageIndex + 1
                     totalPages = result.totalPages
+
                     _screenState.update {
                         it.copy(
                             uiState =
-                                MatchesUiState.Success(
-                                    matches = result.matches,
-                                    currentPage = result.currentPage,
+                                HitsUiState.Success(
+                                    hits = result.result,
+                                    currentPage = result.pageIndex,
                                     totalPages = result.totalPages,
                                 ),
                             isRefreshing = false,
@@ -127,11 +142,11 @@ class MatchesViewModel
                 } catch (e: Exception) {
                     _screenState.update {
                         it.copy(
-                            uiState = MatchesUiState.Error(e.message ?: "Error desconocido"),
+                            uiState = HitsUiState.Error(e.message ?: "Error desconocido"),
                             isRefreshing = false,
                         )
                     }
-                    _eventFlow.emit(MatchesUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
+                    _eventFlow.emit(HitsUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
                 }
             }
         }
@@ -141,19 +156,27 @@ class MatchesViewModel
             dateId: Int? = selectedDateId,
         ) {
             val state = _screenState.value.uiState
-            if (state !is MatchesUiState.Success) return
+            if (state !is HitsUiState.Success) return
             if (currentPage > totalPages || isPaginating) return
             if (dateId != selectedDateId) return
 
             viewModelScope.launch {
                 isPaginating = true
                 try {
-                    val result =
-                        tournamentRepository.getMatches(
-                            tournamentId = tournamentId,
-                            page = currentPage,
+                    val filter =
+                        HitFilter(
+                            userId = userId,
+                            tournamentId = tournamentId?.toString(),
                             teamName = teamName,
-                            dateId = dateId,
+                            dateId = dateId?.toString(),
+                        )
+
+                    val result =
+                        predictionRepository.getHitsToPage(
+                            filter = filter,
+                            pageIndex = currentPage,
+                            pageSize = 20,
+                            sort = "",
                         )
 
                     currentPage++
@@ -162,30 +185,30 @@ class MatchesViewModel
                     _screenState.update {
                         it.copy(
                             uiState =
-                                MatchesUiState.Success(
-                                    matches = state.matches + result.matches,
+                                HitsUiState.Success(
+                                    hits = state.hits + result.result,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
                                 ),
                         )
                     }
                 } catch (e: Exception) {
-                    _eventFlow.emit(MatchesUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
+                    _eventFlow.emit(HitsUiEvent.ShowSnackbar(e.message ?: "Error desconocido"))
                 } finally {
                     isPaginating = false
                 }
             }
         }
 
-        fun onMatchClick(match: Match) {
+        fun onMatchClick(hit: Hit) {
             viewModelScope.launch {
-                _eventFlow.emit(MatchesUiEvent.Navigate("matchDetail/${match.matchId}"))
+                _eventFlow.emit(HitsUiEvent.Navigate("matchDetail/${hit.matchId}"))
             }
         }
 
         fun onBackPressed() {
             viewModelScope.launch {
-                _eventFlow.emit(MatchesUiEvent.PopBackStack)
+                _eventFlow.emit(HitsUiEvent.PopBackStack)
             }
         }
     }

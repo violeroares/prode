@@ -1,4 +1,4 @@
-package com.rockandcode.prodefutbolero.domain.tournament.models
+package com.rockandcode.prodefutbolero.data.models
 
 data class RankingRequest(
     val boardId: String? = null,
@@ -8,7 +8,7 @@ data class RankingRequest(
     val firstName: String? = null,
     val lastName: String? = null,
     val userName: String? = null,
+    val posicion: String? = null,
     val fechaDesde: String? = null, // formato ISO "yyyy-MM-dd" si es necesario
     val fechaHasta: String? = null,
-    val posicion: String? = null,
 )

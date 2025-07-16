@@ -1,4 +1,4 @@
-package com.rockandcode.prodefutbolero.domain.tournament.models
+package com.rockandcode.prodefutbolero.data.models
 
 data class Pagination<T>(
     val filter: T,

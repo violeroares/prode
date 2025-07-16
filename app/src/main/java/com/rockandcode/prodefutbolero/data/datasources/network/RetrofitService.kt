@@ -31,7 +31,7 @@ object RetrofitService {
         // Builder Como lo vimos en clase
         return Retrofit
             .Builder()
-            .baseUrl("http://192.168.0.21:5128/")
+            .baseUrl("http://200.32.43.207:3004/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

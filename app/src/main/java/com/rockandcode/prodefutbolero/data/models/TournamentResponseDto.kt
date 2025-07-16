@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 
 data class TournamentResponseDto(
-    @SerializedName("tournamentId")
+    @SerializedName("TournamentId")
     val id: Int,
-    @SerializedName("name")
+    @SerializedName("Name")
     val name: String,
-    @SerializedName("tournamentTypeName")
+    @SerializedName("TournamentTypeName")
     val tournamentTypeName: String,
-    @SerializedName("pictureUrl")
+    @SerializedName("PictureUrl")
     val pictureUrl: String,
 ) {
     fun toDomain() =
