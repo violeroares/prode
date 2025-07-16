@@ -48,7 +48,7 @@ fun FloatingBottomNavigationBar(
             FloatingBottomNavItem("Inicio", Icons.Outlined.Home, Routes.Home.route),
             FloatingBottomNavItem("Matches", Icons.Outlined.CalendarToday, Routes.Matches.route),
             FloatingBottomNavItem("Ranking", Icons.Outlined.EmojiEvents, Routes.Ranking.route),
-            FloatingBottomNavItem("Favoritos", Icons.Outlined.BarChart, Routes.MyTournaments.route),
+            FloatingBottomNavItem("Favoritos", Icons.Outlined.BarChart, Routes.MyHits.route),
             FloatingBottomNavItem("Perfil", Icons.Outlined.PersonOutline, Routes.Profile.route),
         )
 

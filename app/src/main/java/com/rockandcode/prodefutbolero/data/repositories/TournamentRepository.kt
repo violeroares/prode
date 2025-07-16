@@ -1,15 +1,16 @@
 package com.rockandcode.prodefutbolero.data.repositories
 
 import android.util.Log
+import com.google.gson.Gson
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
+import com.rockandcode.prodefutbolero.data.mappers.toRequest
 import com.rockandcode.prodefutbolero.data.models.PaginatedMatchesDto
+import com.rockandcode.prodefutbolero.data.models.Pagination
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
-import com.rockandcode.prodefutbolero.domain.tournament.models.PageResult
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedMatches
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedRanking
-import com.rockandcode.prodefutbolero.domain.tournament.models.Pagination
 import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
-import com.rockandcode.prodefutbolero.domain.tournament.models.RankingRequest
+import com.rockandcode.prodefutbolero.domain.tournament.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 import com.rockandcode.prodefutbolero.domain.tournament.models.TournamentHome
 import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException
 import java.time.LocalDate
+import com.rockandcode.prodefutbolero.domain.pagination.PageResult as DomainPageResult
 
 class TournamentRepository(
     private val apiService: ApiService,
@@ -70,7 +72,13 @@ class TournamentRepository(
         )
     }
 
-    override suspend fun getDates(tournamentId: Int): List<MatchDate> = apiService.getDates(tournamentId).map { it.toDomain() }
+    override suspend fun getDates(tournamentId: String): List<MatchDate> = apiService.getDates(tournamentId).map { it.toDomain() }
+
+//    override fun getDates(tournamentId: Int): Flow<List<MatchDate>> =
+//        flow {
+//            val response = apiService.getDates(tournamentId)
+//            emit(response.map { it.toDomain() })
+//        }.flowOn(Dispatchers.IO)
 
     override suspend fun getRanking(
         tournamentId: Int,
@@ -112,18 +120,33 @@ class TournamentRepository(
     }
 
     override suspend fun getRankingToPage(
-        filter: RankingRequest,
+        filter: RankingFilter,
         pageIndex: Int,
         pageSize: Int,
         sort: String,
-    ): PageResult<Ranking> {
-        val pagination = Pagination(filter, pageIndex, pageSize, sort)
+    ): DomainPageResult<Ranking> {
+        val request = filter.toRequest()
+
+        val pagination =
+            Pagination(
+                filter = request,
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+                sort = sort,
+            )
+
+        Log.d("getRankingToPage", "➡️ Enviando pageIndex=$pageIndex")
+
+        val gson = Gson()
+        Log.d("getRankingToPage", "➡️ JSON request: ${gson.toJson(pagination)}")
+
         val response = apiService.getRankingToPage(pagination)
+        Log.d("getRankingToPage", "⬅️ Recibido pageIndex=${response.body()?.pageIndex}")
 
         if (response.isSuccessful) {
             val body = response.body() ?: throw Exception("Empty response body")
 
-            return PageResult(
+            return DomainPageResult(
                 pageSize = body.pageSize,
                 pageIndex = body.pageIndex,
                 totalCount = body.totalCount,

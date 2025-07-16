@@ -1,11 +1,11 @@
 package com.rockandcode.prodefutbolero.domain.tournament.repository
 
+import com.rockandcode.prodefutbolero.domain.pagination.PageResult
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
-import com.rockandcode.prodefutbolero.domain.tournament.models.PageResult
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedMatches
 import com.rockandcode.prodefutbolero.domain.tournament.models.PaginatedRanking
 import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
-import com.rockandcode.prodefutbolero.domain.tournament.models.RankingRequest
+import com.rockandcode.prodefutbolero.domain.tournament.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 import com.rockandcode.prodefutbolero.domain.tournament.models.TournamentHome
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,8 @@ interface ITournamentRepository {
         dateId: Int?,
     ): PaginatedMatches
 
-    suspend fun getDates(tournamentId: Int): List<MatchDate>
+    suspend fun getDates(tournamentId: String): List<MatchDate>
+    // fun getDates(tournamentId: Int): Flow<List<MatchDate>>
 
     suspend fun getRanking(
         tournamentId: Int,
@@ -41,7 +42,7 @@ interface ITournamentRepository {
     ): PaginatedRanking
 
     suspend fun getRankingToPage(
-        filter: RankingRequest,
+        filter: RankingFilter,
         pageIndex: Int,
         pageSize: Int,
         sort: String,

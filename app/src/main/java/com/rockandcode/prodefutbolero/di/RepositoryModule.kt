@@ -1,8 +1,10 @@
 package com.rockandcode.prodefutbolero.di
 
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
+import com.rockandcode.prodefutbolero.data.repositories.PredictionRepository
 import com.rockandcode.prodefutbolero.data.repositories.TournamentRepository
 import com.rockandcode.prodefutbolero.data.repositories.UserRepository
+import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
 import com.rockandcode.prodefutbolero.domain.user.repository.IUserRepository
 import dagger.Module
@@ -21,6 +23,6 @@ object RepositoryModule {
     @Provides @Singleton
     fun providerTournamentRepository(apiService: ApiService): ITournamentRepository = TournamentRepository(apiService)
 
-//    @Provides @Singleton
-//    fun providerMatchRepository(apiService: ApiService): IMatchRepository = MatchRepository(apiService)
+    @Provides @Singleton
+    fun providerPredictionRepository(apiService: ApiService): IPredictionRepository = PredictionRepository(apiService)
 }

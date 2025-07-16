@@ -56,7 +56,7 @@ fun HomeScreen(
     val isDark = isSystemInDarkTheme()
 
     LaunchedEffect(tournament?.id) {
-        tournament?.id?.let { homeViewModel.loadTournamentHome(it, user!!.id) }
+        tournament?.id?.let { homeViewModel.loadTournamentHome(it, user?.id) }
     }
 
     // Actualizar displayedUser solo si user no es null
@@ -69,7 +69,6 @@ fun HomeScreen(
     when (val uiState = state) {
         is HomeUiState.Loading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
                 CircularProgressIndicator()
             }
         }
@@ -87,7 +86,14 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text("Error: ${uiState.message}")
-                    IconButton(onClick = { tournament?.id?.let { homeViewModel.loadTournamentHome(it, user!!.id) } }) {
+                    IconButton(onClick = {
+                        tournament?.id?.let {
+                            homeViewModel.loadTournamentHome(
+                                it,
+                                user?.id,
+                            )
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Actualizar",
@@ -126,11 +132,26 @@ fun HomeScreen(
                     item {
                         Spacer(Modifier.height(8.dp))
                     }
+//                    if (uiState.data != null) {
+//                        item {
+//                            HomeAverageByDateCard(
+//                                title = uiState.data.tournamentName,
+//                                averageList = uiState.data.averageByDate,
+//                                myPosition = myRanking?.posicion.toString(),
+//                                onMoreClick = {
+//                                    navController.navigate(Routes.TournamentSelect.route) {
+//                                        popUpTo(Routes.Home.route) { inclusive = true }
+//                                    }
+//                                },
+//                            )
+//                        }
+//                    }
+
                     item {
                         HomeAverageByDateCard(
-                            title = uiState.data.tournamentName,
-                            averageList = uiState.data.averageByDate,
-                            myPosition = myRanking?.position.toString(),
+                            title = "Clausura 2025",
+                            averageList = emptyList(),
+                            myPosition = myRanking?.posicion.toString(),
                             onMoreClick = {
                                 navController.navigate(Routes.TournamentSelect.route) {
                                     popUpTo(Routes.Home.route) { inclusive = true }

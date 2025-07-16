@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -54,23 +55,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
-import com.rockandcode.prodefutbolero.ui.components.MatchCard
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MatchesScreen(
+fun MyHitsScreen(
     mainViewModel: MainViewModel,
-    viewModel: MatchesViewModel = hiltViewModel(),
+    viewModel: MyHitsViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {
     val state by viewModel.screenState.collectAsState()
+    val user by mainViewModel.user.collectAsState()
     val tournament by mainViewModel.selectedTournament.collectAsState()
     val dates by mainViewModel.dates.collectAsState()
     val listState = rememberLazyListState()
     val pullToRefreshState = rememberPullToRefreshState()
-    val isBusy = state.uiState is MatchesUiState.Loading || viewModel.isPaginating || state.isRefreshing
+    val isBusy = state.uiState is HitsUiState.Loading || viewModel.isPaginating || state.isRefreshing
     val snackbarHostState = remember { SnackbarHostState() }
     var isFilterSheetOpen by remember { mutableStateOf(false) }
 
@@ -78,9 +80,9 @@ fun MatchesScreen(
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
-                is MatchesUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
-                is MatchesUiEvent.Navigate -> { /* navController.navigate(event.route) */ }
-                is MatchesUiEvent.PopBackStack -> {
+                is HitsUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
+                is HitsUiEvent.Navigate -> { /* navController.navigate(event.route) */ }
+                is HitsUiEvent.PopBackStack -> {
                     navController.popBackStack()
                 }
             }
@@ -92,13 +94,13 @@ fun MatchesScreen(
         contentWindowInsets = WindowInsets(0),
     ) { paddingValues ->
         when (val uiState = state.uiState) {
-            is MatchesUiState.Loading -> {
+            is HitsUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            is MatchesUiState.Error -> {
+            is HitsUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -109,7 +111,11 @@ fun MatchesScreen(
                             text = uiState.message,
                             color = MaterialTheme.colorScheme.error,
                         )
-                        IconButton(onClick = { tournament?.id?.let { viewModel.getMatches() } }) {
+                        IconButton(onClick = {
+                            tournament?.id?.let {
+                                viewModel.getHits()
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
                                 contentDescription = "Actualizar",
@@ -119,12 +125,12 @@ fun MatchesScreen(
                 }
             }
 
-            is MatchesUiState.Success -> {
+            is HitsUiState.Success -> {
                 PullToRefreshBox(
                     isRefreshing = state.isRefreshing,
                     onRefresh = {
                         tournament?.id?.let {
-                            viewModel.getMatches(
+                            viewModel.getHits(
                                 teamName = viewModel.searchQuery,
                                 dateId = viewModel.selectedDateId,
                                 isPullToRefresh = true,
@@ -162,16 +168,28 @@ fun MatchesScreen(
                         item {
                             OutlinedTextField(
                                 value = viewModel.searchQuery,
-                                onValueChange = { viewModel.onSearchQueryChanged(it) },
+                                onValueChange = {
+                                    viewModel.onSearchQueryChanged(
+                                        it,
+                                    )
+                                },
                                 modifier =
                                     Modifier
                                         .fillMaxWidth()
                                         .padding(16.dp),
                                 placeholder = { Text("Buscar equipo...") },
-                                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = null,
+                                    )
+                                },
                                 trailingIcon = {
                                     IconButton(onClick = { isFilterSheetOpen = true }) {
-                                        Icon(Icons.Default.FilterList, contentDescription = "Filtrar por fecha")
+                                        Icon(
+                                            Icons.Default.FilterList,
+                                            contentDescription = "Filtrar por fecha",
+                                        )
                                     }
                                 },
                                 singleLine = true,
@@ -204,20 +222,20 @@ fun MatchesScreen(
                             }
                         }
 
-                        if (uiState.matches.isEmpty() && !isBusy) {
+                        if (uiState.hits.isEmpty() && !isBusy) {
                             item {
                                 Box(
                                     modifier = Modifier.fillParentMaxSize(),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    Text("No hay partidos disponibles")
+                                    Text("No hay aciertos disponibles")
                                 }
                             }
                         }
 
-                        items(uiState.matches) { match ->
-                            MatchCard(match = match) {
-                                viewModel.onMatchClick(match)
+                        items(uiState.hits) { hit ->
+                            HitCard(hit = hit) {
+                                viewModel.onMatchClick(hit)
                             }
                         }
 
@@ -239,14 +257,15 @@ fun MatchesScreen(
             }
         }
 
-        LaunchedEffect(tournament?.id, dates) {
+        LaunchedEffect(user?.id, tournament?.id, dates) {
+            val currentUser = user
             val currentTournament = tournament
             val activeDateId = dates.firstOrNull { it.active }?.id
 
-            if (currentTournament != null && activeDateId != null) {
-                viewModel.setContext(tournamentId = currentTournament.id)
+            if (currentUser != null && currentTournament != null && activeDateId != null) {
+                viewModel.setContext(userId = currentUser.id.toString(), tournamentId = currentTournament.id)
                 viewModel.selectedDateId = activeDateId
-                viewModel.getMatches(
+                viewModel.getHits(
                     teamName = null,
                     dateId = activeDateId,
                     isPullToRefresh = false,
@@ -263,7 +282,7 @@ fun MatchesScreen(
                 .distinctUntilChanged()
                 .collect { index ->
                     val matches =
-                        (state.uiState as? MatchesUiState.Success)?.matches ?: return@collect
+                        (state.uiState as? HitsUiState.Success)?.hits ?: return@collect
                     val shouldLoadMore =
                         index + listState.layoutInfo.visibleItemsInfo.size >= matches.size - 3
                     if (shouldLoadMore && !isBusy && viewModel.currentPage <= viewModel.totalPages) {
@@ -304,7 +323,7 @@ fun MatchesScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         viewModel.selectedDateId = null
-                                        viewModel.getMatches(
+                                        viewModel.getHits(
                                             viewModel.searchQuery,
                                             null,
                                         )
@@ -333,7 +352,7 @@ fun MatchesScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         viewModel.selectedDateId = date.id
-                                        viewModel.getMatches(
+                                        viewModel.getHits(
                                             viewModel.searchQuery,
                                             date.id,
                                         )
@@ -347,5 +366,15 @@ fun MatchesScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
+    }
+}
+
+@Composable
+fun HitCard(
+    hit: Hit,
+    onMatchClick: () -> Unit = {},
+) {
+    Card(modifier = Modifier.clickable(onClick = onMatchClick)) {
+        Text(hit.firstName)
     }
 }

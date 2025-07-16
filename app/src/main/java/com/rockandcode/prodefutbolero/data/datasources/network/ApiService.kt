@@ -1,17 +1,19 @@
 package com.rockandcode.prodefutbolero.data.datasources.network
 
+import com.rockandcode.prodefutbolero.data.models.HitDto
+import com.rockandcode.prodefutbolero.data.models.HitRequest
 import com.rockandcode.prodefutbolero.data.models.LoginRequest
 import com.rockandcode.prodefutbolero.data.models.LoginResponse
 import com.rockandcode.prodefutbolero.data.models.MatchDateDto
+import com.rockandcode.prodefutbolero.data.models.PageResult
 import com.rockandcode.prodefutbolero.data.models.PaginatedMatchesDto
 import com.rockandcode.prodefutbolero.data.models.PaginatedRankingDto
+import com.rockandcode.prodefutbolero.data.models.Pagination
 import com.rockandcode.prodefutbolero.data.models.RankingDto
+import com.rockandcode.prodefutbolero.data.models.RankingRequest
 import com.rockandcode.prodefutbolero.data.models.TournamentHomeResponseDto
 import com.rockandcode.prodefutbolero.data.models.TournamentResponseDto
 import com.rockandcode.prodefutbolero.data.models.UserProfileResponseDto
-import com.rockandcode.prodefutbolero.domain.tournament.models.PageResult
-import com.rockandcode.prodefutbolero.domain.tournament.models.Pagination
-import com.rockandcode.prodefutbolero.domain.tournament.models.RankingRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,7 +30,10 @@ interface ApiService {
     @GET("api/auth/currentAuthUser")
     suspend fun getUserProfile(): Response<UserProfileResponseDto>
 
-    @GET("api/MobileV3/GetTournaments")
+//    @GET("api/MobileV3/GetTournaments")
+//    suspend fun getTournaments(): List<TournamentResponseDto>
+
+    @GET("api/tournaments/GetTournamentsForHeader")
     suspend fun getTournaments(): List<TournamentResponseDto>
 
     @GET("api/MobileV3/{id}/home")
@@ -45,9 +50,9 @@ interface ApiService {
         @Query("dateId") dateId: Int?,
     ): PaginatedMatchesDto
 
-    @GET("api/MobileV3/{id}/dates")
+    @GET("api/Dates/GetDatesKV")
     suspend fun getDates(
-        @Path("id") tournamentId: Int,
+        @Query("tournamentId") tournamentId: String,
     ): List<MatchDateDto>
 
     @GET("api/MobileV3/GetRankingAsync")
@@ -69,4 +74,14 @@ interface ApiService {
     suspend fun getRankingToPage(
         @Body input: Pagination<RankingRequest>,
     ): Response<PageResult<RankingDto>>
+
+    @POST("api/predictions/GetHitsToPage")
+    suspend fun getHitsToPage(
+        @Body input: Pagination<HitRequest>,
+    ): Response<PageResult<HitDto>>
+//
+//    @POST("api/matches/GetMatchesToPage")
+//    suspend fun getMatchesToPage(
+//        @Body input: Pagination<MatchRequest>,
+//    ): Response<PageResult<MatchDto>>
 }

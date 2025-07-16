@@ -1,16 +1,22 @@
 package com.rockandcode.prodefutbolero.data.models
 
+import com.google.gson.annotations.SerializedName
 import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
 
 data class RankingDto(
-    val boardId: String,
+    @SerializedName("Posicion")
+    val posicion: Int,
+    @SerializedName("UserId")
     val userId: Int,
-    val tournamentId: String,
+    @SerializedName("Username")
     val userName: String,
+    @SerializedName("FirstName")
     val firstName: String,
+    @SerializedName("LastName")
     val lastName: String,
-    val position: Int,
-    val points: Int?,
+    @SerializedName("Puntos")
+    val puntos: Int,
+    @SerializedName("UserPictureUrl")
     val userPictureUrl: String,
 ) {
     fun toDomain(): Ranking =
@@ -19,8 +25,8 @@ data class RankingDto(
             userName = userName,
             firstName = firstName,
             lastName = lastName,
-            position = position,
-            points = points,
+            posicion = posicion,
+            puntos = puntos,
             userPictureUrl = userPictureUrl,
         )
 }
