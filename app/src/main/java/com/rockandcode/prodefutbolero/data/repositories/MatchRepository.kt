@@ -3,22 +3,21 @@ package com.rockandcode.prodefutbolero.data.repositories
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
 import com.rockandcode.prodefutbolero.data.mappers.toRequest
 import com.rockandcode.prodefutbolero.data.models.Pagination
-import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
-import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
-import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
-import com.rockandcode.prodefutbolero.domain.tournament.models.AverageByDate
+import com.rockandcode.prodefutbolero.domain.match.models.Match
+import com.rockandcode.prodefutbolero.domain.match.models.MatchFilter
+import com.rockandcode.prodefutbolero.domain.match.repository.IMatchRepository
+import com.rockandcode.prodefutbolero.domain.pagination.PageResult
 import retrofit2.HttpException
-import com.rockandcode.prodefutbolero.domain.pagination.PageResult as DomainPageResult
 
-class PredictionRepository(
+class MatchRepository(
     private val apiService: ApiService,
-) : IPredictionRepository {
-    override suspend fun getHitsToPage(
-        filter: HitFilter,
+) : IMatchRepository {
+    override suspend fun getMatchesToPage(
+        filter: MatchFilter,
         pageIndex: Int,
         pageSize: Int,
         sort: String,
-    ): DomainPageResult<Hit> {
+    ): PageResult<Match> {
         val request = filter.toRequest()
 
         val pagination =
@@ -28,12 +27,12 @@ class PredictionRepository(
                 pageSize = pageSize,
                 sort = sort,
             )
-        val response = apiService.getHitsToPage(pagination)
+        val response = apiService.getMatchesToPage(pagination)
 
         if (response.isSuccessful) {
             val body = response.body() ?: throw Exception("Empty response body")
 
-            return DomainPageResult(
+            return PageResult(
                 pageSize = body.pageSize,
                 pageIndex = body.pageIndex,
                 totalCount = body.totalCount,
@@ -46,9 +45,4 @@ class PredictionRepository(
             throw HttpException(response)
         }
     }
-
-    override suspend fun getAverageByUser(tournamentId: Int?): List<AverageByDate> =
-        apiService.getAverageByUser(tournamentId).map {
-            it.toDomain()
-        }
 }

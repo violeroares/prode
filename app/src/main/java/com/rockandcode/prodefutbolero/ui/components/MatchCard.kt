@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.rockandcode.prodefutbolero.domain.tournament.models.Match
+import com.rockandcode.prodefutbolero.domain.match.models.Match
 import com.rockandcode.prodefutbolero.utils.formatFechaHora
 
 @Composable
@@ -38,7 +38,6 @@ fun MatchCard(
     val isDark = isSystemInDarkTheme()
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
     val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
-    val shadowSpot = shadowAmbient
     Card(
         modifier =
             modifier
@@ -49,7 +48,7 @@ fun MatchCard(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(36.dp),
                     ambientColor = shadowAmbient,
-                    spotColor = shadowSpot,
+                    spotColor = shadowAmbient,
                 ),
         shape = RoundedCornerShape(36.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
@@ -73,7 +72,7 @@ fun MatchCard(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = match.statusMatchName,
+                        text = "", // match.statusMatchName,
                         style = MaterialTheme.typography.labelSmall,
                     )
                     // Spacer(modifier = Modifier.height(4.dp))
