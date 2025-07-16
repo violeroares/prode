@@ -1,4 +1,4 @@
-package com.rockandcode.prodefutbolero.domain.tournament.models
+package com.rockandcode.prodefutbolero.domain.match.models
 
 data class Match(
     val matchId: Int,
@@ -13,7 +13,6 @@ data class Match(
     val localName: String,
     val visitorName: String,
     val displayOrder: Int,
-    val statusMatchName: String,
     val groupName: String,
     val dateName: String,
     val localPictureId: Int,

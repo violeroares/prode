@@ -1,10 +1,13 @@
 package com.rockandcode.prodefutbolero.data.datasources.network
 
+import com.rockandcode.prodefutbolero.data.models.AverageDto
 import com.rockandcode.prodefutbolero.data.models.HitDto
 import com.rockandcode.prodefutbolero.data.models.HitRequest
 import com.rockandcode.prodefutbolero.data.models.LoginRequest
 import com.rockandcode.prodefutbolero.data.models.LoginResponse
 import com.rockandcode.prodefutbolero.data.models.MatchDateDto
+import com.rockandcode.prodefutbolero.data.models.MatchDto
+import com.rockandcode.prodefutbolero.data.models.MatchRequest
 import com.rockandcode.prodefutbolero.data.models.PageResult
 import com.rockandcode.prodefutbolero.data.models.PaginatedMatchesDto
 import com.rockandcode.prodefutbolero.data.models.PaginatedRankingDto
@@ -79,9 +82,14 @@ interface ApiService {
     suspend fun getHitsToPage(
         @Body input: Pagination<HitRequest>,
     ): Response<PageResult<HitDto>>
-//
-//    @POST("api/matches/GetMatchesToPage")
-//    suspend fun getMatchesToPage(
-//        @Body input: Pagination<MatchRequest>,
-//    ): Response<PageResult<MatchDto>>
+
+    @POST("api/matches/GetMatchesToPageV3")
+    suspend fun getMatchesToPage(
+        @Body input: Pagination<MatchRequest>,
+    ): Response<PageResult<MatchDto>>
+
+    @GET("api/Predictions/GetAverageByUser")
+    suspend fun getAverageByUser(
+        @Query("tournamentId") tournamentId: Int?,
+    ): List<AverageDto>
 }

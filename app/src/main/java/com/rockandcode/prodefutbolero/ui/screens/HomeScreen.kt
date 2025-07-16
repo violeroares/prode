@@ -105,6 +105,7 @@ fun HomeScreen(
 
         is HomeUiState.Success -> {
             val myRanking = uiState.myRanking
+            val averageByDate = uiState.averageByDate
             // val topRanking = uiState.topRanking
 
             Scaffold(
@@ -149,8 +150,8 @@ fun HomeScreen(
 
                     item {
                         HomeAverageByDateCard(
-                            title = "Clausura 2025",
-                            averageList = emptyList(),
+                            title = tournament?.name ?: "",
+                            averageList = averageByDate,
                             myPosition = myRanking?.posicion.toString(),
                             onMoreClick = {
                                 navController.navigate(Routes.TournamentSelect.route) {

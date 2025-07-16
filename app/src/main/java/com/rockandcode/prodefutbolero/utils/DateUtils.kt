@@ -1,6 +1,5 @@
 package com.rockandcode.prodefutbolero.utils
 
-import com.rockandcode.prodefutbolero.domain.tournament.models.Match
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
@@ -15,7 +14,7 @@ fun formatFechaHora(fechaIso: String): String =
         "Fecha inválida ${e.message}"
     }
 
-fun Match.dateAsLocalDateTime(): LocalDateTime = LocalDateTime.parse(this.date, DateTimeFormatter.ISO_DATE_TIME)
+// fun Match.dateAsLocalDateTime(): LocalDateTime = LocalDateTime.parse(this.date, DateTimeFormatter.ISO_DATE_TIME)
 
 fun ordinalEs(number: Int): String =
     when (number) {

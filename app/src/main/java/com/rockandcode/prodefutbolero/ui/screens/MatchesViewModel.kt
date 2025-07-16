@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rockandcode.prodefutbolero.domain.tournament.models.Match
-import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
-import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
+import com.rockandcode.prodefutbolero.domain.match.models.Match
+import com.rockandcode.prodefutbolero.domain.match.models.MatchFilter
+import com.rockandcode.prodefutbolero.domain.match.repository.IMatchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface MatchesUiState {
-    object Loading : MatchesUiState
+    data object Loading : MatchesUiState
 
     data class Success(
         val matches: List<Match>,
@@ -35,7 +35,6 @@ sealed interface MatchesUiState {
 
 data class MatchesScreenState(
     val uiState: MatchesUiState = MatchesUiState.Loading,
-    val dates: List<MatchDate> = emptyList(),
     val isRefreshing: Boolean = false,
 )
 
@@ -48,14 +47,14 @@ sealed class MatchesUiEvent {
         val route: String,
     ) : MatchesUiEvent()
 
-    object PopBackStack : MatchesUiEvent()
+    data object PopBackStack : MatchesUiEvent()
 }
 
 @HiltViewModel
 class MatchesViewModel
     @Inject
     constructor(
-        private val tournamentRepository: ITournamentRepository,
+        private val repo: IMatchRepository,
     ) : ViewModel() {
         private val _screenState = MutableStateFlow(MatchesScreenState())
         val screenState: StateFlow<MatchesScreenState> = _screenState.asStateFlow()
@@ -103,22 +102,30 @@ class MatchesViewModel
                 totalPages = 1
 
                 try {
-                    val result =
-                        tournamentRepository.getMatches(
-                            tournamentId = tournamentId,
-                            page = currentPage,
+                    val filter =
+                        MatchFilter(
+                            tournamentId = tournamentId?.toString(),
                             teamName = teamName,
-                            dateId = dateId,
+                            dateId = dateId?.toString(),
                         )
 
-                    currentPage = result.currentPage + 1
+                    val result =
+                        repo.getMatchesToPage(
+                            filter = filter,
+                            pageIndex = currentPage,
+                            pageSize = 20,
+                            sort = "",
+                        )
+
+                    currentPage = result.pageIndex + 1
                     totalPages = result.totalPages
+
                     _screenState.update {
                         it.copy(
                             uiState =
                                 MatchesUiState.Success(
-                                    matches = result.matches,
-                                    currentPage = result.currentPage,
+                                    matches = result.result,
+                                    currentPage = result.pageIndex,
                                     totalPages = result.totalPages,
                                 ),
                             isRefreshing = false,
@@ -148,12 +155,19 @@ class MatchesViewModel
             viewModelScope.launch {
                 isPaginating = true
                 try {
-                    val result =
-                        tournamentRepository.getMatches(
-                            tournamentId = tournamentId,
-                            page = currentPage,
+                    val filter =
+                        MatchFilter(
+                            tournamentId = tournamentId?.toString(),
                             teamName = teamName,
-                            dateId = dateId,
+                            dateId = dateId?.toString(),
+                        )
+
+                    val result =
+                        repo.getMatchesToPage(
+                            filter = filter,
+                            pageIndex = currentPage,
+                            pageSize = 20,
+                            sort = "",
                         )
 
                     currentPage++
@@ -163,7 +177,7 @@ class MatchesViewModel
                         it.copy(
                             uiState =
                                 MatchesUiState.Success(
-                                    matches = state.matches + result.matches,
+                                    matches = state.matches + result.result,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
                                 ),

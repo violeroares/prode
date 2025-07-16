@@ -263,7 +263,7 @@ fun MyHitsScreen(
             val activeDateId = dates.firstOrNull { it.active }?.id
 
             if (currentUser != null && currentTournament != null && activeDateId != null) {
-                viewModel.setContext(userId = currentUser.id.toString(), tournamentId = currentTournament.id)
+                viewModel.setContext(userId = currentUser.id, tournamentId = currentTournament.id)
                 viewModel.selectedDateId = activeDateId
                 viewModel.getHits(
                     teamName = null,
