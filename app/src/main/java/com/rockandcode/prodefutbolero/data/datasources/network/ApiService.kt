@@ -92,4 +92,11 @@ interface ApiService {
     suspend fun getAverageByUser(
         @Query("tournamentId") tournamentId: Int?,
     ): List<AverageDto>
+
+    @GET("api/Predictions/GetPredictionsIncompletasApp")
+    suspend fun getPrediccionesIncompletas(
+        @Query("userId") userId: Int? = null,
+        @Query("tournamentId") tournamentId: Int,
+        @Query("dateId") dateId: Int? = null,
+    ): Response<Int>
 }

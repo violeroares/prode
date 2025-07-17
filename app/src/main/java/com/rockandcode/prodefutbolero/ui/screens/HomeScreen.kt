@@ -34,7 +34,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
 import com.rockandcode.prodefutbolero.ui.components.HomeHeader
+import com.rockandcode.prodefutbolero.ui.components.IncompleteCard
+import com.rockandcode.prodefutbolero.ui.components.MoistureGaugeFull
 import com.rockandcode.prodefutbolero.ui.components.TestCard
+import com.rockandcode.prodefutbolero.ui.components.TournamentStatsCard
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
 // data class StatItem(
@@ -54,6 +57,7 @@ fun HomeScreen(
     var displayedUser by remember { mutableStateOf(user) }
     val state by homeViewModel.uiState.collectAsState()
     val isDark = isSystemInDarkTheme()
+    val incompletas by viewModel.prediccionesIncompletas.collectAsState()
 
     LaunchedEffect(tournament?.id) {
         tournament?.id?.let { homeViewModel.loadTournamentHome(it, user?.id) }
@@ -161,15 +165,30 @@ fun HomeScreen(
                         )
                     }
 
+                    item {
+                        IncompleteCard(value = 14, dateName = "Fecha 02")
+                    }
+
+                    item {
+                        TournamentStatsCard(title = "Mi progreso", onMoreClick = {})
+                    }
+
+                    item {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            MoistureGaugeFull()
+                        }
+                    }
+
 //                    item {
 //                        HomeCalendarCard(
 //                            matches = uiState.data.matches,
 //                            onMoreClick = { },
 //                        )
 //                    }
-
-                    item {
-                        TestCard(user = displayedUser)
+                    if (incompletas > 0) {
+                        item {
+                            TestCard(user = displayedUser)
+                        }
                     }
 
 //                    item {

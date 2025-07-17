@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -25,7 +23,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderCard(
+fun HeaderCardInverted(
     leftIcon: ImageVector? = null,
     rightIcon: ImageVector? = null,
     title: String,
@@ -70,14 +68,13 @@ fun HeaderCard(
                 style = MaterialTheme.typography.headlineSmall,
                 // fontSize = 22.sp,
                 // fontWeight = FontWeight.Medium,
-                color = if (isDark) Color.White else Color.Black,
+                color = if (isDark) Color(0xFF27300A) else Color.Black,
             )
-            Spacer(Modifier.height(2.dp))
             if (subTitle.isNotEmpty()) {
                 Text(
                     text = subTitle.toString(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isDark) Color(0xFFB3B3B3) else Color.DarkGray,
+                    color = if (isDark) Color(0xFF565F1E) else Color.DarkGray,
                 )
             }
         }
@@ -89,7 +86,7 @@ fun HeaderCard(
                         .clip(CircleShape)
                         .clickable(onClick = onClick)
                         .background(
-                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+                            if (isDark) Color(0xFFDDE869) else MaterialTheme.colorScheme.background,
                             shape = CircleShape,
                         ),
                 contentAlignment = Alignment.Center,
@@ -98,7 +95,7 @@ fun HeaderCard(
                     rightIcon,
                     contentDescription = "Icono",
                     // tint = if (isDark) Color(0xFFA9F582) else Color.Black,
-                    tint = if (isDark) Color(0xFFA2F7A1) else Color.Black,
+                    tint = if (isDark) Color(0xFF27300A) else Color.Black,
                 )
             }
         }

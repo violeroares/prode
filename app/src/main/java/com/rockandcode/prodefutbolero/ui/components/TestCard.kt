@@ -37,7 +37,7 @@ fun TestCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 4.dp)
                 .shadow(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(36.dp),

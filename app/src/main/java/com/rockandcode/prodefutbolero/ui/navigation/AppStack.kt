@@ -1,10 +1,13 @@
 package com.rockandcode.prodefutbolero.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,6 +33,8 @@ fun AppStack(
     val currentBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry.value?.destination?.route
 
+    val incompletas by mainViewModel.prediccionesIncompletas.collectAsState()
+
     val bottomBarRoutes =
         listOf(
             Routes.Home.route,
@@ -42,7 +47,8 @@ fun AppStack(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (showBottomBar) {
-                FloatingBottomNavigationBar(navController)
+                Log.d("AppStack", "Incompletas: $incompletas")
+                FloatingBottomNavigationBar(navController = navController, incompleteCount = incompletas)
             }
         },
     ) { innerPadding ->
