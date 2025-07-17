@@ -1,5 +1,6 @@
 package com.rockandcode.prodefutbolero.data.repositories
 
+import android.util.Log
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
 import com.rockandcode.prodefutbolero.data.mappers.toRequest
 import com.rockandcode.prodefutbolero.data.models.Pagination
@@ -51,4 +52,26 @@ class PredictionRepository(
         apiService.getAverageByUser(tournamentId).map {
             it.toDomain()
         }
+
+    override suspend fun getPrediccionesIncompletas(
+        userId: Int?,
+        tournamentId: Int,
+        dateId: Int?,
+    ): Int {
+        Log.d("AppStack", "Enviando user = $userId torneo = $tournamentId fecha = $dateId")
+        val response =
+            apiService.getPrediccionesIncompletas(
+                userId = userId,
+                tournamentId = tournamentId,
+                dateId = dateId,
+            )
+
+        val body = response.body()
+        if (body != null) {
+            Log.d("AppStack", "Recibido cantidad = $body")
+            return body
+        } else {
+            throw Exception("Error al cargar las predicciones incompletas")
+        }
+    }
 }

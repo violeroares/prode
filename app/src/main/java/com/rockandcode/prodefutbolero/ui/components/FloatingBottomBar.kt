@@ -17,8 +17,11 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PersonOutline
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,15 +43,16 @@ data class FloatingBottomNavItem(
 
 @Composable
 fun FloatingBottomNavigationBar(
-    navController: NavHostController,
     modifier: Modifier = Modifier,
+    incompleteCount: Int = 0,
+    navController: NavHostController,
 ) {
     val bottomItems =
         listOf(
             FloatingBottomNavItem("Inicio", Icons.Outlined.Home, Routes.Home.route),
             FloatingBottomNavItem("Matches", Icons.Outlined.CalendarToday, Routes.Matches.route),
-            FloatingBottomNavItem("Ranking", Icons.Outlined.EmojiEvents, Routes.Ranking.route),
             FloatingBottomNavItem("Favoritos", Icons.Outlined.BarChart, Routes.MyHits.route),
+            FloatingBottomNavItem("Ranking", Icons.Outlined.EmojiEvents, Routes.Ranking.route),
             FloatingBottomNavItem("Perfil", Icons.Outlined.PersonOutline, Routes.Profile.route),
         )
 
@@ -124,11 +128,21 @@ fun FloatingBottomNavigationBar(
                             ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = item.label,
-                        tint = if (selected) selectedColor else unselectedColor,
-                    )
+                    BadgedBox(
+                        badge = {
+                            if (incompleteCount > 0 && item.route == Routes.Matches.route) {
+                                Badge {
+                                    Text(incompleteCount.toString())
+                                }
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.label,
+                            tint = if (selected) selectedColor else unselectedColor,
+                        )
+                    }
                 }
             }
         }

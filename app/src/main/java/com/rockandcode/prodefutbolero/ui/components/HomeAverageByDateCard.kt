@@ -50,7 +50,7 @@ fun HomeAverageByDateCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 4.dp)
                 .shadow(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(36.dp),
@@ -99,8 +99,6 @@ fun HomeAverageByDateCard(
                             .height(110.dp),
                 ) {
                     items(filteredAverageList) { item ->
-                        // val barColor = if (item.points > 0) Color(0xFF4270F6) else Color(0xFFBDBDBD)
-                        // val barColor = if (item.points > 0) Color(0xFFF1FD72) else Color(0xFFBDBDBD)
                         val barColor = if (isDark) Color(0xFFF1FD72) else Color(0xFF4270F6)
                         val barHeight =
                             if (item.points > 0) {

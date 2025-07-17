@@ -2,6 +2,7 @@ package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
 import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
@@ -24,6 +25,7 @@ class MainViewModel
         private val getUserSessionUseCase: GetUserSessionUseCase,
         private val clearSessionUseCase: ClearSessionUseCase,
         private val tournamentRepository: ITournamentRepository,
+        private val predictionRepository: IPredictionRepository,
     ) : ViewModel() {
         private val _user = MutableStateFlow<User?>(null)
         val user: StateFlow<User?> = _user
@@ -47,10 +49,19 @@ class MainViewModel
         private val _dates = MutableStateFlow<List<MatchDate>>(emptyList())
         val dates: StateFlow<List<MatchDate>> = _dates
 
+        private val _prediccionesIncompletas = MutableStateFlow<Int>(0)
+        val prediccionesIncompletas: StateFlow<Int> = _prediccionesIncompletas
+
         fun selectTournament(tournament: Tournament) {
             _selectedTournament.value = tournament
             viewModelScope.launch {
                 _dates.value = tournamentRepository.getDates(tournament.id.toString())
+                _prediccionesIncompletas.value =
+                    predictionRepository.getPrediccionesIncompletas(
+                        userId = _user.value?.id?.toInt() ?: 0,
+                        tournamentId = _selectedTournament.value?.id ?: 0,
+                        dateId = _dates.value.find { it.active == true }?.id ?: 0,
+                    )
             }
         }
 

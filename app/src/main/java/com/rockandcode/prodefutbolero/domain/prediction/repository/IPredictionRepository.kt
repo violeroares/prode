@@ -14,4 +14,10 @@ interface IPredictionRepository {
     ): PageResult<Hit>
 
     suspend fun getAverageByUser(tournamentId: Int?): List<AverageByDate>
+
+    suspend fun getPrediccionesIncompletas(
+        userId: Int? = null,
+        tournamentId: Int,
+        dateId: Int? = null,
+    ): Int
 }
