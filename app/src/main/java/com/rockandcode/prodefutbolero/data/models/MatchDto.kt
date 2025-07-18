@@ -28,14 +28,18 @@ data class MatchDto(
     val visitorName: String,
     @SerializedName("DisplayOrder")
     val displayOrder: Int,
-    @SerializedName("GroupName")
-    val groupName: String,
+    @SerializedName("StatusMatchName")
+    val statusMatchName: String,
     @SerializedName("DateName")
     val dateName: String,
+    @SerializedName("GroupName")
+    val groupName: String,
     @SerializedName("LocalPictureId")
     val localPictureId: Int,
     @SerializedName("VisitorPictureId")
     val visitorPictureId: Int,
+    @SerializedName("TournamentName")
+    val tournamentName: String,
     @SerializedName("Predictions")
     val predictions: Int,
     @SerializedName("LocalPictureUrl")
@@ -57,10 +61,12 @@ data class MatchDto(
             localName = this.localName,
             visitorName = this.visitorName,
             displayOrder = this.displayOrder,
-            groupName = this.groupName,
+            statusMatchName = statusMatchName,
             dateName = this.dateName,
+            groupName = this.groupName,
             localPictureId = this.localPictureId,
             visitorPictureId = this.visitorPictureId,
+            tournamentName = this.tournamentName,
             predictions = this.predictions,
             localPictureUrl = this.localPictureUrl,
             visitorPictureUrl = this.visitorPictureUrl,
