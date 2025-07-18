@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
 import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
+import com.rockandcode.prodefutbolero.utils.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface RankingUiState {
-    object Loading : RankingUiState
+    data object Loading : RankingUiState
 
     data class Success(
         val rankings: List<Ranking>,
@@ -47,7 +48,7 @@ sealed class RankingUiEvent {
         val route: String,
     ) : RankingUiEvent()
 
-    object PopBackStack : RankingUiEvent()
+    data object PopBackStack : RankingUiEvent()
 }
 
 @HiltViewModel
@@ -56,6 +57,8 @@ class RankingViewModel
     constructor(
         private val predictionRepository: IPredictionRepository,
     ) : ViewModel() {
+        val pageSize = AppConstants.PAGE_SIZE
+
         private val _screenState = MutableStateFlow(RankingScreenState())
         val screenState: StateFlow<RankingScreenState> = _screenState.asStateFlow()
 
@@ -66,6 +69,7 @@ class RankingViewModel
 
         var currentPage = 1
             private set
+
         internal var totalPages = 1
 
         var isPaginating = false
@@ -108,16 +112,16 @@ class RankingViewModel
                             userName = userName,
                             dateId = dateId?.toString(),
                         )
-                    val page = (currentPage - 1) * 20
+                    val offset = (currentPage - 1) * pageSize
+
                     val result =
                         predictionRepository.getRankingToPage(
                             filter = filter,
-                            pageIndex = page,
-                            pageSize = 20,
+                            pageIndex = offset,
+                            pageSize = pageSize,
                             sort = "",
                         )
 
-                    currentPage = result.pageIndex + 1
                     totalPages = result.totalPages
 
                     _screenState.update {
@@ -125,8 +129,8 @@ class RankingViewModel
                             uiState =
                                 RankingUiState.Success(
                                     rankings = result.result,
-                                    currentPage = result.pageIndex,
-                                    totalPages = result.totalPages,
+                                    currentPage = currentPage,
+                                    totalPages = totalPages,
                                 ),
                             isRefreshing = false,
                         )
@@ -162,15 +166,18 @@ class RankingViewModel
                             userName = userName,
                             dateId = dateId?.toString(),
                         )
-                    val page = (currentPage - 1) * 20
+                    val nextPage = currentPage + 1
+                    val offset = (nextPage - 1) * pageSize
+
                     val result =
                         predictionRepository.getRankingToPage(
                             filter = filter,
-                            pageIndex = page,
-                            pageSize = 20,
+                            pageIndex = offset,
+                            pageSize = pageSize,
                             sort = "",
                         )
 
+                    currentPage = nextPage
                     totalPages = result.totalPages
 
                     _screenState.update {

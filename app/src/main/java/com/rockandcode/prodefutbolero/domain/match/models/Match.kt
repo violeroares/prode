@@ -13,7 +13,7 @@ data class Match(
     val localName: String,
     val visitorName: String,
     val displayOrder: Int,
-    val statusMatchName: String,
+//    val statusMatchName: String,
     val groupName: String,
     val dateName: String,
     val localPictureId: Int,

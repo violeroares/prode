@@ -9,6 +9,7 @@ import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
+import com.rockandcode.prodefutbolero.utils.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface HitsUiState {
-    object Loading : HitsUiState
+    data object Loading : HitsUiState
 
     data class Success(
         val hits: List<Hit>,
@@ -49,7 +50,7 @@ sealed class HitsUiEvent {
         val route: String,
     ) : HitsUiEvent()
 
-    object PopBackStack : HitsUiEvent()
+    data object PopBackStack : HitsUiEvent()
 }
 
 @HiltViewModel
@@ -58,6 +59,8 @@ class MyHitsViewModel
     constructor(
         private val predictionRepository: IPredictionRepository,
     ) : ViewModel() {
+        val pageSize = AppConstants.PAGE_SIZE
+
         private val _screenState = MutableStateFlow(HitsScreenState())
         val screenState: StateFlow<HitsScreenState> = _screenState.asStateFlow()
 
@@ -117,15 +120,16 @@ class MyHitsViewModel
                             dateId = dateId?.toString(),
                         )
 
+                    val offset = (currentPage - 1) * pageSize
+
                     val result =
                         predictionRepository.getHitsToPage(
                             filter = filter,
-                            pageIndex = currentPage,
-                            pageSize = 20,
+                            pageIndex = offset,
+                            pageSize = pageSize,
                             sort = "",
                         )
 
-                    currentPage = result.pageIndex + 1
                     totalPages = result.totalPages
 
                     _screenState.update {
@@ -133,8 +137,8 @@ class MyHitsViewModel
                             uiState =
                                 HitsUiState.Success(
                                     hits = result.result,
-                                    currentPage = result.pageIndex,
-                                    totalPages = result.totalPages,
+                                    currentPage = currentPage,
+                                    totalPages = totalPages,
                                 ),
                             isRefreshing = false,
                         )
@@ -171,15 +175,18 @@ class MyHitsViewModel
                             dateId = dateId?.toString(),
                         )
 
+                    val nextPage = currentPage + 1
+                    val offset = (nextPage - 1) * pageSize
+
                     val result =
                         predictionRepository.getHitsToPage(
                             filter = filter,
-                            pageIndex = currentPage,
-                            pageSize = 20,
+                            pageIndex = offset,
+                            pageSize = pageSize,
                             sort = "",
                         )
 
-                    currentPage++
+                    currentPage = nextPage
                     totalPages = result.totalPages
 
                     _screenState.update {
@@ -200,15 +207,15 @@ class MyHitsViewModel
             }
         }
 
-        fun onMatchClick(hit: Hit) {
-            viewModelScope.launch {
-                _eventFlow.emit(HitsUiEvent.Navigate("matchDetail/${hit.matchId}"))
-            }
-        }
-
-        fun onBackPressed() {
-            viewModelScope.launch {
-                _eventFlow.emit(HitsUiEvent.PopBackStack)
-            }
-        }
+//        fun onMatchClick(hit: Hit) {
+//            viewModelScope.launch {
+//                _eventFlow.emit(HitsUiEvent.Navigate("matchDetail/${hit.matchId}"))
+//            }
+//        }
+//
+//        fun onBackPressed() {
+//            viewModelScope.launch {
+//                _eventFlow.emit(HitsUiEvent.PopBackStack)
+//            }
+//        }
     }
