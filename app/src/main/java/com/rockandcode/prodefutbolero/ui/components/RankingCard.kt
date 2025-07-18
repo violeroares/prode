@@ -27,34 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.rockandcode.prodefutbolero.domain.tournament.models.RankingUser
-
-// @Composable
-// fun RankingCard(user: RankingUser) {
-//    Row(
-//        modifier =
-//            Modifier
-//                .fillMaxWidth()
-//                .padding(horizontal = 16.dp, vertical = 8.dp),
-//        verticalAlignment = Alignment.CenterVertically,
-//    ) {
-//        AsyncImage(
-//            model = user.pictureUrl,
-//            contentDescription = "Avatar",
-//            modifier = Modifier.size(48.dp).clip(CircleShape),
-//            contentScale = ContentScale.Crop,
-//        )
-//        Spacer(Modifier.width(8.dp))
-//        Text("${user.firstName} ${user.lastName}", style = MaterialTheme.typography.bodyLarge)
-//        Text("${user.posicion}", style = MaterialTheme.typography.titleMedium)
-//        Spacer(Modifier.weight(1f))
-//        Text("${user.puntos} pts", style = MaterialTheme.typography.bodyMedium)
-//    }
-// }
+import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
 
 @Composable
 fun RankingCard(
-    user: RankingUser,
+    user: Ranking,
     modifier: Modifier = Modifier,
 ) {
     val isDark = isSystemInDarkTheme()

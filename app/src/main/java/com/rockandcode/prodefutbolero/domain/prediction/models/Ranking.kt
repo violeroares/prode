@@ -1,4 +1,4 @@
-package com.rockandcode.prodefutbolero.domain.tournament.models
+package com.rockandcode.prodefutbolero.domain.prediction.models
 
 data class Ranking(
     val posicion: Int,

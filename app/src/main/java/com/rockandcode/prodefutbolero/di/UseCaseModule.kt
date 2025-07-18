@@ -1,8 +1,5 @@
 package com.rockandcode.prodefutbolero.di
 
-import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
-import com.rockandcode.prodefutbolero.domain.tournament.usecases.GetMatchesUseCase
-import com.rockandcode.prodefutbolero.domain.tournament.usecases.GetTournamentHomeUseCase
 import com.rockandcode.prodefutbolero.domain.user.repository.ISessionRepository
 import com.rockandcode.prodefutbolero.domain.user.repository.IUserRepository
 import com.rockandcode.prodefutbolero.domain.user.usecases.ClearSessionUseCase
@@ -35,10 +32,4 @@ object UseCaseModule {
 
     @Provides
     fun provideLogoutUseCase(sessionManager: ISessionRepository): LogoutUseCase = LogoutUseCase(sessionManager)
-
-    @Provides
-    fun provideGetTournamentHomeUseCase(repo: ITournamentRepository): GetTournamentHomeUseCase = GetTournamentHomeUseCase(repo)
-
-    @Provides
-    fun provideGetMatchesUseCase(repo: ITournamentRepository): GetMatchesUseCase = GetMatchesUseCase(repo)
 }
