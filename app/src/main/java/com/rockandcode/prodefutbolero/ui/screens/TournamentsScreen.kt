@@ -37,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -155,38 +154,41 @@ fun TournamentCard(
 ) {
     val isDark = isSystemInDarkTheme()
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
-    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
-    val shadowSpot = shadowAmbient
-
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clip(CircleShape)
-                .clickable(onClick = onClick)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(36.dp),
-                    ambientColor = shadowAmbient,
-                    spotColor = shadowSpot,
-                ),
+                .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(36.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
+        onClick = onClick,
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = 12.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+                    .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+//            AsyncImage(
+//                model = pictureUrl,
+//                contentDescription = "image-$title",
+//                modifier = Modifier.size(36.dp).clip(CircleShape),
+//                contentScale = ContentScale.Crop,
+//            )
             AsyncImage(
                 model = pictureUrl,
                 contentDescription = "image-$title",
-                modifier = Modifier.size(36.dp),
+                modifier =
+                    Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(if (isDark) Color(0xFF2E3134) else Color.White),
+                // Opcional, para relleno si hay transparencia
                 contentScale = ContentScale.Crop,
             )
+
             Spacer(modifier = Modifier.width(8.dp))
 
             Column(
@@ -211,7 +213,7 @@ fun TournamentCard(
             Box(
                 modifier =
                     Modifier
-                        .size(48.dp)
+                        .size(68.dp)
                         .clip(CircleShape)
                         .clickable(onClick = onClick)
                         .background(

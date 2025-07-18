@@ -54,6 +54,7 @@ fun HomeScreen(
 ) {
     val tournament by viewModel.selectedTournament.collectAsState()
     val user by viewModel.user.collectAsState()
+    val predictionSummary by viewModel.predictionSummary.collectAsState()
     var displayedUser by remember { mutableStateOf(user) }
     val state by homeViewModel.uiState.collectAsState()
     val isDark = isSystemInDarkTheme()
@@ -151,6 +152,11 @@ fun HomeScreen(
 //                            )
 //                        }
 //                    }
+                    if (incompletas > 0) {
+                        item {
+                            IncompleteCard(value = incompletas, dateName = "Fecha 02")
+                        }
+                    }
 
                     item {
                         HomeAverageByDateCard(
@@ -166,19 +172,15 @@ fun HomeScreen(
                     }
 
                     item {
-                        IncompleteCard(value = 14, dateName = "Fecha 02")
+                        TournamentStatsCard(title = "Mi progreso", predictionSummary = predictionSummary, onMoreClick = {})
                     }
-
-                    item {
-                        TournamentStatsCard(title = "Mi progreso", onMoreClick = {})
-                    }
-
-                    item {
-                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            MoistureGaugeFull()
+                    if (incompletas > 0) {
+                        item {
+                            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                MoistureGaugeFull()
+                            }
                         }
                     }
-
 //                    item {
 //                        HomeCalendarCard(
 //                            matches = uiState.data.matches,
