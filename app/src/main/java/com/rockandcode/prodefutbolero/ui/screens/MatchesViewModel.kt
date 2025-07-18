@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.rockandcode.prodefutbolero.domain.match.models.Match
 import com.rockandcode.prodefutbolero.domain.match.models.MatchFilter
 import com.rockandcode.prodefutbolero.domain.match.repository.IMatchRepository
+import com.rockandcode.prodefutbolero.utils.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +57,8 @@ class MatchesViewModel
     constructor(
         private val repo: IMatchRepository,
     ) : ViewModel() {
+        val pageSize = AppConstants.PAGE_SIZE
+
         private val _screenState = MutableStateFlow(MatchesScreenState())
         val screenState: StateFlow<MatchesScreenState> = _screenState.asStateFlow()
 
@@ -66,6 +69,7 @@ class MatchesViewModel
 
         var currentPage = 1
             private set
+
         internal var totalPages = 1
 
         var isPaginating = false
@@ -109,15 +113,16 @@ class MatchesViewModel
                             dateId = dateId?.toString(),
                         )
 
+                    val offset = (currentPage - 1) * pageSize
+
                     val result =
                         repo.getMatchesToPage(
                             filter = filter,
-                            pageIndex = currentPage,
-                            pageSize = 20,
+                            pageIndex = offset,
+                            pageSize = pageSize,
                             sort = "",
                         )
 
-                    currentPage = result.pageIndex + 1
                     totalPages = result.totalPages
 
                     _screenState.update {
@@ -125,8 +130,8 @@ class MatchesViewModel
                             uiState =
                                 MatchesUiState.Success(
                                     matches = result.result,
-                                    currentPage = result.pageIndex,
-                                    totalPages = result.totalPages,
+                                    currentPage = currentPage,
+                                    totalPages = totalPages,
                                 ),
                             isRefreshing = false,
                         )
@@ -162,15 +167,18 @@ class MatchesViewModel
                             dateId = dateId?.toString(),
                         )
 
+                    val nextPage = currentPage + 1
+                    val offset = (nextPage - 1) * pageSize
+
                     val result =
                         repo.getMatchesToPage(
                             filter = filter,
-                            pageIndex = currentPage,
-                            pageSize = 20,
+                            pageIndex = offset,
+                            pageSize = pageSize,
                             sort = "",
                         )
 
-                    currentPage++
+                    currentPage = nextPage
                     totalPages = result.totalPages
 
                     _screenState.update {
@@ -197,9 +205,9 @@ class MatchesViewModel
             }
         }
 
-        fun onBackPressed() {
-            viewModelScope.launch {
-                _eventFlow.emit(MatchesUiEvent.PopBackStack)
-            }
-        }
+//        fun onBackPressed() {
+//            viewModelScope.launch {
+//                _eventFlow.emit(MatchesUiEvent.PopBackStack)
+//            }
+//        }
     }

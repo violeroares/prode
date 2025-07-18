@@ -211,10 +211,6 @@ fun RankingScreen(
                             }
                         }
 
-                        item {
-                            Spacer(Modifier.height(72.dp))
-                        }
-
                         items(uiState.rankings) { user ->
                             RankingCard(user)
                         }

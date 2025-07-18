@@ -28,8 +28,8 @@ data class MatchDto(
     val visitorName: String,
     @SerializedName("DisplayOrder")
     val displayOrder: Int,
-    @SerializedName("StatusMatchName")
-    val statusMatchName: String,
+//    @SerializedName("StatusMatchName")
+//    val statusMatchName: String,
     @SerializedName("DateName")
     val dateName: String,
     @SerializedName("GroupName")
@@ -61,7 +61,7 @@ data class MatchDto(
             localName = this.localName,
             visitorName = this.visitorName,
             displayOrder = this.displayOrder,
-            statusMatchName = statusMatchName,
+//            statusMatchName = statusMatchName,
             dateName = this.dateName,
             groupName = this.groupName,
             localPictureId = this.localPictureId,
