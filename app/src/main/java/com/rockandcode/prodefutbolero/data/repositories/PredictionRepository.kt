@@ -100,7 +100,6 @@ class PredictionRepository(
         sort: String,
     ): DomainPageResult<Ranking> {
         val request = filter.toRequest()
-
         val pagination =
             Pagination(
                 filter = request,

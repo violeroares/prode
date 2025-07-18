@@ -108,11 +108,11 @@ class RankingViewModel
                             userName = userName,
                             dateId = dateId?.toString(),
                         )
-
+                    val page = (currentPage - 1) * 20
                     val result =
                         predictionRepository.getRankingToPage(
                             filter = filter,
-                            pageIndex = currentPage,
+                            pageIndex = page,
                             pageSize = 20,
                             sort = "",
                         )
@@ -155,22 +155,22 @@ class RankingViewModel
             viewModelScope.launch {
                 isPaginating = true
                 try {
+                    currentPage++
                     val filter =
                         RankingFilter(
                             tournamentId = tournamentId?.toString(),
                             userName = userName,
                             dateId = dateId?.toString(),
                         )
-
+                    val page = (currentPage - 1) * 20
                     val result =
                         predictionRepository.getRankingToPage(
                             filter = filter,
-                            pageIndex = currentPage,
+                            pageIndex = page,
                             pageSize = 20,
                             sort = "",
                         )
 
-                    currentPage++
                     totalPages = result.totalPages
 
                     _screenState.update {
