@@ -3,7 +3,7 @@ package com.rockandcode.prodefutbolero.ui.screens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
-import com.rockandcode.prodefutbolero.domain.tournament.usecases.GetTournamentsUseCase
+import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,7 @@ sealed class TournamentsUiState {
 class TournamentsViewModel
     @Inject
     constructor(
-        private val getTournamentsUseCase: GetTournamentsUseCase,
+        private val repo: ITournamentRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<TournamentsUiState>(TournamentsUiState.Loading)
         val uiState: StateFlow<TournamentsUiState> = _uiState.asStateFlow()
@@ -39,7 +39,8 @@ class TournamentsViewModel
 
         fun loadTournaments() {
             viewModelScope.launch {
-                getTournamentsUseCase()
+                repo
+                    .getTournaments()
                     .catch { e ->
                         _uiState.value = TournamentsUiState.Error(e.message ?: "Error desconocido")
                     }.collect { tournaments ->

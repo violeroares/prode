@@ -1,11 +1,11 @@
 package com.rockandcode.prodefutbolero.data.repositories
 
-import android.util.Log
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
 import com.rockandcode.prodefutbolero.data.mappers.toRequest
 import com.rockandcode.prodefutbolero.data.models.Pagination
 import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
+import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.AverageByDate
 import retrofit2.HttpException
@@ -58,7 +58,6 @@ class PredictionRepository(
         tournamentId: Int,
         dateId: Int?,
     ): Int {
-        Log.d("AppStack", "Enviando user = $userId torneo = $tournamentId fecha = $dateId")
         val response =
             apiService.getPrediccionesIncompletas(
                 userId = userId,
@@ -68,10 +67,27 @@ class PredictionRepository(
 
         val body = response.body()
         if (body != null) {
-            Log.d("AppStack", "Recibido cantidad = $body")
             return body
         } else {
             throw Exception("Error al cargar las predicciones incompletas")
+        }
+    }
+
+    override suspend fun getPredictionSummary(
+        userId: String,
+        dateId: String,
+    ): PredictionSummary {
+        val response =
+            apiService.getPredictionSummary(
+                userId = userId,
+                dateId = dateId,
+            )
+
+        val body = response.body()
+        if (body != null) {
+            return body.toDomain()
+        } else {
+            throw Exception("Error al cargar el resumen")
         }
     }
 }

@@ -2,6 +2,7 @@ package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
 import com.rockandcode.prodefutbolero.domain.tournament.models.Tournament
@@ -52,6 +53,9 @@ class MainViewModel
         private val _prediccionesIncompletas = MutableStateFlow<Int>(0)
         val prediccionesIncompletas: StateFlow<Int> = _prediccionesIncompletas
 
+        private val _predictionSummary = MutableStateFlow<PredictionSummary?>(null)
+        val predictionSummary: StateFlow<PredictionSummary?> = _predictionSummary
+
         fun selectTournament(tournament: Tournament) {
             _selectedTournament.value = tournament
             viewModelScope.launch {
@@ -61,6 +65,15 @@ class MainViewModel
                         userId = _user.value?.id?.toInt() ?: 0,
                         tournamentId = _selectedTournament.value?.id ?: 0,
                         dateId = _dates.value.find { it.active == true }?.id ?: 0,
+                    )
+                _predictionSummary.value =
+                    predictionRepository.getPredictionSummary(
+                        userId = _user.value?.id?.toString() ?: "0",
+                        dateId =
+                            _dates.value
+                                .find { it.active == true }
+                                ?.id
+                                .toString(),
                     )
             }
         }

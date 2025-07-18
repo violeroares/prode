@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -46,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -53,21 +53,25 @@ import kotlin.math.sin
 fun TournamentStatsCard(
     title: String,
     modifier: Modifier = Modifier,
-    currentValue: Float = 23f,
-    targetValue: Float = 84f,
-    maxValue: Float = 84f,
-    tips: List<String> =
-        listOf(
-            "Tenés ${currentValue.toInt()} puntos de los ${targetValue.toInt()} en juego.",
-            "Restan por jugarse 8 partidos.",
-            "¡Mucha suerte!.",
-        ),
+    predictionSummary: PredictionSummary?,
     onMoreClick: () -> Unit,
 ) {
+    val currentValue = predictionSummary?.userPoints?.toFloat() ?: 0f
+    val targetValue = predictionSummary?.maxPointsSoFar?.toFloat() ?: 0f
+    val maxValue = predictionSummary?.maxPointsSoFar?.toFloat() ?: 0f
+
+    val tips =
+        listOf(
+            "Tenés ${currentValue.toInt()} puntos de los ${targetValue.toInt()} en juego.",
+            "Restan por jugarse ${predictionSummary?.remainingMatches} partidos.",
+            "¡Mucha suerte!.",
+        )
+
     val isDark = isSystemInDarkTheme()
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
-    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
-    val shadowSpot = shadowAmbient
+    val iconColor = if (isDark) Color(0xFFF1FD72) else Color(0xFF4270F6)
+//    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
+//    val shadowSpot = shadowAmbient
 
     val sizeDp = 220.dp
     val strokeWidthPx = 120f
@@ -92,14 +96,9 @@ fun TournamentStatsCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(36.dp),
-                    ambientColor = shadowAmbient,
-                    spotColor = shadowSpot,
-                ),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(36.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
     ) {
         Column(
@@ -110,7 +109,7 @@ fun TournamentStatsCard(
             HeaderCard(
                 rightIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 title = title,
-                subTitle = "Fecha 02",
+                subTitle = predictionSummary?.dateName ?: "",
                 onClick = onMoreClick,
             )
 
@@ -138,7 +137,7 @@ fun TournamentStatsCard(
 //                        size = Size(radius * 2, radius * 2),
 //                    )
 
-                    // Fondo gris rayado
+                    // Fondo gris ray ado
                     drawArc(
                         color = Color.Gray.copy(alpha = 0.3f),
                         startAngle = 180f,
@@ -147,7 +146,7 @@ fun TournamentStatsCard(
                         style =
                             Stroke(
                                 width = strokeWidth,
-                                cap = StrokeCap.Butt, // ← cambio clave
+                                cap = StrokeCap.Butt,
                                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f),
                             ),
                         topLeft = Offset(center.x - radius, center.y - radius),
@@ -157,7 +156,7 @@ fun TournamentStatsCard(
                     // Progreso amarillo
                     val sweepCurrent = (currentValue / maxValue) * 180f
                     drawArc(
-                        color = Color(0xFFEFFD72),
+                        color = iconColor,
                         startAngle = 180f,
                         sweepAngle = sweepCurrent,
                         useCenter = false,
@@ -202,7 +201,8 @@ fun TournamentStatsCard(
                         val paint =
                             Paint().asFrameworkPaint().apply {
                                 isAntiAlias = true
-                                color = "#EEFD72".toColorInt()
+                                // color = "#EEFD72".toColorInt()
+                                color = if (isDark) ("#EEFD72").toColorInt() else ("#4270F6").toColorInt()
                                 style = android.graphics.Paint.Style.FILL
                                 pathEffect = CornerPathEffect(40f)
                             }
@@ -215,7 +215,12 @@ fun TournamentStatsCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.align(Alignment.Center).padding(top = 64.dp),
                 ) {
-                    Text("${currentValue.toInt()}", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "${currentValue.toInt()}",
+                        color = if (isDark) Color.White else Color.Black,
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                     Text("Ganados", color = Color.Gray, fontSize = 14.sp)
                 }
 
@@ -227,7 +232,8 @@ fun TournamentStatsCard(
                     modifier =
                         Modifier
                             .offset(x = offsetX.dp, y = offsetY.dp)
-                            .background(Color(0xFFEFFD72), RoundedCornerShape(24.dp))
+                            // .rotate(-15f)
+                            .background(iconColor, RoundedCornerShape(24.dp))
                             .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 16.dp),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -251,7 +257,11 @@ fun TournamentStatsCard(
 
                         // Icon(Icons.Default.Flag, contentDescription = null, tint = Color.Black, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("${targetValue.toInt()}", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "${targetValue.toInt()}",
+                            color = if (isDark) Color.Black else Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
                 }
             }
@@ -269,8 +279,10 @@ fun TournamentStatsCard(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFF2E3134), RoundedCornerShape(36.dp))
-                            .padding(16.dp),
+                            .background(
+                                if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+                                RoundedCornerShape(32.dp),
+                            ).padding(16.dp),
                 ) {
                     tips.forEach { tip ->
                         Row(
@@ -281,18 +293,18 @@ fun TournamentStatsCard(
                                 modifier =
                                     Modifier
                                         .size(24.dp)
-                                        .background(Color(0xFFEFFD72), CircleShape),
+                                        .background(iconColor, CircleShape),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     Icons.Default.Check,
                                     contentDescription = "Check",
-                                    tint = Color.Black,
+                                    tint = if (isDark) Color.Black else Color.White,
                                     modifier = Modifier.size(18.dp),
                                 )
                             }
                             Spacer(Modifier.width(12.dp))
-                            Text(tip, color = Color.LightGray, fontSize = 14.sp)
+                            Text(tip, color = if (isDark) Color.LightGray else Color.DarkGray, fontSize = 14.sp)
                         }
                     }
                 }

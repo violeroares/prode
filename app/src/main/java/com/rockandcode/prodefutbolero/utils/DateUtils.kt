@@ -33,3 +33,11 @@ fun obtenerSaludo(): String {
         else -> "¡Buenas Noches!"
     }
 }
+
+fun statusName(number: Int): String =
+    when (number) {
+        1 -> "No iniciado"
+        2 -> "Finalizado"
+        3 -> "En juego"
+        else -> "Desconocido"
+    }

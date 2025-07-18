@@ -23,7 +23,7 @@ fun RoundButton(onClick: () -> Unit) {
     Box(
         modifier =
             Modifier
-                .size(48.dp)
+                .size(68.dp)
                 .clip(CircleShape)
                 .clickable(onClick = onClick)
                 .background(

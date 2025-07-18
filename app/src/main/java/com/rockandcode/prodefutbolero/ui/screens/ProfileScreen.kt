@@ -1,13 +1,11 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -77,7 +74,7 @@ fun ProfileScreen(
                 showBackButton = true,
             )
         },
-        contentWindowInsets = WindowInsets(0),
+        // contentWindowInsets = WindowInsets(0),
         containerColor = Color.Transparent,
     ) { paddingValues ->
         LazyColumn(
@@ -203,30 +200,41 @@ fun ProfileOptionCard(
     onClick: () -> Unit,
 ) {
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
-    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
-    val shadowSpot = shadowAmbient
+//    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
+//    val shadowSpot = shadowAmbient
     val iconColor = if (isDark) Color(0xFFF1FD72) else Color(0xFF4270F6)
+//    Card(
+//        modifier =
+//            modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 16.dp)
+//                .clip(CircleShape)
+//                .clickable(onClick = onClick)
+//                .shadow(
+//                    elevation = 4.dp,
+//                    shape = RoundedCornerShape(36.dp),
+//                    ambientColor = shadowAmbient,
+//                    spotColor = shadowSpot,
+//                ),
+//        shape = RoundedCornerShape(36.dp),
+//        colors = CardDefaults.cardColors(containerColor = cardColor),
+//    ) {
+
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clip(CircleShape)
-                .clickable(onClick = onClick)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(36.dp),
-                    ambientColor = shadowAmbient,
-                    spotColor = shadowSpot,
-                ),
+                .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(36.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
+        onClick = onClick,
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = 12.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+                    .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically, // <-- Esto es clave
         ) {
             Icon(
