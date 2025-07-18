@@ -1,7 +1,7 @@
 package com.rockandcode.prodefutbolero.data.models
 
 import com.google.gson.annotations.SerializedName
-import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
+import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
 
 data class RankingDto(
     @SerializedName("Posicion")

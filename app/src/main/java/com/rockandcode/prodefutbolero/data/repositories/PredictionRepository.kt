@@ -6,6 +6,8 @@ import com.rockandcode.prodefutbolero.data.models.Pagination
 import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
+import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
+import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.AverageByDate
 import retrofit2.HttpException
@@ -88,6 +90,41 @@ class PredictionRepository(
             return body.toDomain()
         } else {
             throw Exception("Error al cargar el resumen")
+        }
+    }
+
+    override suspend fun getRankingToPage(
+        filter: RankingFilter,
+        pageIndex: Int,
+        pageSize: Int,
+        sort: String,
+    ): DomainPageResult<Ranking> {
+        val request = filter.toRequest()
+
+        val pagination =
+            Pagination(
+                filter = request,
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+                sort = sort,
+            )
+
+        val response = apiService.getRankingToPage(pagination)
+
+        if (response.isSuccessful) {
+            val body = response.body() ?: throw Exception("Empty response body")
+
+            return DomainPageResult(
+                pageSize = body.pageSize,
+                pageIndex = body.pageIndex,
+                totalCount = body.totalCount,
+                totalPages = body.totalPages,
+                hasNextPage = body.hasNextPage,
+                hasPreviousPage = body.hasPreviousPage,
+                result = body.result.map { it.toDomain() },
+            )
+        } else {
+            throw HttpException(response)
         }
     }
 }

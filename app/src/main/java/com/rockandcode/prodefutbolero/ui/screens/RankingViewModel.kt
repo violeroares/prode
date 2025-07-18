@@ -1,9 +1,13 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rockandcode.prodefutbolero.domain.tournament.models.RankingUser
-import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
+import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
+import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
+import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +23,7 @@ sealed interface RankingUiState {
     object Loading : RankingUiState
 
     data class Success(
-        val rankings: List<RankingUser>,
+        val rankings: List<Ranking>,
         val currentPage: Int,
         val totalPages: Int,
     ) : RankingUiState
@@ -50,7 +54,7 @@ sealed class RankingUiEvent {
 class RankingViewModel
     @Inject
     constructor(
-        private val tournamentRepository: ITournamentRepository,
+        private val predictionRepository: IPredictionRepository,
     ) : ViewModel() {
         private val _screenState = MutableStateFlow(RankingScreenState())
         val screenState: StateFlow<RankingScreenState> = _screenState.asStateFlow()
@@ -58,18 +62,33 @@ class RankingViewModel
         private val _eventFlow = MutableSharedFlow<RankingUiEvent>()
         val eventFlow: SharedFlow<RankingUiEvent> = _eventFlow.asSharedFlow()
 
+        private var tournamentId: Int? = null
+
         var currentPage = 1
             private set
         internal var totalPages = 1
 
-//        var isLoading = false
-//            private set
         var isPaginating = false
             private set
 
+        var selectedDateId by mutableStateOf<Int?>(null)
+        var searchQuery by mutableStateOf("")
+            private set
+
+        fun setContext(tournamentId: Int?) {
+            this.tournamentId = tournamentId
+        }
+
+        fun onSearchQueryChanged(newQuery: String) {
+            searchQuery = newQuery
+            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
+                getRanking(userName = searchQuery, dateId = selectedDateId)
+            }
+        }
+
         fun getRanking(
-            tournamentId: Int,
-            dateId: Int? = null,
+            userName: String? = null,
+            dateId: Int? = selectedDateId,
             isPullToRefresh: Boolean = false,
         ) {
             viewModelScope.launch {
@@ -83,21 +102,30 @@ class RankingViewModel
                 totalPages = 1
 
                 try {
-                    val result =
-                        tournamentRepository.getRanking(
-                            tournamentId = tournamentId,
-                            page = currentPage,
-                            dateId = dateId,
+                    val filter =
+                        RankingFilter(
+                            tournamentId = tournamentId?.toString(),
+                            userName = userName,
+                            dateId = dateId?.toString(),
                         )
-                    currentPage = result.currentPage + 1
+
+                    val result =
+                        predictionRepository.getRankingToPage(
+                            filter = filter,
+                            pageIndex = currentPage,
+                            pageSize = 20,
+                            sort = "",
+                        )
+
+                    currentPage = result.pageIndex + 1
                     totalPages = result.totalPages
 
                     _screenState.update {
                         it.copy(
                             uiState =
                                 RankingUiState.Success(
-                                    rankings = result.rankings,
-                                    currentPage = result.currentPage,
+                                    rankings = result.result,
+                                    currentPage = result.pageIndex,
                                     totalPages = result.totalPages,
                                 ),
                             isRefreshing = false,
@@ -116,21 +144,30 @@ class RankingViewModel
         }
 
         fun loadNextPage(
-            tournamentId: Int,
-            dateId: Int? = null,
+            userName: String? = null,
+            dateId: Int? = selectedDateId,
         ) {
             val state = _screenState.value.uiState
             if (state !is RankingUiState.Success) return
             if (currentPage > totalPages || isPaginating) return
+            if (dateId != selectedDateId) return
 
             viewModelScope.launch {
                 isPaginating = true
                 try {
+                    val filter =
+                        RankingFilter(
+                            tournamentId = tournamentId?.toString(),
+                            userName = userName,
+                            dateId = dateId?.toString(),
+                        )
+
                     val result =
-                        tournamentRepository.getRanking(
-                            tournamentId = tournamentId,
-                            page = currentPage,
-                            dateId = dateId,
+                        predictionRepository.getRankingToPage(
+                            filter = filter,
+                            pageIndex = currentPage,
+                            pageSize = 20,
+                            sort = "",
                         )
 
                     currentPage++
@@ -140,7 +177,7 @@ class RankingViewModel
                         it.copy(
                             uiState =
                                 RankingUiState.Success(
-                                    rankings = state.rankings + result.rankings,
+                                    rankings = state.rankings + result.result,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
                                 ),
@@ -154,9 +191,9 @@ class RankingViewModel
             }
         }
 
-        fun onBackPressed() {
-            viewModelScope.launch {
-                _eventFlow.emit(RankingUiEvent.PopBackStack)
-            }
-        }
+//        fun onBackPressed() {
+//            viewModelScope.launch {
+//                _eventFlow.emit(RankingUiEvent.PopBackStack)
+//            }
+//        }
     }

@@ -3,12 +3,11 @@ package com.rockandcode.prodefutbolero.ui.screens
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
+import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.AverageByDate
-import com.rockandcode.prodefutbolero.domain.tournament.models.Ranking
-import com.rockandcode.prodefutbolero.domain.tournament.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.tournament.models.TournamentHome
-import com.rockandcode.prodefutbolero.domain.tournament.repository.ITournamentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +35,6 @@ sealed interface HomeUiState {
 class HomeViewModel
     @Inject
     constructor(
-        private val repo: ITournamentRepository,
         private val predictionsRepo: IPredictionRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -60,13 +58,13 @@ class HomeViewModel
                     val myRankingDeferred =
                         async {
                             val filter = RankingFilter(userId = userId, tournamentId = tournamentId?.toString())
-                            repo.getRankingToPage(filter, pageIndex = 0, pageSize = 1, sort = "").result.firstOrNull()
+                            predictionsRepo.getRankingToPage(filter, pageIndex = 0, pageSize = 1, sort = "").result.firstOrNull()
                         }
 
 //                    val topRankingDeferred =
 //                        async {
 //                            val filter = RankingFilter(posicion = "1", tournamentId = tournamentId.toString())
-//                            repo.getRankingToPage(filter, pageIndex = 1, pageSize = 1, sort = "").result.firstOrNull()
+//                            predictionsRepo.getRankingToPage(filter, pageIndex = 1, pageSize = 1, sort = "").result.firstOrNull()
 //                        }
 
                     // val home = homeDeferred.await()

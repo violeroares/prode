@@ -4,6 +4,8 @@ import com.rockandcode.prodefutbolero.domain.pagination.PageResult
 import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
+import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
+import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.tournament.models.AverageByDate
 
 interface IPredictionRepository {
@@ -26,4 +28,11 @@ interface IPredictionRepository {
         userId: String,
         dateId: String,
     ): PredictionSummary
+
+    suspend fun getRankingToPage(
+        filter: RankingFilter,
+        pageIndex: Int,
+        pageSize: Int,
+        sort: String,
+    ): PageResult<Ranking>
 }
