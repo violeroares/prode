@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +18,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -51,7 +47,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.ui.components.ErrorView
 import com.rockandcode.prodefutbolero.ui.components.HitCard
+import com.rockandcode.prodefutbolero.ui.components.LoadingView
+import com.rockandcode.prodefutbolero.ui.components.PaginationLoadingItem
 import com.rockandcode.prodefutbolero.ui.components.SearchAppHeader
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -103,34 +102,18 @@ fun MyHitsScreen(
     ) { paddingValues ->
         when (val uiState = state.uiState) {
             is HitsUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+                LoadingView()
             }
 
             is HitsUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                        IconButton(onClick = {
-                            tournament?.id?.let {
-                                viewModel.getHits()
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Actualizar",
-                            )
+                ErrorView(
+                    message = uiState.message,
+                    onRetry = {
+                        tournament?.id?.let {
+                            viewModel.getHits()
                         }
-                    }
-                }
+                    },
+                )
             }
 
             is HitsUiState.Success -> {
@@ -254,17 +237,7 @@ fun MyHitsScreen(
                         }
 
                         if (viewModel.isPaginating) {
-                            item {
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            }
+                            item { PaginationLoadingItem() }
                         }
                     }
                 }
@@ -278,12 +251,7 @@ fun MyHitsScreen(
 
             if (currentUser != null && currentTournament != null && activeDateId != null) {
                 viewModel.setContext(userId = currentUser.id, tournamentId = currentTournament.id)
-                viewModel.selectedDateId = activeDateId
-                viewModel.getHits(
-                    teamName = null,
-                    dateId = activeDateId,
-                    isPullToRefresh = false,
-                )
+                viewModel.setSelectedDate(activeDateId)
             }
         }
 
@@ -336,11 +304,7 @@ fun MyHitsScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        viewModel.selectedDateId = null
-                                        viewModel.getHits(
-                                            viewModel.searchQuery,
-                                            null,
-                                        )
+                                        viewModel.setSelectedDate(null)
                                         isFilterSheetOpen = false
                                     },
                         )
@@ -365,11 +329,7 @@ fun MyHitsScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        viewModel.selectedDateId = date.id
-                                        viewModel.getHits(
-                                            viewModel.searchQuery,
-                                            date.id,
-                                        )
+                                        viewModel.setSelectedDate(date.id)
                                         isFilterSheetOpen = false
                                     },
                         )

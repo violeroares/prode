@@ -1,6 +1,8 @@
 package com.rockandcode.prodefutbolero.ui.navigation
 
-import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -8,7 +10,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,63 +42,104 @@ fun AppStack(
     val bottomBarRoutes =
         listOf(
             Routes.Home.route,
-            Routes.Ranking.route,
+            // Routes.Ranking.route,
+            // Routes.MyPredictions.route,
         )
 
     val showBottomBar = currentRoute in bottomBarRoutes
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+//        bottomBar = {
+//            if (showBottomBar) {
+//                FloatingBottomNavigationBar(
+//                    navController = navController,
+//                    incompleteCount = incompletas,
+//                )
+//            }
+//        },
+            contentWindowInsets = WindowInsets(0),
+            containerColor = Color.Transparent,
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = Routes.TournamentSelect.route,
+                // Modifier.padding(innerPadding),
+//            modifier =
+//                Modifier.padding(
+//                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+//                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+//                    // No aplicamos bottom = innerPadding.calculateBottomPadding()
+//                ),
+            ) {
+                composable(Routes.TournamentSelect.route) {
+                    TournamentsScreen(
+                        viewModel = mainViewModel,
+                        modifier = Modifier.padding(innerPadding),
+                        onTournamentSelected = {
+                            navController.navigate(Routes.Home.route) {
+                                popUpTo(Routes.TournamentSelect.route) { inclusive = true }
+                            }
+                        },
+                    )
+                }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = {
+                composable(Routes.Home.route) {
+                    HomeScreen(navController = navController, viewModel = mainViewModel)
+                }
+
+                composable(Routes.Profile.route) {
+                    ProfileScreen(controller = navController, viewModel = mainViewModel)
+                }
+
+                composable(Routes.MyTournaments.route) {
+                    MyTournamentsScreen(navController = navController)
+                }
+
+                composable(Routes.MyPredictions.route) {
+                    MyPredictionsScreen()
+                }
+
+                composable(Routes.Matches.route) {
+                    MatchesScreen(mainViewModel = mainViewModel, navController = navController)
+                }
+
+                composable(Routes.Ranking.route) {
+                    RankingScreen(mainViewModel = mainViewModel, navController = navController)
+                }
+
+                composable(Routes.MyHits.route) {
+                    MyHitsScreen(mainViewModel = mainViewModel, navController = navController)
+                }
+            }
+            // BottomBar flotante sobre el contenido
             if (showBottomBar) {
-                Log.d("AppStack", "Incompletas: $incompletas")
-                FloatingBottomNavigationBar(navController = navController, incompleteCount = incompletas)
-            }
-        },
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Routes.TournamentSelect.route,
-        ) {
-            composable(Routes.TournamentSelect.route) {
-                TournamentsScreen(
-                    viewModel = mainViewModel,
-                    modifier = Modifier.padding(innerPadding),
-                    onTournamentSelected = {
-                        navController.navigate(Routes.Home.route) {
-                            popUpTo(Routes.TournamentSelect.route) { inclusive = true }
-                        }
-                    },
+                FloatingBottomNavigationBar(
+                    navController = navController,
+                    incompleteCount = incompletas,
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomCenter),
+//                            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
+//                            .clip(RoundedCornerShape(24.dp))
+//                            .background(Color.White.copy(alpha = 0.95f))
+//                            .shadow(8.dp, shape = RoundedCornerShape(24.dp)),
                 )
-            }
-
-            composable(Routes.Home.route) {
-                HomeScreen(navController = navController, viewModel = mainViewModel)
-            }
-
-            composable(Routes.Profile.route) {
-                ProfileScreen(controller = navController, viewModel = mainViewModel)
-            }
-
-            composable(Routes.MyTournaments.route) {
-                MyTournamentsScreen(navController = navController)
-            }
-
-            composable(Routes.MyPredictions.route) {
-                MyPredictionsScreen(navController = navController)
-            }
-
-            composable(Routes.Matches.route) {
-                MatchesScreen(mainViewModel = mainViewModel, navController = navController)
-            }
-
-            composable(Routes.Ranking.route) {
-                RankingScreen(mainViewModel = mainViewModel, navController = navController)
-            }
-
-            composable(Routes.MyHits.route) {
-                MyHitsScreen(mainViewModel = mainViewModel, navController = navController)
             }
         }
     }
 }
+// }
+//
+// enum class Destination(
+//    val route: String,
+//    val label: String,
+//    val icon: ImageVector,
+//    val contentDescription: String,
+// ) {
+//    TOURNAMENTS(Routes.TournamentSelect.route, "Torneos", Icons.Outlined.SportsSoccer, "Torneos"),
+//    HOME(Routes.Home.route, "Home", Icons.Outlined.Home, "Home"),
+//    MATCHES(Routes.Matches.route, "Calendario", Icons.Outlined.CalendarToday, "Calendario"),
+//    RANKING(Routes.Ranking.route, "Ranking", Icons.Outlined.EmojiEvents, "Ranking"),
+//    PROFILE(Routes.Profile.route, "Perfil", Icons.Outlined.PersonOutline, "Perfil"),
+// }

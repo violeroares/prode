@@ -57,8 +57,6 @@ class MatchesViewModel
     constructor(
         private val repo: IMatchRepository,
     ) : ViewModel() {
-        val pageSize = AppConstants.PAGE_SIZE
-
         private val _screenState = MutableStateFlow(MatchesScreenState())
         val screenState: StateFlow<MatchesScreenState> = _screenState.asStateFlow()
 
@@ -67,20 +65,33 @@ class MatchesViewModel
 
         private var tournamentId: Int? = null
 
+        val pageSize = AppConstants.PAGE_SIZE
         var currentPage = 1
             private set
-
-        internal var totalPages = 1
-
-        var isPaginating = false
+        var totalPages = 1
+            private set
+        var isPaginating by mutableStateOf(false)
             private set
 
+        /**
+         * Define el contexto del torneo sobre el cual se van a buscar partidos
+         */
+        fun setContext(tournamentId: Int?) {
+            this.tournamentId = tournamentId
+        }
+
         var selectedDateId by mutableStateOf<Int?>(null)
+            private set
+
         var searchQuery by mutableStateOf("")
             private set
 
-        fun setContext(tournamentId: Int?) {
-            this.tournamentId = tournamentId
+        /**
+         * Permite cambiar la fecha seleccionada desde la UI
+         */
+        fun setSelectedDate(dateId: Int?) {
+            selectedDateId = dateId
+            getMatches(teamName = searchQuery, dateId = selectedDateId)
         }
 
         fun onSearchQueryChanged(newQuery: String) {
@@ -90,6 +101,9 @@ class MatchesViewModel
             }
         }
 
+        /**
+         * Obtiene la primera página de partidos
+         */
         fun getMatches(
             teamName: String? = null,
             dateId: Int? = selectedDateId,
@@ -148,6 +162,9 @@ class MatchesViewModel
             }
         }
 
+        /**
+         * Carga la siguiente página (scroll infinito)
+         */
         fun loadNextPage(
             teamName: String? = null,
             dateId: Int? = selectedDateId,
@@ -205,9 +222,13 @@ class MatchesViewModel
             }
         }
 
-//        fun onBackPressed() {
-//            viewModelScope.launch {
-//                _eventFlow.emit(MatchesUiEvent.PopBackStack)
-//            }
-//        }
+        /**
+         * Navega al detalle del partido
+
+         fun onBackPressed() {
+         viewModelScope.launch {
+         _eventFlow.emit(MatchesUiEvent.PopBackStack)
+         }
+         }
+         */
     }
