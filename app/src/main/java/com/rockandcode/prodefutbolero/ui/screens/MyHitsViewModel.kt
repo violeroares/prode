@@ -72,21 +72,10 @@ class MyHitsViewModel
 
         var currentPage = 1
             private set
-        internal var totalPages = 1
-
-        var isPaginating = false
+        var totalPages = 1
             private set
-
-        var selectedDateId by mutableStateOf<Int?>(null)
-        var searchQuery by mutableStateOf("")
+        var isPaginating by mutableStateOf(false)
             private set
-
-        fun onSearchQueryChanged(newQuery: String) {
-            searchQuery = newQuery
-            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
-                getHits(teamName = searchQuery, dateId = selectedDateId)
-            }
-        }
 
         fun setContext(
             userId: String?,
@@ -94,6 +83,27 @@ class MyHitsViewModel
         ) {
             this.userId = userId
             this.tournamentId = tournamentId
+        }
+
+        var selectedDateId by mutableStateOf<Int?>(null)
+            private set
+
+        var searchQuery by mutableStateOf("")
+            private set
+
+        /**
+         * Permite cambiar la fecha seleccionada desde la UI
+         */
+        fun setSelectedDate(dateId: Int?) {
+            selectedDateId = dateId
+            getHits(teamName = searchQuery, dateId = selectedDateId)
+        }
+
+        fun onSearchQueryChanged(newQuery: String) {
+            searchQuery = newQuery
+            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
+                getHits(teamName = searchQuery, dateId = selectedDateId)
+            }
         }
 
         fun getHits(

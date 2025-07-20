@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -53,7 +52,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.MatchCard
+import com.rockandcode.prodefutbolero.ui.components.PaginationLoadingItem
 import com.rockandcode.prodefutbolero.ui.components.SearchAppHeader
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -87,21 +88,42 @@ fun MatchesScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            SearchAppHeader(
-                title = "Calendario",
-                onBack = { navController.popBackStack() },
-                showBackButton = true,
-                searchQuery = viewModel.searchQuery,
-                onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
-                onFilterClick = { isFilterSheetOpen = true },
-                filtersActive = 1,
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = {
+            tournament?.id?.let {
+                viewModel.getMatches(
+                    teamName = viewModel.searchQuery,
+                    dateId = viewModel.selectedDateId,
+                    isPullToRefresh = true,
+                )
+            }
+        },
+        state = pullToRefreshState,
+        indicator = {
+            Indicator(
+                modifier = Modifier.align(Alignment.TopCenter),
+                isRefreshing = state.isRefreshing,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                state = pullToRefreshState,
             )
         },
+    ) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                SearchAppHeader(
+                    title = "Calendario",
+                    onBack = { navController.popBackStack() },
+                    showBackButton = true,
+                    searchQuery = viewModel.searchQuery,
+                    onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
+                    onFilterClick = { isFilterSheetOpen = true },
+                    filtersActive = 1,
+                )
+            },
 //        bottomBar = {
 //            BottomAppBar(
 //                actions = {
@@ -138,64 +160,38 @@ fun MatchesScreen(
 //                },
 //            )
 //        },
-        // contentWindowInsets = WindowInsets(0),
-    ) { paddingValues ->
-        when (val uiState = state.uiState) {
-            is MatchesUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+            // contentWindowInsets = WindowInsets(0),
+        ) { paddingValues ->
+            when (val uiState = state.uiState) {
+                is MatchesUiState.Loading -> {
+                    LoadingView()
                 }
-            }
 
-            is MatchesUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                        IconButton(onClick = { tournament?.id?.let { viewModel.getMatches() } }) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Actualizar",
+                is MatchesUiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text = uiState.message,
+                                color = MaterialTheme.colorScheme.error,
                             )
+                            IconButton(onClick = { tournament?.id?.let { viewModel.getMatches() } }) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Actualizar",
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            is MatchesUiState.Success -> {
-                PullToRefreshBox(
-                    isRefreshing = state.isRefreshing,
-                    onRefresh = {
-                        tournament?.id?.let {
-                            viewModel.getMatches(
-                                teamName = viewModel.searchQuery,
-                                dateId = viewModel.selectedDateId,
-                                isPullToRefresh = true,
-                            )
-                        }
-                    },
-                    state = pullToRefreshState,
-                    indicator = {
-                        Indicator(
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            isRefreshing = state.isRefreshing,
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            state = pullToRefreshState,
-                        )
-                    },
-                ) {
+                is MatchesUiState.Success -> {
                     LazyColumn(
                         state = listState,
-                        modifier =
-                            Modifier
-                                .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         contentPadding = paddingValues,
@@ -258,17 +254,7 @@ fun MatchesScreen(
                         }
 
                         if (viewModel.isPaginating) {
-                            item {
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            }
+                            item { PaginationLoadingItem() }
                         }
                     }
                 }
@@ -281,12 +267,7 @@ fun MatchesScreen(
 
             if (currentTournament != null && activeDateId != null) {
                 viewModel.setContext(tournamentId = currentTournament.id)
-                viewModel.selectedDateId = activeDateId
-                viewModel.getMatches(
-                    teamName = null,
-                    dateId = activeDateId,
-                    isPullToRefresh = false,
-                )
+                viewModel.setSelectedDate(activeDateId)
             }
         }
 
@@ -339,17 +320,14 @@ fun MatchesScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        viewModel.selectedDateId = null
-                                        viewModel.getMatches(
-                                            viewModel.searchQuery,
-                                            null,
-                                        )
+                                        viewModel.setSelectedDate(null)
                                         isFilterSheetOpen = false
                                     },
                         )
                         HorizontalDivider()
                     }
 
+                    // Fechas del torneo (desde MainViewModel)
                     items(dates) { date ->
                         val isSelected = date.id == viewModel.selectedDateId
                         ListItem(
@@ -368,11 +346,7 @@ fun MatchesScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        viewModel.selectedDateId = date.id
-                                        viewModel.getMatches(
-                                            viewModel.searchQuery,
-                                            date.id,
-                                        )
+                                        viewModel.setSelectedDate(date.id)
                                         isFilterSheetOpen = false
                                     },
                         )

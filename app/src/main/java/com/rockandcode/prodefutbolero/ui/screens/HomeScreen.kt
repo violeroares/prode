@@ -1,24 +1,15 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,15 +17,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.ui.components.ErrorView
 import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
 import com.rockandcode.prodefutbolero.ui.components.HomeHeader
 import com.rockandcode.prodefutbolero.ui.components.IncompleteCard
+import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.MoistureGaugeFull
 import com.rockandcode.prodefutbolero.ui.components.TestCard
 import com.rockandcode.prodefutbolero.ui.components.TournamentStatsCard
@@ -73,39 +65,23 @@ fun HomeScreen(
 
     when (val uiState = state) {
         is HomeUiState.Loading -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingView()
         }
 
         is HomeUiState.Error -> {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Error: ${uiState.message}")
-                    IconButton(onClick = {
+            ErrorView(
+                message = uiState.message,
+                onRetry = {
+                    tournament?.id?.let {
                         tournament?.id?.let {
                             homeViewModel.loadTournamentHome(
                                 it,
                                 user?.id,
                             )
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Actualizar",
-                        )
                     }
-                }
-            }
+                },
+            )
         }
 
         is HomeUiState.Success -> {
@@ -138,20 +114,7 @@ fun HomeScreen(
                     item {
                         Spacer(Modifier.height(8.dp))
                     }
-//                    if (uiState.data != null) {
-//                        item {
-//                            HomeAverageByDateCard(
-//                                title = uiState.data.tournamentName,
-//                                averageList = uiState.data.averageByDate,
-//                                myPosition = myRanking?.posicion.toString(),
-//                                onMoreClick = {
-//                                    navController.navigate(Routes.TournamentSelect.route) {
-//                                        popUpTo(Routes.Home.route) { inclusive = true }
-//                                    }
-//                                },
-//                            )
-//                        }
-//                    }
+
                     if (incompletas > 0) {
                         item {
                             IncompleteCard(value = incompletas, dateName = "Fecha 02")

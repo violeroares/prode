@@ -1,10 +1,7 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +16,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -54,6 +48,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.ui.components.ErrorView
+import com.rockandcode.prodefutbolero.ui.components.LoadingView
+import com.rockandcode.prodefutbolero.ui.components.PaginationLoadingItem
 import com.rockandcode.prodefutbolero.ui.components.RankingCard
 import com.rockandcode.prodefutbolero.ui.components.SearchAppHeader
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -89,83 +86,67 @@ fun RankingScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            SearchAppHeader(
-                title = "Ranking",
-                onBack = { navController.popBackStack() },
-                showBackButton = true,
-                searchQuery = viewModel.searchQuery,
-                onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
-                onFilterClick = { isFilterSheetOpen = true },
-                filtersActive = 1,
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = {
+            tournament?.id?.let {
+                viewModel.getRanking(
+                    userName = viewModel.searchQuery,
+                    dateId = viewModel.selectedDateId,
+                    isPullToRefresh = true,
+                )
+            }
+        },
+        state = pullToRefreshState,
+        indicator = {
+            Indicator(
+                modifier = Modifier.align(Alignment.TopCenter),
+                isRefreshing = state.isRefreshing,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                state = pullToRefreshState,
             )
         },
-    ) { paddingValues ->
+    ) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                SearchAppHeader(
+                    title = "Ranking",
+                    onBack = { navController.popBackStack() },
+                    showBackButton = true,
+                    searchQuery = viewModel.searchQuery,
+                    onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
+                    onFilterClick = { isFilterSheetOpen = true },
+                    filtersActive = 1,
+                )
+            },
+        ) { paddingValues ->
 
-        when (val uiState = state.uiState) {
-            is RankingUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+            when (val uiState = state.uiState) {
+                is RankingUiState.Loading -> {
+                    LoadingView()
                 }
-            }
 
-            is RankingUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                        IconButton(onClick = { tournament?.id?.let { viewModel.getRanking() } }) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Actualizar",
-                            )
-                        }
-                    }
+                is RankingUiState.Error -> {
+                    ErrorView(
+                        message = uiState.message,
+                        onRetry = { tournament?.id?.let { viewModel.getRanking() } },
+                    )
                 }
-            }
 
-            is RankingUiState.Success -> {
-                PullToRefreshBox(
-                    isRefreshing = state.isRefreshing,
-                    onRefresh = {
-                        tournament?.id?.let {
-                            viewModel.getRanking(
-                                userName = viewModel.searchQuery,
-                                dateId = viewModel.selectedDateId,
-                                isPullToRefresh = true,
-                            )
-                        }
-                    },
-                    state = pullToRefreshState,
-                    indicator = {
-                        Indicator(
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            isRefreshing = state.isRefreshing,
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            state = pullToRefreshState,
-                        )
-                    },
-                ) {
+                is RankingUiState.Success -> {
                     LazyColumn(
                         state = listState,
                         modifier =
                             Modifier
-                                .fillMaxSize(),
+                                .fillMaxSize()
+                                .padding(vertical = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         contentPadding = paddingValues,
                     ) {
-                        Log.d("RankingScreen", "${uiState.rankings}")
                         // Card especial para el primer puesto
 //                        if (uiState.rankings.isNotEmpty()) {
 //                            item {
@@ -216,17 +197,7 @@ fun RankingScreen(
                         }
 
                         if (viewModel.isPaginating) {
-                            item {
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            }
+                            item { PaginationLoadingItem() }
                         }
                     }
                 }
@@ -235,19 +206,10 @@ fun RankingScreen(
 
         LaunchedEffect(tournament?.id, dates) {
             val currentTournament = tournament
-            // val activeDateId = dates.firstOrNull { it.active }?.id
 
-            // if (currentTournament != null && activeDateId != null) {
             if (currentTournament != null) {
                 viewModel.setContext(tournamentId = currentTournament.id)
-                // viewModel.selectedDateId = activeDateId
-                viewModel.selectedDateId = null
-                viewModel.getRanking(
-                    userName = null,
-                    // dateId = activeDateId,
-                    dateId = null,
-                    isPullToRefresh = false,
-                )
+                viewModel.setSelectedDate(null)
             }
         }
 
@@ -300,11 +262,7 @@ fun RankingScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        viewModel.selectedDateId = null
-                                        viewModel.getRanking(
-                                            viewModel.searchQuery,
-                                            null,
-                                        )
+                                        viewModel.setSelectedDate(null)
                                         isFilterSheetOpen = false
                                     },
                         )
@@ -329,11 +287,7 @@ fun RankingScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        viewModel.selectedDateId = date.id
-                                        viewModel.getRanking(
-                                            viewModel.searchQuery,
-                                            date.id,
-                                        )
+                                        viewModel.setSelectedDate(date.id)
                                         isFilterSheetOpen = false
                                     },
                         )

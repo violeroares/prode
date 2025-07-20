@@ -22,12 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,7 +45,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
+import com.rockandcode.prodefutbolero.ui.components.ErrorView
+import com.rockandcode.prodefutbolero.ui.components.LoadingView
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TournamentsScreen(
     viewModel: MainViewModel,
@@ -55,42 +56,23 @@ fun TournamentsScreen(
     onTournamentSelected: () -> Unit,
     modifier: Modifier,
 ) {
-    val uiState by tournamentsViewModel.uiState.collectAsState()
+    val state by tournamentsViewModel.uiState.collectAsState()
 
-    when (uiState) {
+    when (val uiState = state) {
         is TournamentsUiState.Loading -> {
-            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingView()
         }
 
         is TournamentsUiState.Error -> {
-            val message = (uiState as TournamentsUiState.Error).message
-            Box(
-                Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Error: $message")
-                    IconButton(onClick = { tournamentsViewModel.loadTournaments() }) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Actualizar",
-                        )
-                    }
-                }
-            }
+            ErrorView(
+                message = uiState.message,
+                onRetry = { tournamentsViewModel.loadTournaments() },
+            )
         }
 
         is TournamentsUiState.Success -> {
-            val tournaments = (uiState as TournamentsUiState.Success).tournaments
-
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 contentWindowInsets = WindowInsets(0),
                 containerColor = Color.Transparent,
             ) { paddingValues ->
@@ -129,7 +111,7 @@ fun TournamentsScreen(
                             )
                         }
                     }
-                    items(tournaments) { tournament ->
+                    items(uiState.tournaments) { tournament ->
                         TournamentCard(
                             title = tournament.name,
                             onClick = {

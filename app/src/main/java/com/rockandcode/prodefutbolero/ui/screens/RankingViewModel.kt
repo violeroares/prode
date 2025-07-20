@@ -57,8 +57,6 @@ class RankingViewModel
     constructor(
         private val predictionRepository: IPredictionRepository,
     ) : ViewModel() {
-        val pageSize = AppConstants.PAGE_SIZE
-
         private val _screenState = MutableStateFlow(RankingScreenState())
         val screenState: StateFlow<RankingScreenState> = _screenState.asStateFlow()
 
@@ -67,20 +65,27 @@ class RankingViewModel
 
         private var tournamentId: Int? = null
 
+        val pageSize = AppConstants.PAGE_SIZE
         var currentPage = 1
             private set
-
-        internal var totalPages = 1
-
-        var isPaginating = false
+        var totalPages = 1
             private set
-
-        var selectedDateId by mutableStateOf<Int?>(null)
-        var searchQuery by mutableStateOf("")
+        var isPaginating by mutableStateOf(false)
             private set
 
         fun setContext(tournamentId: Int?) {
             this.tournamentId = tournamentId
+        }
+
+        var selectedDateId by mutableStateOf<Int?>(null)
+            private set
+
+        var searchQuery by mutableStateOf("")
+            private set
+
+        fun setSelectedDate(dateId: Int?) {
+            selectedDateId = dateId
+            getRanking(userName = searchQuery, dateId = selectedDateId)
         }
 
         fun onSearchQueryChanged(newQuery: String) {
@@ -109,7 +114,7 @@ class RankingViewModel
                     val filter =
                         RankingFilter(
                             tournamentId = tournamentId?.toString(),
-                            userName = userName,
+                            firstName = userName,
                             dateId = dateId?.toString(),
                         )
                     val offset = (currentPage - 1) * pageSize
