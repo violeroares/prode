@@ -42,7 +42,9 @@ fun AppStack(
     val bottomBarRoutes =
         listOf(
             Routes.Home.route,
-            // Routes.Ranking.route,
+            Routes.Ranking.route,
+            Routes.Matches.route,
+            Routes.Profile.route,
             // Routes.MyPredictions.route,
         )
 
@@ -50,21 +52,26 @@ fun AppStack(
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
-//        bottomBar = {
-//            if (showBottomBar) {
-//                FloatingBottomNavigationBar(
-//                    navController = navController,
-//                    incompleteCount = incompletas,
-//                )
-//            }
-//        },
+//            bottomBar = {
+//                if (showBottomBar) {
+//                    FloatingBottomNavigationBar(
+//                        navController = navController,
+//                        incompleteCount = incompletas,
+//                    )
+//                }
+//            },
+//            bottomBar = {
+//                if (showBottomBar) {
+//                    BottomBar(navController = navController, incompleteCount = incompletas)
+//                }
+//            },
             contentWindowInsets = WindowInsets(0),
             containerColor = Color.Transparent,
         ) { innerPadding ->
             NavHost(
                 navController = navController,
                 startDestination = Routes.TournamentSelect.route,
-                // Modifier.padding(innerPadding),
+                Modifier.padding(innerPadding),
 //            modifier =
 //                Modifier.padding(
 //                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -112,34 +119,20 @@ fun AppStack(
                     MyHitsScreen(mainViewModel = mainViewModel, navController = navController)
                 }
             }
-            // BottomBar flotante sobre el contenido
-            if (showBottomBar) {
-                FloatingBottomNavigationBar(
-                    navController = navController,
-                    incompleteCount = incompletas,
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter),
-//                            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
-//                            .clip(RoundedCornerShape(24.dp))
-//                            .background(Color.White.copy(alpha = 0.95f))
-//                            .shadow(8.dp, shape = RoundedCornerShape(24.dp)),
-                )
-            }
+        }
+        // BottomBar flotante sobre el contenido
+        if (showBottomBar) {
+            FloatingBottomNavigationBar(
+                navController = navController,
+                incompleteCount = incompletas,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter),
+                //                            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
+                //                            .clip(RoundedCornerShape(24.dp))
+                //                            .background(Color.White.copy(alpha = 0.95f))
+                //                            .shadow(8.dp, shape = RoundedCornerShape(24.dp)),
+            )
         }
     }
 }
-// }
-//
-// enum class Destination(
-//    val route: String,
-//    val label: String,
-//    val icon: ImageVector,
-//    val contentDescription: String,
-// ) {
-//    TOURNAMENTS(Routes.TournamentSelect.route, "Torneos", Icons.Outlined.SportsSoccer, "Torneos"),
-//    HOME(Routes.Home.route, "Home", Icons.Outlined.Home, "Home"),
-//    MATCHES(Routes.Matches.route, "Calendario", Icons.Outlined.CalendarToday, "Calendario"),
-//    RANKING(Routes.Ranking.route, "Ranking", Icons.Outlined.EmojiEvents, "Ranking"),
-//    PROFILE(Routes.Profile.route, "Perfil", Icons.Outlined.PersonOutline, "Perfil"),
-// }

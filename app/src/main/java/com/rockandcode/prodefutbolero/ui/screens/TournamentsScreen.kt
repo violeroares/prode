@@ -2,10 +2,8 @@ package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,6 +42,7 @@ import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
 import com.rockandcode.prodefutbolero.ui.components.ErrorView
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
+import com.rockandcode.prodefutbolero.ui.components.RoundButton
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -80,7 +76,7 @@ fun TournamentsScreen(
                     modifier =
                         Modifier
                             .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     contentPadding = paddingValues,
                 ) {
                     item {
@@ -142,7 +138,7 @@ fun TournamentCard(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(36.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+        // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         onClick = onClick,
     ) {
@@ -191,25 +187,25 @@ fun TournamentCard(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 )
             }
-
-            Box(
-                modifier =
-                    Modifier
-                        .size(68.dp)
-                        .clip(CircleShape)
-                        .clickable(onClick = onClick)
-                        .background(
-                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
-                            shape = CircleShape,
-                        ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "Icono",
-                    tint = if (isDark) Color.White else Color.Black,
-                )
-            }
+            RoundButton(onClick = onClick)
+//            Box(
+//                modifier =
+//                    Modifier
+//                        .size(68.dp)
+//                        .clip(CircleShape)
+//                        .clickable(onClick = onClick)
+//                        .background(
+//                            if (isDark) Color(0xFF2E3134) else MaterialTheme.colorScheme.background,
+//                            shape = CircleShape,
+//                        ),
+//                contentAlignment = Alignment.Center,
+//            ) {
+//                Icon(
+//                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                    contentDescription = "Icono",
+//                    tint = if (isDark) Color.White else Color.Black,
+//                )
+//            }
         }
     }
 }

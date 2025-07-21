@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -34,7 +36,7 @@ fun HomeHeader(
     onNotificationsClick: () -> Unit = {},
     isDark: Boolean,
 ) {
-    val iconBackgroundColor = Color.White
+    val iconBackgroundColor = if (isDark) Color(0xFF27292C) else Color.White
     val saludo = remember { obtenerSaludo() }
     Row(
         modifier =
@@ -51,6 +53,7 @@ fun HomeHeader(
                 fontWeight = FontWeight.Normal,
                 color = Color(0xFF747D8B),
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = saludo,
                 style = MaterialTheme.typography.headlineMedium,
@@ -77,7 +80,7 @@ fun HomeHeader(
                 Icon(
                     Icons.Outlined.Notifications,
                     contentDescription = "Icono",
-                    tint = Color.Black,
+                    tint = if (isDark) Color.White else Color.Black,
                 )
             }
 

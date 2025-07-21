@@ -50,9 +50,9 @@ fun HomeAverageByDateCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+                .padding(horizontal = 8.dp, vertical = 4.dp),
         shape = RoundedCornerShape(36.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+        // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
     ) {
 //    Card(
@@ -196,7 +196,7 @@ fun ScoresSummary(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         ) {
-            ScoreItem(value = myPosition.toString(), title = "Posición", isDark = isDark)
+            ScoreItem(value = myPosition, title = "Posición", isDark = isDark)
         }
 
         // Card Total Puntaje

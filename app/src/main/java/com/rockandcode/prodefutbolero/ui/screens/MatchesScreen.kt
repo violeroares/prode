@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
-import com.rockandcode.prodefutbolero.ui.components.MatchCard
+import com.rockandcode.prodefutbolero.ui.components.MatchStatusCard
 import com.rockandcode.prodefutbolero.ui.components.PaginationLoadingItem
 import com.rockandcode.prodefutbolero.ui.components.SearchAppHeader
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -248,13 +248,17 @@ fun MatchesScreen(
                         }
 
                         items(uiState.matches) { match ->
-                            MatchCard(match = match) {
-                                viewModel.onMatchClick(match)
-                            }
+                            MatchStatusCard(match = match, onClick = { viewModel.onMatchClick(match) })
+//                            MatchCard(match = match) {
+//                                viewModel.onMatchClick(match)
+//                            }
                         }
 
                         if (viewModel.isPaginating) {
                             item { PaginationLoadingItem() }
+                        }
+                        item {
+                            Spacer(Modifier.height(96.dp))
                         }
                     }
                 }

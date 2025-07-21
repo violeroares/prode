@@ -139,10 +139,7 @@ fun RankingScreen(
                 is RankingUiState.Success -> {
                     LazyColumn(
                         state = listState,
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .padding(vertical = 16.dp),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         contentPadding = paddingValues,
@@ -198,6 +195,10 @@ fun RankingScreen(
 
                         if (viewModel.isPaginating) {
                             item { PaginationLoadingItem() }
+                        }
+
+                        item {
+                            Spacer(Modifier.height(96.dp))
                         }
                     }
                 }
