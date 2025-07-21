@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.EmojiEvents
@@ -37,7 +42,8 @@ import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
 data class FloatingBottomNavItem(
     val label: String,
-    val icon: ImageVector,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
     val route: String,
 )
 
@@ -49,11 +55,11 @@ fun FloatingBottomNavigationBar(
 ) {
     val bottomItems =
         listOf(
-            FloatingBottomNavItem("Inicio", Icons.Outlined.Home, Routes.Home.route),
-            FloatingBottomNavItem("Matches", Icons.Outlined.CalendarToday, Routes.Matches.route),
-            FloatingBottomNavItem("Favoritos", Icons.Outlined.BarChart, Routes.MyPredictions.route),
-            FloatingBottomNavItem("Ranking", Icons.Outlined.EmojiEvents, Routes.Ranking.route),
-            FloatingBottomNavItem("Perfil", Icons.Outlined.PersonOutline, Routes.Profile.route),
+            FloatingBottomNavItem("Inicio", Icons.Filled.Home, Icons.Outlined.Home, Routes.Home.route),
+            FloatingBottomNavItem("Matches", Icons.Filled.CalendarToday, Icons.Outlined.CalendarToday, Routes.Matches.route),
+            FloatingBottomNavItem("Favoritos", Icons.Filled.BarChart, Icons.Outlined.BarChart, Routes.MyPredictions.route),
+            FloatingBottomNavItem("Ranking", Icons.Filled.EmojiEvents, Icons.Outlined.EmojiEvents, Routes.Ranking.route),
+            FloatingBottomNavItem("Perfil", Icons.Filled.Person, Icons.Outlined.PersonOutline, Routes.Profile.route),
         )
 
     val currentDestination by navController.currentBackStackEntryAsState()
@@ -138,7 +144,7 @@ fun FloatingBottomNavigationBar(
                         },
                     ) {
                         Icon(
-                            imageVector = item.icon,
+                            imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
                             contentDescription = item.label,
                             tint = if (selected) selectedColor else unselectedColor,
                         )

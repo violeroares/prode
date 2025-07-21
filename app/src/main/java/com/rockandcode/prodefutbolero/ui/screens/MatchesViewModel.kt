@@ -3,6 +3,7 @@ package com.rockandcode.prodefutbolero.ui.screens
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rockandcode.prodefutbolero.domain.match.models.Match
@@ -10,12 +11,15 @@ import com.rockandcode.prodefutbolero.domain.match.models.MatchFilter
 import com.rockandcode.prodefutbolero.domain.match.repository.IMatchRepository
 import com.rockandcode.prodefutbolero.utils.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,6 +55,7 @@ sealed class MatchesUiEvent {
     data object PopBackStack : MatchesUiEvent()
 }
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class MatchesViewModel
     @Inject
@@ -96,10 +101,47 @@ class MatchesViewModel
 
         fun onSearchQueryChanged(newQuery: String) {
             searchQuery = newQuery
-            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
-                getMatches(teamName = searchQuery, dateId = selectedDateId)
+//            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
+//                getMatches(teamName = searchQuery, dateId = selectedDateId)
+//            }
+        }
+
+//        private val _searchResults = MutableStateFlow<List<Match>>(emptyList())
+//        val searchResults: StateFlow<List<Match>> = _searchResults
+
+        init {
+            // Debounce para evitar demasiadas llamadas
+            viewModelScope.launch {
+                snapshotFlow { searchQuery }
+                    .debounce(400)
+                    .distinctUntilChanged()
+                    .collect { query ->
+                        if (query.length >= 3 || query.isEmpty()) {
+                            getMatches(teamName = query, dateId = selectedDateId)
+                        }
+                    }
             }
         }
+
+//        fun onSearchQueryChanged(newQuery: String) {
+//            searchQuery = newQuery
+//            viewModelScope.launch {
+//                if (searchQuery.length >= 3) {
+//                    val filter =
+//                        MatchFilter(
+//                            tournamentId = tournamentId?.toString(),
+//                            teamName = searchQuery,
+//                            dateId = selectedDateId?.toString(),
+//                        )
+//                    // val result = repo.getMatchesToPage(filter, 0, 5, "") // Solo 5 sugerencias
+//                    // Log.d("MatchesViewModel", "$result")
+//                    // _searchResults.value = result.result
+//                    getMatches(teamName = searchQuery, dateId = selectedDateId)
+//                } else {
+//                    _searchResults.value = emptyList()
+//                }
+//            }
+//        }
 
         /**
          * Obtiene la primera página de partidos

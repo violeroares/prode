@@ -1,5 +1,6 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddChart
@@ -25,6 +29,7 @@ import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExpandedFullScreenSearchBar
@@ -32,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -90,6 +96,8 @@ fun MyPredictionsScreen() {
             Icons.Outlined.Person,
         )
 
+    // var searchResults by remember { mutableStateOf(listOf("Home", "Calendario", "Ranking", "Pronósticos", "Mi Perfil")) }
+
     val inputField =
         @Composable {
             SearchBarDefaults.InputField(
@@ -120,6 +128,13 @@ fun MyPredictionsScreen() {
                         Icon(Icons.Outlined.FilterList, contentDescription = "Filter")
                     }
                 },
+//                trailingIcon = {
+//                    if (viewModel.searchQuery.isNotEmpty()) {
+//                        IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
+//                            Icon(Icons.Default.Close, contentDescription = "Borrar")
+//                        }
+//                    }
+//                },
             )
         }
 
@@ -138,6 +153,14 @@ fun MyPredictionsScreen() {
 //                        scope.launch { searchBarState.animateToCollapsed() }
 //                    },
 //                )
+                SearchResultsList(
+                    results = items, // tu lista de resultados
+                    onResultClick = { result ->
+                        textFieldState.setTextAndPlaceCursorAtEnd(result)
+                        scope.launch { searchBarState.animateToCollapsed() }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         },
         contentWindowInsets = WindowInsets.systemBars,
@@ -281,5 +304,55 @@ fun MyPredictionsScreen() {
 //                },
 //            )
 //        }
+    }
+}
+
+@Composable
+fun SearchResultsList(
+    results: List<String>,
+    onResultClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (results.isEmpty()) {
+        Box(
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "No se encontraron resultados",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(results) { result ->
+                Card(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onResultClick(result) },
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                ) {
+                    Text(
+                        text = result,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier =
+                            Modifier
+                                .padding(16.dp),
+                    )
+                }
+            }
+        }
     }
 }

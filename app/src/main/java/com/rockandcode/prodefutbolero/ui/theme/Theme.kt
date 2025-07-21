@@ -7,6 +7,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme =
@@ -14,6 +15,7 @@ private val DarkColorScheme =
         primary = Purple80,
         secondary = PurpleGrey80,
         tertiary = Pink80,
+        background = Color(0xFF17181C),
         // Chris
 //        background = Color(0xFF17181C),
 //        secondary = Color(0xFFA2F7A1),
@@ -26,6 +28,7 @@ private val LightColorScheme =
         primary = Purple40,
         secondary = PurpleGrey40,
         tertiary = Pink40,
+        background = Color(0xFFE6EDF2),
         /*
        // Chris
        // primary = Color(0xFF4270F6),
@@ -44,12 +47,12 @@ private val LightColorScheme =
 fun ProdeFutboleroTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme =
         when {
-            dynamicColor && true -> {
+            dynamicColor -> {
                 val context = LocalContext.current
                 if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             }

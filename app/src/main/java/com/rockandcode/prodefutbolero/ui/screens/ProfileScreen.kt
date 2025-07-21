@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
@@ -26,18 +24,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,14 +42,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.rockandcode.prodefutbolero.ui.components.AppHeader
 import com.rockandcode.prodefutbolero.ui.components.RoundButton
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProfileScreen(
     viewModel: MainViewModel,
@@ -86,37 +75,44 @@ fun ProfileScreen(
 //            )
 //        },
         // contentWindowInsets = WindowInsets(0),
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text("Mi perfil", maxLines = 1, overflow = TextOverflow.Ellipsis)
+//                },
+//                subtitle = { Text("Datos personales", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+//                navigationIcon = {
+//                    TooltipBox(
+//                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+//                        tooltip = { PlainTooltip { Text("Menu") } },
+//                        state = rememberTooltipState(),
+//                    ) {
+//                        IconButton(onClick = { controller.popBackStack() }) {
+//                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Menu")
+//                        }
+//                    }
+//                },
+//                actions = {
+//                    TooltipBox(
+//                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+//                        tooltip = { PlainTooltip { Text("Add to favorites") } },
+//                        state = rememberTooltipState(),
+//                    ) {
+//                        IconButton(onClick = { /* doSomething() */ }) {
+//                            Icon(
+//                                imageVector = Icons.Filled.Favorite,
+//                                contentDescription = "Add to favorites",
+//                            )
+//                        }
+//                    }
+//                },
+//            )
+//        },
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Mi perfil", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                },
-                subtitle = { Text("Datos personales", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = {
-                    TooltipBox(
-                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                        tooltip = { PlainTooltip { Text("Menu") } },
-                        state = rememberTooltipState(),
-                    ) {
-                        IconButton(onClick = { controller.popBackStack() }) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Menu")
-                        }
-                    }
-                },
-                actions = {
-                    TooltipBox(
-                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-                        tooltip = { PlainTooltip { Text("Add to favorites") } },
-                        state = rememberTooltipState(),
-                    ) {
-                        IconButton(onClick = { /* doSomething() */ }) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = "Add to favorites",
-                            )
-                        }
-                    }
-                },
+            AppHeader(
+                title = "Mi perfil",
+                onBack = { controller.popBackStack() },
+                showBackButton = false,
             )
         },
         containerColor = Color.Transparent,
@@ -126,7 +122,7 @@ fun ProfileScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = paddingValues,
         ) {
@@ -244,25 +240,7 @@ fun ProfileOptionCard(
     onClick: () -> Unit,
 ) {
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
-//    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
-//    val shadowSpot = shadowAmbient
     val iconColor = if (isDark) Color(0xFFF1FD72) else Color(0xFF4270F6)
-//    Card(
-//        modifier =
-//            modifier
-//                .fillMaxWidth()
-//                .padding(horizontal = 16.dp)
-//                .clip(CircleShape)
-//                .clickable(onClick = onClick)
-//                .shadow(
-//                    elevation = 4.dp,
-//                    shape = RoundedCornerShape(36.dp),
-//                    ambientColor = shadowAmbient,
-//                    spotColor = shadowSpot,
-//                ),
-//        shape = RoundedCornerShape(36.dp),
-//        colors = CardDefaults.cardColors(containerColor = cardColor),
-//    ) {
 
     Card(
         modifier =
@@ -270,7 +248,7 @@ fun ProfileOptionCard(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(36.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+        // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         onClick = onClick,
     ) {
