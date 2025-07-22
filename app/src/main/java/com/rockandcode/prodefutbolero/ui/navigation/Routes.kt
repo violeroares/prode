@@ -25,4 +25,6 @@ sealed class Routes(
     object Ranking : Routes("ranking")
 
     object MyHits : Routes("hits")
+
+    object Inbox : Routes("inbox")
 }
