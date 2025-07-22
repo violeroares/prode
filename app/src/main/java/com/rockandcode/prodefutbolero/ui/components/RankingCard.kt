@@ -37,7 +37,6 @@ fun RankingCard(
     val isDark = isSystemInDarkTheme()
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
     val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
-    val shadowSpot = shadowAmbient
     Card(
         modifier =
             modifier
@@ -47,7 +46,7 @@ fun RankingCard(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(36.dp),
                     ambientColor = shadowAmbient,
-                    spotColor = shadowSpot,
+                    spotColor = shadowAmbient,
                 ),
         shape = RoundedCornerShape(36.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),

@@ -17,8 +17,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rockandcode.prodefutbolero.ui.components.BottomBar
+import com.rockandcode.prodefutbolero.ui.screens.ChangePasswordScreen
 import com.rockandcode.prodefutbolero.ui.screens.HomeScreen
 import com.rockandcode.prodefutbolero.ui.screens.InboxScreen
+import com.rockandcode.prodefutbolero.ui.screens.InstructionsScreen
 import com.rockandcode.prodefutbolero.ui.screens.MainViewModel
 import com.rockandcode.prodefutbolero.ui.screens.MatchesScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyHitsScreen
@@ -121,6 +123,17 @@ fun AppStack(
 
                 composable(Routes.Inbox.route) {
                     InboxScreen()
+                }
+
+                composable(Routes.ChangePassword.route) {
+                    ChangePasswordScreen(
+                        mainViewModel = mainViewModel,
+                        navController = navController,
+                    )
+                }
+
+                composable(Routes.Instructions.route) {
+                    InstructionsScreen(navController = navController)
                 }
             }
         }

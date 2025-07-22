@@ -4,27 +4,32 @@ sealed class Routes(
     val route: String,
 ) {
     // Auth
-    object Login : Routes("login")
+    data object Login : Routes("login")
 
-    object Register : Routes("register")
+    data object Register : Routes("register")
 
-    object Forgot : Routes("forgot-password")
+    data object Forgot : Routes("forgot-password")
 
-    object TournamentSelect : Routes("tournaments")
+    // App
+    data object TournamentSelect : Routes("tournaments")
 
-    object Home : Routes("home")
+    data object Home : Routes("home")
 
-    object MyPredictions : Routes("predictions")
+    data object MyPredictions : Routes("predictions")
 
-    object MyTournaments : Routes("mytournaments")
+    data object MyTournaments : Routes("mytournaments")
 
-    object Profile : Routes("profile")
+    data object Profile : Routes("profile")
 
-    object Matches : Routes("matches")
+    data object Matches : Routes("matches")
 
-    object Ranking : Routes("ranking")
+    data object Ranking : Routes("ranking")
 
-    object MyHits : Routes("hits")
+    data object MyHits : Routes("hits")
 
-    object Inbox : Routes("inbox")
+    data object Inbox : Routes("inbox")
+
+    data object ChangePassword : Routes("change-password")
+
+    data object Instructions : Routes("instructions")
 }

@@ -9,4 +9,10 @@ interface IUserRepository {
     ): String
 
     suspend fun getUserProfile(): User
+
+    suspend fun changePassword(
+        userId: String,
+        oldPassword: String,
+        newPassword: String,
+    ): Boolean
 }

@@ -3,7 +3,6 @@ package com.rockandcode.prodefutbolero.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +17,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -52,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.rockandcode.prodefutbolero.ui.components.ErrorView
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.MatchStatusCard
 import com.rockandcode.prodefutbolero.ui.components.PaginationLoadingItem
@@ -117,7 +115,7 @@ fun MatchesScreen(
                 SearchAppHeader(
                     title = "Calendario",
                     onBack = { navController.popBackStack() },
-                    showBackButton = true,
+                    showBackButton = false,
                     searchQuery = viewModel.searchQuery,
                     onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
                     onFilterClick = { isFilterSheetOpen = true },
@@ -168,34 +166,23 @@ fun MatchesScreen(
                 }
 
                 is MatchesUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = uiState.message,
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                            IconButton(onClick = { tournament?.id?.let { viewModel.getMatches() } }) {
-                                Icon(
-                                    imageVector = Icons.Default.Refresh,
-                                    contentDescription = "Actualizar",
-                                )
-                            }
-                        }
-                    }
+                    ErrorView(
+                        message = uiState.message,
+                        onRetry = { tournament?.id?.let { viewModel.getMatches() } },
+                    )
                 }
 
                 is MatchesUiState.Success -> {
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         contentPadding = paddingValues,
                     ) {
+                        item {
+                            Spacer(Modifier.height(8.dp))
+                        }
 //                        item {
 //                            AppHeader(
 //                                title = "Calendario",
@@ -249,9 +236,6 @@ fun MatchesScreen(
 
                         items(uiState.matches) { match ->
                             MatchStatusCard(match = match, onClick = { viewModel.onMatchClick(match) })
-//                            MatchCard(match = match) {
-//                                viewModel.onMatchClick(match)
-//                            }
                         }
 
                         if (viewModel.isPaginating) {
