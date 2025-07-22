@@ -1,11 +1,13 @@
 package com.rockandcode.prodefutbolero.ui.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +32,7 @@ fun BottomBar(
     navController: NavHostController,
     incompleteCount: Int = 0,
 ) {
+    val isDark = isSystemInDarkTheme()
     val currentDestination by navController.currentBackStackEntryAsState()
     val currentRoute = currentDestination?.destination?.route
 
@@ -68,7 +71,7 @@ fun BottomBar(
         )
 
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = if (isDark) Color(0xFF27292C) else Color.White,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
     ) {
@@ -105,6 +108,15 @@ fun BottomBar(
                         }
                     }
                 },
+                colors =
+                    NavigationBarItemDefaults.colors(
+                        selectedIconColor = if (isDark) Color(0xFFA2F7A1) else Color(0xFF4270F6),
+                        // unselectedIconColor = Color.White,
+                        selectedTextColor = if (isDark) Color(0xFFA2F7A1) else Color(0xFF4270F6),
+                        // unselectedTextColor = Color.White,
+                        indicatorColor = Color.Transparent,
+                        // indicatorColor = if (!isDark) Color(0xFF4F3BC4) else MaterialTheme.colorScheme.secondaryContainer,
+                    ),
             )
         }
     }

@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,10 +40,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import kotlin.math.cos
 import kotlin.math.sin
@@ -122,9 +123,8 @@ fun TournamentStatsCard(
                 contentAlignment = Alignment.Center,
             ) {
                 Canvas(modifier = Modifier.size(width = sizeDp, height = sizeDp / 2)) {
-                    val strokeWidth = strokeWidthPx
                     val center = Offset(size.width / 2, size.height)
-                    val radius = size.width / 2 - strokeWidth / 2
+                    val arcRadius = size.width / 2 - strokeWidthPx / 2
 
                     // Fondo gris
 //                    drawArc(
@@ -145,12 +145,12 @@ fun TournamentStatsCard(
                         useCenter = false,
                         style =
                             Stroke(
-                                width = strokeWidth,
+                                width = strokeWidthPx,
                                 cap = StrokeCap.Butt,
                                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f),
                             ),
-                        topLeft = Offset(center.x - radius, center.y - radius),
-                        size = Size(radius * 2, radius * 2),
+                        topLeft = Offset(center.x - arcRadius, center.y - arcRadius),
+                        size = Size(arcRadius * 2, arcRadius * 2),
                     )
 
                     // Progreso amarillo
@@ -160,16 +160,16 @@ fun TournamentStatsCard(
                         startAngle = 180f,
                         sweepAngle = sweepCurrent,
                         useCenter = false,
-                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
-                        topLeft = Offset(center.x - radius, center.y - radius),
-                        size = Size(radius * 2, radius * 2),
+                        style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round),
+                        topLeft = Offset(center.x - arcRadius, center.y - arcRadius),
+                        size = Size(arcRadius * 2, arcRadius * 2),
                     )
 
                     // Indicador (triángulo)
                     val angle = 180f + sweepCurrent
                     val radian = Math.toRadians(angle.toDouble())
 
-                    val indicatorRadius = radius + strokeWidth / 2 + 10f
+                    val indicatorRadius = arcRadius + strokeWidthPx / 2 + 10f
                     val tip =
                         Offset(
                             x = center.x + indicatorRadius * cos(radian).toFloat(),
@@ -249,7 +249,7 @@ fun TournamentStatsCard(
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                Icons.Outlined.Flag,
+                                painter = painterResource(id = R.drawable.flag_2_24dp_outlined),
                                 contentDescription = "Icono",
                                 tint = if (isDark) Color(0xFFA2F7A1) else Color.Black,
                             )

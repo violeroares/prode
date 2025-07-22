@@ -1,6 +1,5 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
@@ -48,7 +47,6 @@ class HomeViewModel
                 _uiState.value = HomeUiState.Loading
                 try {
                     // val homeDeferred = async { repo.getTournamentHome(tournamentId ?: 0) }
-                    Log.d("HomeViewModel", "loadTournamentHome")
 
                     val averageDeferred =
                         async {
@@ -71,8 +69,7 @@ class HomeViewModel
                     val myRanking = myRankingDeferred.await()
                     val averageByDate = averageDeferred.await()
                     // val topRanking = topRankingDeferred.await()
-                    Log.d("HomeViewModel", "MyRanking: $myRanking")
-                    Log.d("HomeViewModel", "Average: $averageByDate")
+
                     _uiState.value =
                         HomeUiState.Success(
                             data = null,

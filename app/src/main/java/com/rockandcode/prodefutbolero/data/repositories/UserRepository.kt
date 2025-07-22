@@ -1,7 +1,7 @@
 package com.rockandcode.prodefutbolero.data.repositories
 
-import android.util.Log
 import com.rockandcode.prodefutbolero.data.datasources.network.ApiService
+import com.rockandcode.prodefutbolero.data.models.ChangePasswordRequest
 import com.rockandcode.prodefutbolero.data.models.LoginRequest
 import com.rockandcode.prodefutbolero.domain.user.models.User
 import com.rockandcode.prodefutbolero.domain.user.repository.IUserRepository
@@ -16,7 +16,6 @@ class UserRepository(
     ): String {
         try {
             val response = apiService.login(LoginRequest(email, password))
-            Log.d("UserRepository", "$email $password")
             if (response.isSuccessful) {
                 return response.body()?.token ?: throw Exception("Token vacío")
             } else {
@@ -34,11 +33,10 @@ class UserRepository(
 
     override suspend fun getUserProfile(): User {
         try {
-            val response = apiService.getUserProfile() // Asumo que devuelve Response<UserResponseDto> ahora
+            val response = apiService.getUserProfile()
             if (response.isSuccessful) {
                 return response.body()?.toDomain() ?: throw Exception("Perfil de usuario vacío")
             } else {
-                Log.e("UserRepositoryImpl", "Get user profile failed: ${response.code()} - ${response.message()}")
                 when (response.code()) {
                     401 -> throw Exception("Token expirado o no válido")
                     in 500..599 -> throw Exception("Servidor temporalmente no disponible")
@@ -46,10 +44,29 @@ class UserRepository(
                 }
             }
         } catch (e: IOException) {
-            Log.e("UserRepositoryImpl", "Network error getting user profile", e)
             throw Exception("Error de red")
         } catch (e: Exception) {
-            Log.e("UserRepositoryImpl", "An unexpected error occurred getting user profile", e)
+            throw Exception("Error desconocido: ${e.message}")
+        }
+    }
+
+    override suspend fun changePassword(
+        userId: String,
+        oldPassword: String,
+        newPassword: String,
+    ): Boolean {
+        try {
+            return apiService
+                .changePassword(
+                    ChangePasswordRequest(
+                        userId = userId,
+                        oldPassword = oldPassword,
+                        newPassword = newPassword,
+                    ),
+                ).isSuccessful
+        } catch (e: IOException) {
+            throw Exception("Error de red")
+        } catch (e: Exception) {
             throw Exception("Error desconocido: ${e.message}")
         }
     }

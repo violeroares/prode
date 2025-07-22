@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,9 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.domain.user.models.User
 import com.rockandcode.prodefutbolero.utils.obtenerSaludo
 
@@ -78,7 +78,8 @@ fun HomeHeader(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    Icons.Outlined.Notifications,
+                    // Icons.Outlined.Notifications,
+                    painterResource(id = R.drawable.notifications_24dp_outlined),
                     contentDescription = "Icono",
                     tint = if (isDark) Color.White else Color.Black,
                 )

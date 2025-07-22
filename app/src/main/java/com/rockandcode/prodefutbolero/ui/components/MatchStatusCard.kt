@@ -53,13 +53,13 @@ fun MatchStatusCard(
     Box(
         modifier =
             modifier
-                .padding(top = 12.dp), // deja espacio para que el chip sobresalga
+                .padding(top = 12.dp), // espacio para que el chip sobresalga
     ) {
         Card(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(36.dp),
             // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
             colors = CardDefaults.cardColors(containerColor = cardColor),

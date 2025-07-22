@@ -140,10 +140,13 @@ fun RankingScreen(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         contentPadding = paddingValues,
                     ) {
+                        item {
+                            Spacer(Modifier.height(8.dp))
+                        }
                         // Card especial para el primer puesto
 //                        if (uiState.rankings.isNotEmpty()) {
 //                            item {

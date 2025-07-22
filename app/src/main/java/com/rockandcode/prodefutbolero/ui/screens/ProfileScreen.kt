@@ -172,7 +172,7 @@ fun ProfileScreen(
             item {
                 ProfileOptionCard(
                     icon = Icons.Outlined.Info,
-                    onClick = {},
+                    onClick = { controller.navigate(Routes.Instructions.route) },
                     title = "Instrucciones",
                     description = "Guía de juego, realizar predicciones y sistema de puntuación",
                     isDark = isDark,
@@ -192,7 +192,7 @@ fun ProfileScreen(
             item {
                 ProfileOptionCard(
                     icon = Icons.Outlined.Lock,
-                    onClick = {},
+                    onClick = { controller.navigate(Routes.ChangePassword.route) },
                     title = "Cambiar contraseña",
                     description = "Cambiar la contraseña de inicio de sesión",
                     isDark = isDark,
@@ -258,7 +258,7 @@ fun ProfileOptionCard(
                 Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
-            verticalAlignment = Alignment.CenterVertically, // <-- Esto es clave
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = icon,

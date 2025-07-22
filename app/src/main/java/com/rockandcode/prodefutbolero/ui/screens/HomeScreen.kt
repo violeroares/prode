@@ -27,6 +27,7 @@ import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
 import com.rockandcode.prodefutbolero.ui.components.HomeHeader
 import com.rockandcode.prodefutbolero.ui.components.IncompleteCard
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
+import com.rockandcode.prodefutbolero.ui.components.MatchesTodayCard
 import com.rockandcode.prodefutbolero.ui.components.MoistureGaugeFull
 import com.rockandcode.prodefutbolero.ui.components.TestCard
 import com.rockandcode.prodefutbolero.ui.components.TournamentStatsCard
@@ -46,6 +47,7 @@ fun HomeScreen(
 ) {
     val tournament by viewModel.selectedTournament.collectAsState()
     val user by viewModel.user.collectAsState()
+    val matchesDate by viewModel.matchesDate.collectAsState()
     val predictionSummary by viewModel.predictionSummary.collectAsState()
     var displayedUser by remember { mutableStateOf(user) }
     val state by homeViewModel.uiState.collectAsState()
@@ -204,6 +206,28 @@ fun HomeScreen(
 //                            TodayMatchesCard(matches = uiState.data.matches)
 //                        }
 //                    }
+
+//                    item {
+//                        Column {
+//                            LazyRow(
+//                                contentPadding = PaddingValues(horizontal = 16.dp),
+//                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+//                                modifier = Modifier.fillMaxWidth(),
+//                            ) {
+//                                items(matchesDate) { match ->
+//                                    Text(match.localName)
+//                                }
+//                            }
+//                        }
+//                    }
+
+                    item {
+                        MatchesTodayCard(
+                            matchesDate = matchesDate, // Tu lista desde la base
+                            isLoading = false,
+                            onClick = { /* Navegar a Matches */ },
+                        )
+                    }
 
                     item {
                         Spacer(Modifier.height(96.dp))

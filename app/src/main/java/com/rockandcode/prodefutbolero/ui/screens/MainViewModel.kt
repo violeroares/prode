@@ -2,6 +2,9 @@ package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rockandcode.prodefutbolero.domain.match.models.Match
+import com.rockandcode.prodefutbolero.domain.match.models.MatchFilter
+import com.rockandcode.prodefutbolero.domain.match.repository.IMatchRepository
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.domain.tournament.models.MatchDate
@@ -27,6 +30,7 @@ class MainViewModel
         private val clearSessionUseCase: ClearSessionUseCase,
         private val tournamentRepository: ITournamentRepository,
         private val predictionRepository: IPredictionRepository,
+        private val matchesRepository: IMatchRepository,
     ) : ViewModel() {
         private val _user = MutableStateFlow<User?>(null)
         val user: StateFlow<User?> = _user
@@ -50,11 +54,14 @@ class MainViewModel
         private val _dates = MutableStateFlow<List<MatchDate>>(emptyList())
         val dates: StateFlow<List<MatchDate>> = _dates
 
-        private val _prediccionesIncompletas = MutableStateFlow<Int>(0)
+        private val _prediccionesIncompletas = MutableStateFlow(0)
         val prediccionesIncompletas: StateFlow<Int> = _prediccionesIncompletas
 
         private val _predictionSummary = MutableStateFlow<PredictionSummary?>(null)
         val predictionSummary: StateFlow<PredictionSummary?> = _predictionSummary
+
+        private val _matchesDate = MutableStateFlow<List<Match>>(emptyList())
+        val matchesDate: StateFlow<List<Match>> = _matchesDate
 
         fun selectTournament(tournament: Tournament) {
             _selectedTournament.value = tournament
@@ -64,17 +71,27 @@ class MainViewModel
                     predictionRepository.getPrediccionesIncompletas(
                         userId = _user.value?.id?.toInt() ?: 0,
                         tournamentId = _selectedTournament.value?.id ?: 0,
-                        dateId = _dates.value.find { it.active == true }?.id ?: 0,
+                        dateId = _dates.value.find { it.active }?.id ?: 0,
                     )
                 _predictionSummary.value =
                     predictionRepository.getPredictionSummary(
-                        userId = _user.value?.id?.toString() ?: "0",
+                        userId = _user.value?.id ?: "0",
                         dateId =
                             _dates.value
-                                .find { it.active == true }
+                                .find { it.active }
                                 ?.id
                                 .toString(),
                     )
+                val filter =
+                    MatchFilter(
+                        tournamentId = tournament.id.toString(),
+                        dateId =
+                            _dates.value
+                                .find { it.active }
+                                ?.id
+                                .toString(),
+                    )
+                _matchesDate.value = matchesRepository.getMatchesToPage(filter, 0, 999, "").result
             }
         }
 

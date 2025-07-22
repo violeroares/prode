@@ -1,6 +1,7 @@
 package com.rockandcode.prodefutbolero.data.datasources.network
 
 import com.rockandcode.prodefutbolero.data.models.AverageDto
+import com.rockandcode.prodefutbolero.data.models.ChangePasswordRequest
 import com.rockandcode.prodefutbolero.data.models.HitDto
 import com.rockandcode.prodefutbolero.data.models.HitRequest
 import com.rockandcode.prodefutbolero.data.models.LoginRequest
@@ -26,6 +27,11 @@ interface ApiService {
     suspend fun login(
         @Body loginRequest: LoginRequest,
     ): Response<LoginResponse>
+
+    @POST("api/auth/ChangePassword")
+    suspend fun changePassword(
+        @Body changePasswordRequest: ChangePasswordRequest,
+    ): Response<Boolean>
 
     @GET("api/auth/currentAuthUser")
     suspend fun getUserProfile(): Response<UserProfileResponseDto>
