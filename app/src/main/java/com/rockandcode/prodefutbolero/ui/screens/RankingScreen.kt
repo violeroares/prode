@@ -115,7 +115,7 @@ fun RankingScreen(
                 SearchAppHeader(
                     title = "Ranking",
                     onBack = { navController.popBackStack() },
-                    showBackButton = true,
+                    showBackButton = false,
                     searchQuery = viewModel.searchQuery,
                     onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
                     onFilterClick = { isFilterSheetOpen = true },

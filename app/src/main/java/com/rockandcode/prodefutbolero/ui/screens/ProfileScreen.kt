@@ -48,6 +48,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
 import com.rockandcode.prodefutbolero.ui.components.RoundButton
+import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
 @Composable
 fun ProfileScreen(
@@ -162,7 +163,7 @@ fun ProfileScreen(
             item {
                 ProfileOptionCard(
                     icon = Icons.Outlined.Person,
-                    onClick = {},
+                    onClick = { controller.navigate(Routes.Inbox.route) },
                     title = "Editar Perfil",
                     description = "Cambiar datos personales",
                     isDark = isDark,
@@ -181,7 +182,7 @@ fun ProfileScreen(
             item {
                 ProfileOptionCard(
                     icon = Icons.Outlined.CheckCircleOutline,
-                    onClick = {},
+                    onClick = { controller.navigate(Routes.MyHits.route) },
                     title = "Mis aciertos",
                     description = "Historial de aciertos",
                     isDark = isDark,

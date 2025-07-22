@@ -12,16 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.PersonOutline
+import androidx.compose.material.icons.rounded.BarChart
+import androidx.compose.material.icons.rounded.CalendarToday
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PersonOutline
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -55,11 +55,11 @@ fun FloatingBottomNavigationBar(
 ) {
     val bottomItems =
         listOf(
-            FloatingBottomNavItem("Inicio", Icons.Filled.Home, Icons.Outlined.Home, Routes.Home.route),
-            FloatingBottomNavItem("Matches", Icons.Filled.CalendarToday, Icons.Outlined.CalendarToday, Routes.Matches.route),
-            FloatingBottomNavItem("Favoritos", Icons.Filled.BarChart, Icons.Outlined.BarChart, Routes.MyPredictions.route),
-            FloatingBottomNavItem("Ranking", Icons.Filled.EmojiEvents, Icons.Outlined.EmojiEvents, Routes.Ranking.route),
-            FloatingBottomNavItem("Perfil", Icons.Filled.Person, Icons.Outlined.PersonOutline, Routes.Profile.route),
+            FloatingBottomNavItem("Inicio", Icons.Rounded.Home, Icons.Outlined.Home, Routes.Home.route),
+            FloatingBottomNavItem("Matches", Icons.Rounded.CalendarToday, Icons.Outlined.CalendarToday, Routes.Matches.route),
+            FloatingBottomNavItem("Favoritos", Icons.Rounded.BarChart, Icons.Outlined.BarChart, Routes.MyPredictions.route),
+            FloatingBottomNavItem("Ranking", Icons.Rounded.EmojiEvents, Icons.Outlined.EmojiEvents, Routes.Ranking.route),
+            FloatingBottomNavItem("Perfil", Icons.Rounded.Person, Icons.Rounded.PersonOutline, Routes.Profile.route),
         )
 
     val currentDestination by navController.currentBackStackEntryAsState()
