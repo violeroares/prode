@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.rockandcode.prodefutbolero.domain.tournament.models.AverageByDate
+import com.rockandcode.prodefutbolero.utils.AppConstants
 import com.rockandcode.prodefutbolero.utils.ordinalEs
 
 @Composable
@@ -50,7 +51,7 @@ fun HomeAverageByDateCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp, vertical = 4.dp),
         shape = RoundedCornerShape(36.dp),
         // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),

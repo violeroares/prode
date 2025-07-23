@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rockandcode.prodefutbolero.ui.components.ErrorView
+import com.rockandcode.prodefutbolero.ui.components.HeaderWelcome
 import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
-import com.rockandcode.prodefutbolero.ui.components.HomeHeader
 import com.rockandcode.prodefutbolero.ui.components.IncompleteCard
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.MatchesTodayCard
@@ -102,17 +102,29 @@ fun HomeScreen(
                             .fillMaxSize(),
                     contentPadding = paddingValues,
                 ) {
+//                    item {
+//                        HomeHeader(
+//                            user = displayedUser,
+//                            //                            onSearchClick = {
+//                            //                                navController.navigate(Routes.TournamentSelect.route) {
+//                            //                                    popUpTo(Routes.Home.route) { inclusive = true }
+//                            //                                }
+//                            //                            },
+//                            isDark = isDark,
+//                        )
+//                    }
+
                     item {
-                        HomeHeader(
-                            user = displayedUser,
-//                            onSearchClick = {
-//                                navController.navigate(Routes.TournamentSelect.route) {
-//                                    popUpTo(Routes.Home.route) { inclusive = true }
-//                                }
-//                            },
-                            isDark = isDark,
-                        )
+                        user?.let {
+                            HeaderWelcome(
+                                userName = "${user?.firstName}",
+                                userImage = it.avatarUrl,
+                                onNotificationClick = { /* Acción */ },
+                                isDark = isDark,
+                            )
+                        }
                     }
+
                     item {
                         Spacer(Modifier.height(8.dp))
                     }

@@ -2,6 +2,7 @@ package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +36,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,6 +84,30 @@ fun RankingScreen(
         }
     }
 
+    LaunchedEffect(tournament?.id, dates) {
+        val currentTournament = tournament
+
+        if (currentTournament != null) {
+            viewModel.setContext(tournamentId = currentTournament.id)
+            viewModel.setSelectedDate(null)
+        }
+    }
+
+    // Scroll infinito
+    LaunchedEffect(listState, state.uiState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .distinctUntilChanged()
+            .collect { index ->
+                val rankings =
+                    (state.uiState as? RankingUiState.Success)?.rankings ?: return@collect
+                val shouldLoadMore =
+                    index + listState.layoutInfo.visibleItemsInfo.size >= rankings.size - 3
+                if (shouldLoadMore && !isBusy && viewModel.currentPage < viewModel.totalPages) {
+                    viewModel.loadNextPage()
+                }
+            }
+    }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     PullToRefreshBox(
@@ -119,15 +143,12 @@ fun RankingScreen(
                     searchQuery = viewModel.searchQuery,
                     onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
                     onFilterClick = { isFilterSheetOpen = true },
-                    filtersActive = 1,
+                    filtersActive = if (viewModel.selectedDateId != null) 1 else 0,
                 )
             },
         ) { paddingValues ->
-
             when (val uiState = state.uiState) {
-                is RankingUiState.Loading -> {
-                    LoadingView()
-                }
+                is RankingUiState.Loading -> LoadingView()
 
                 is RankingUiState.Error -> {
                     ErrorView(
@@ -160,40 +181,82 @@ fun RankingScreen(
 //                            RankingCard(user)
 //                        }
 
-                        viewModel.selectedDateId?.let { selectedId ->
-                            val selectedDate = dates.find { it.id == selectedId }
-                            selectedDate?.let {
-                                item {
-                                    Row(
-                                        modifier =
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 8.dp, horizontal = 24.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Event,
-                                            contentDescription = "Fecha actual",
-                                            modifier = Modifier.size(20.dp),
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = selectedDate.name,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "(${uiState.rankings.size} usuarios)",
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    }
+                        item {
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp, horizontal = 24.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Event,
+                                    contentDescription = "Fecha actual",
+                                    modifier = Modifier.size(20.dp),
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                val selectedDate = dates.find { it.id == viewModel.selectedDateId }
+                                val dateText = selectedDate?.name ?: "Todas las fechas"
+
+                                Text(
+                                    text = dateText,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "(${uiState.totalUsers} usuarios)",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
+
+//                        viewModel.selectedDateId?.let { selectedId ->
+//                            val selectedDate = dates.find { it.id == selectedId }
+//                            selectedDate?.let {
+//                                item {
+//                                    Row(
+//                                        modifier =
+//                                            Modifier
+//                                                .fillMaxWidth()
+//                                                .padding(vertical = 8.dp, horizontal = 24.dp),
+//                                        verticalAlignment = Alignment.CenterVertically,
+//                                    ) {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Event,
+//                                            contentDescription = "Fecha actual",
+//                                            modifier = Modifier.size(20.dp),
+//                                        )
+//                                        Spacer(modifier = Modifier.width(8.dp))
+//                                        Text(
+//                                            text = selectedDate.name,
+//                                            style = MaterialTheme.typography.labelLarge,
+//                                            fontWeight = FontWeight.Bold,
+//                                        )
+//                                        Spacer(modifier = Modifier.width(8.dp))
+//                                        Text(
+//                                            text = "(${uiState.rankings.size} usuarios)",
+//                                            style = MaterialTheme.typography.bodySmall,
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        }
+                        if (uiState.rankings.isEmpty() && !isBusy) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text("No hay ranking disponible")
                                 }
                             }
                         }
 
-                        items(uiState.rankings) { user ->
-                            RankingCard(user)
+                        items(uiState.rankings, key = { user -> user.userId }) { user ->
+                            RankingCard(user = user)
                         }
 
                         if (viewModel.isPaginating) {
@@ -206,33 +269,6 @@ fun RankingScreen(
                     }
                 }
             }
-        }
-
-        LaunchedEffect(tournament?.id, dates) {
-            val currentTournament = tournament
-
-            if (currentTournament != null) {
-                viewModel.setContext(tournamentId = currentTournament.id)
-                viewModel.setSelectedDate(null)
-            }
-        }
-
-        // Scroll infinito
-        LaunchedEffect(
-            remember { derivedStateOf { listState.firstVisibleItemIndex } },
-            state.uiState,
-        ) {
-            snapshotFlow { listState.firstVisibleItemIndex }
-                .distinctUntilChanged()
-                .collect { index ->
-                    val rankings =
-                        (state.uiState as? RankingUiState.Success)?.rankings ?: return@collect
-                    val shouldLoadMore =
-                        index + listState.layoutInfo.visibleItemsInfo.size >= rankings.size - 3
-                    if (shouldLoadMore && !isBusy && viewModel.currentPage <= viewModel.totalPages) {
-                        viewModel.loadNextPage()
-                    }
-                }
         }
 
         // BottomSheet para filtro por fecha

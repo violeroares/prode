@@ -3,6 +3,7 @@ package com.rockandcode.prodefutbolero.ui.screens
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
@@ -10,12 +11,15 @@ import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
 import com.rockandcode.prodefutbolero.domain.prediction.repository.IPredictionRepository
 import com.rockandcode.prodefutbolero.utils.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +31,7 @@ sealed interface RankingUiState {
         val rankings: List<Ranking>,
         val currentPage: Int,
         val totalPages: Int,
+        val totalUsers: Int,
     ) : RankingUiState
 
     data class Error(
@@ -51,6 +56,7 @@ sealed class RankingUiEvent {
     data object PopBackStack : RankingUiEvent()
 }
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class RankingViewModel
     @Inject
@@ -90,8 +96,22 @@ class RankingViewModel
 
         fun onSearchQueryChanged(newQuery: String) {
             searchQuery = newQuery
-            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
-                getRanking(userName = searchQuery, dateId = selectedDateId)
+//            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
+//                getRanking(userName = searchQuery, dateId = selectedDateId)
+//            }
+        }
+
+        init {
+            // Búsqueda con debounce
+            viewModelScope.launch {
+                snapshotFlow { searchQuery }
+                    .debounce(400)
+                    .distinctUntilChanged()
+                    .collect { query ->
+                        if (query.length >= 3 || query.isEmpty()) {
+                            getRanking(userName = searchQuery, dateId = selectedDateId)
+                        }
+                    }
             }
         }
 
@@ -117,12 +137,11 @@ class RankingViewModel
                             firstName = userName,
                             dateId = dateId?.toString(),
                         )
-                    val offset = (currentPage - 1) * pageSize
 
                     val result =
                         predictionRepository.getRankingToPage(
                             filter = filter,
-                            pageIndex = offset,
+                            pageIndex = 0,
                             pageSize = pageSize,
                             sort = "",
                         )
@@ -136,6 +155,7 @@ class RankingViewModel
                                     rankings = result.result,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
+                                    totalUsers = result.totalCount,
                                 ),
                             isRefreshing = false,
                         )
@@ -182,6 +202,8 @@ class RankingViewModel
                             sort = "",
                         )
 
+                    val updatedRanking = (state.rankings + result.result).distinctBy { it.userId }
+
                     currentPage = nextPage
                     totalPages = result.totalPages
 
@@ -189,9 +211,10 @@ class RankingViewModel
                         it.copy(
                             uiState =
                                 RankingUiState.Success(
-                                    rankings = state.rankings + result.result,
+                                    rankings = updatedRanking,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
+                                    totalUsers = result.totalCount,
                                 ),
                         )
                     }

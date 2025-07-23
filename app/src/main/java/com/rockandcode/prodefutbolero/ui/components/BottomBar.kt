@@ -1,6 +1,7 @@
 package com.rockandcode.prodefutbolero.ui.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -11,6 +12,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -74,6 +78,17 @@ fun BottomBar(
         containerColor = if (isDark) Color(0xFF27292C) else Color.White,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .drawBehind {
+                    drawLine(
+                        color = if (isDark) Color.DarkGray else Color.LightGray, // Color del borde
+                        start = Offset(0f, 0f), // Inicio en la parte superior izquierda
+                        end = Offset(size.width, 0f), // Fin en la parte superior derecha
+                        strokeWidth = 2.dp.toPx(), // Grosor de la línea
+                    )
+                },
     ) {
         bottomItems.forEach { item ->
             val selected = currentRoute == item.route

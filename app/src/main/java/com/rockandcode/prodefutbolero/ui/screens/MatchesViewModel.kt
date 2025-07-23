@@ -176,7 +176,6 @@ class MatchesViewModel
             if (state !is MatchesUiState.Success) return
             if (currentPage >= totalPages || isPaginating) return
             if (dateId != selectedDateId) return
-
             viewModelScope.launch {
                 isPaginating = true
                 try {

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
+import com.rockandcode.prodefutbolero.utils.AppConstants
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -97,7 +98,7 @@ fun TournamentStatsCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp, vertical = 4.dp),
         shape = RoundedCornerShape(36.dp),
         // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),

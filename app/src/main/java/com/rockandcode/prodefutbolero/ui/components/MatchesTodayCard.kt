@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.domain.match.models.Match
+import com.rockandcode.prodefutbolero.utils.AppConstants
 import com.rockandcode.prodefutbolero.utils.statusName
 import java.time.Instant
 import java.time.LocalDate
@@ -92,7 +93,7 @@ fun MatchesTodayCard(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp, vertical = 4.dp),
         shape = RoundedCornerShape(36.dp),
         // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
