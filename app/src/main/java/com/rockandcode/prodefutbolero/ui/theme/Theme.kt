@@ -16,6 +16,8 @@ private val DarkColorScheme =
         secondary = PurpleGrey80,
         tertiary = Pink80,
         background = Color(0xFF17181C),
+        // primary = Color(0xFFE1FB15),
+        // secondary = Color(0xFF32D583),
         // Chris
 //        background = Color(0xFF17181C),
 //        secondary = Color(0xFFA2F7A1),
@@ -28,6 +30,7 @@ private val LightColorScheme =
         primary = Purple40,
         secondary = PurpleGrey40,
         tertiary = Pink40,
+        // background = Color(0xFFFFFFFF),
         background = Color(0xFFE6EDF2),
         /*
        // Chris

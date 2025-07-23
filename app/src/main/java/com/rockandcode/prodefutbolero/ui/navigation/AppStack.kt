@@ -10,13 +10,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.rockandcode.prodefutbolero.ui.components.BottomBar
+import com.rockandcode.prodefutbolero.ui.components.FloatingBottomNavigationBar
 import com.rockandcode.prodefutbolero.ui.screens.ChangePasswordScreen
 import com.rockandcode.prodefutbolero.ui.screens.HomeScreen
 import com.rockandcode.prodefutbolero.ui.screens.InboxScreen
@@ -62,11 +63,11 @@ fun AppStack(
 //                    )
 //                }
 //            },
-            bottomBar = {
-                if (showBottomBar) {
-                    BottomBar(navController = navController, incompleteCount = incompletas)
-                }
-            },
+//            bottomBar = {
+//                if (showBottomBar) {
+//                    BottomBar(navController = navController, incompleteCount = incompletas)
+//                }
+//            },
             contentWindowInsets = WindowInsets(0),
             containerColor = Color.Transparent,
         ) { innerPadding ->
@@ -84,7 +85,6 @@ fun AppStack(
                 composable(Routes.TournamentSelect.route) {
                     TournamentsScreen(
                         viewModel = mainViewModel,
-                        modifier = Modifier.padding(innerPadding),
                         onTournamentSelected = {
                             navController.navigate(Routes.Home.route) {
                                 popUpTo(Routes.TournamentSelect.route) { inclusive = true }
@@ -138,18 +138,18 @@ fun AppStack(
             }
         }
         // BottomBar flotante sobre el contenido
-//        if (showBottomBar) {
-//            FloatingBottomNavigationBar(
-//                navController = navController,
-//                incompleteCount = incompletas,
-//                modifier =
-//                    Modifier
-//                        .align(Alignment.BottomCenter),
-//                //                            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
-//                //                            .clip(RoundedCornerShape(24.dp))
-//                //                            .background(Color.White.copy(alpha = 0.95f))
-//                //                            .shadow(8.dp, shape = RoundedCornerShape(24.dp)),
-//            )
-//        }
+        if (showBottomBar) {
+            FloatingBottomNavigationBar(
+                navController = navController,
+                incompleteCount = incompletas,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter),
+                //                            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
+                //                            .clip(RoundedCornerShape(24.dp))
+                //                            .background(Color.White.copy(alpha = 0.95f))
+                //                            .shadow(8.dp, shape = RoundedCornerShape(24.dp)),
+            )
+        }
     }
 }

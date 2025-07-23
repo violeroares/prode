@@ -33,6 +33,7 @@ object RetrofitService {
             .Builder()
             .baseUrl("http://200.32.43.207:3004/")
             // .baseUrl("http://172.16.128.102:5068/")
+            // .baseUrl("http://192.168.0.21:5068/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

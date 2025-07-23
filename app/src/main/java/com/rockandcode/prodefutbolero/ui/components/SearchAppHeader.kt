@@ -47,7 +47,7 @@ fun SearchAppHeader(
     val isDarkTheme = isSystemInDarkTheme()
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color.White, // fondo se da en el Box
+        color = MaterialTheme.colorScheme.background, // fondo se da en el Box
         shape = RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp),
     ) {
         Box(
