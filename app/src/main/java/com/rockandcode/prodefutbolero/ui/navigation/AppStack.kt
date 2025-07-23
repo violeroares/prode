@@ -75,12 +75,6 @@ fun AppStack(
                 navController = navController,
                 startDestination = Routes.TournamentSelect.route,
                 Modifier.padding(innerPadding),
-//            modifier =
-//                Modifier.padding(
-//                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-//                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-//                    // No aplicamos bottom = innerPadding.calculateBottomPadding()
-//                ),
             ) {
                 composable(Routes.TournamentSelect.route) {
                     TournamentsScreen(
@@ -142,13 +136,7 @@ fun AppStack(
             FloatingBottomNavigationBar(
                 navController = navController,
                 incompleteCount = incompletas,
-                modifier =
-                    Modifier
-                        .align(Alignment.BottomCenter),
-                //                            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
-                //                            .clip(RoundedCornerShape(24.dp))
-                //                            .background(Color.White.copy(alpha = 0.95f))
-                //                            .shadow(8.dp, shape = RoundedCornerShape(24.dp)),
+                modifier = Modifier.align(Alignment.BottomCenter),
             )
         }
     }
