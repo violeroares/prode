@@ -10,18 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.rounded.BarChart
-import androidx.compose.material.icons.rounded.CalendarToday
-import androidx.compose.material.icons.rounded.EmojiEvents
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.PersonOutline
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -32,18 +22,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.rockandcode.prodefutbolero.R
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
 data class FloatingBottomNavItem(
     val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
+    val selectedIcon: Painter,
+    val unselectedIcon: Painter,
     val route: String,
 )
 
@@ -55,11 +47,36 @@ fun FloatingBottomNavigationBar(
 ) {
     val bottomItems =
         listOf(
-            FloatingBottomNavItem("Inicio", Icons.Rounded.Home, Icons.Outlined.Home, Routes.Home.route),
-            FloatingBottomNavItem("Matches", Icons.Rounded.CalendarToday, Icons.Outlined.CalendarToday, Routes.Matches.route),
-            FloatingBottomNavItem("Favoritos", Icons.Rounded.BarChart, Icons.Outlined.BarChart, Routes.MyPredictions.route),
-            FloatingBottomNavItem("Ranking", Icons.Rounded.EmojiEvents, Icons.Outlined.EmojiEvents, Routes.Ranking.route),
-            FloatingBottomNavItem("Perfil", Icons.Rounded.Person, Icons.Rounded.PersonOutline, Routes.Profile.route),
+            FloatingBottomNavItem(
+                "Inicio",
+                painterResource(id = R.drawable.home_24dp_filled),
+                painterResource(id = R.drawable.home_24dp_outlined),
+                Routes.Home.route,
+            ),
+            FloatingBottomNavItem(
+                "Partidos",
+                painterResource(id = R.drawable.event_24dp_filled),
+                painterResource(id = R.drawable.event_24dp_outlined),
+                Routes.Matches.route,
+            ),
+            FloatingBottomNavItem(
+                "Pronósticos",
+                painterResource(id = R.drawable.add_chart_24dp_filled),
+                painterResource(id = R.drawable.add_chart_24dp_outlined),
+                Routes.MyPredictions.route,
+            ),
+            FloatingBottomNavItem(
+                "Ranking",
+                painterResource(id = R.drawable.trophy_24dp_filled),
+                painterResource(id = R.drawable.trophy_24dp_outlined),
+                Routes.Ranking.route,
+            ),
+            FloatingBottomNavItem(
+                "Perfil",
+                painterResource(id = R.drawable.person_24dp_filled),
+                painterResource(id = R.drawable.person_24dp_outlined),
+                Routes.Profile.route,
+            ),
         )
 
     val currentDestination by navController.currentBackStackEntryAsState()
@@ -67,54 +84,38 @@ fun FloatingBottomNavigationBar(
     val isDark = isSystemInDarkTheme()
     val backgroundColor = if (isDark) Color(0xFF27292C) else Color(0xFFFFFFFF)
     val selectedColor = if (isDark) Color(0xFFA2F7A1) else Color(0xFF4270F6)
-    val unselectedColor = Color.Gray
+    val unselectedColor = if (isDark) Color.White else Color.DarkGray
+
+    // Calculamos el ancho total = (número de ítems * ancho ítem) + (espacios entre ítems)
+    val itemSize = 66.dp
+    val spacing = 4.dp
+    val totalWidth = (bottomItems.size * itemSize) + ((bottomItems.size - 1) * spacing) + 8.dp // +8dp (4dp a cada lado)
 
     Box(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp),
+                .padding(bottom = 12.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Row(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .shadow(8.dp, RoundedCornerShape(28.dp), clip = true)
+                    .width(totalWidth)
+                    .height(74.dp)
+                    // .shadow(8.dp, RoundedCornerShape(28.dp), clip = true)
                     .clip(RoundedCornerShape(28.dp))
                     .background(backgroundColor)
-                    .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             bottomItems.forEach { item ->
                 val selected = currentRoute == item.route
-//                IconButton(
-//                    onClick = {
-//                        if (!selected) {
-//                            navController.navigate(item.route) {
-//                                popUpTo(Routes.Home.route) {
-//                                    saveState = true
-//                                }
-//                                launchSingleTop = true
-//                                restoreState = true
-//                            }
-//                        }
-//                    },
-//                    modifier = Modifier.size(68.dp),
-//                ) {
-//                    Icon(
-//                        imageVector = item.icon,
-//                        contentDescription = item.label,
-//                        tint = if (selected) selectedColor else unselectedColor,
-//                    )
-//                }
-
                 Box(
                     modifier =
                         Modifier
-                            .size(66.dp)
-                            // .clip(CircleShape)
+                            .size(itemSize)
                             .clip(RoundedCornerShape(24.dp))
                             .clickable(onClick = {
                                 if (!selected) {
@@ -129,7 +130,6 @@ fun FloatingBottomNavigationBar(
                             })
                             .background(
                                 if (isDark) Color(0xFF2E3033) else MaterialTheme.colorScheme.background,
-                                // shape = CircleShape,
                                 shape = RoundedCornerShape(24.dp),
                             ),
                     contentAlignment = Alignment.Center,
@@ -144,7 +144,7 @@ fun FloatingBottomNavigationBar(
                         },
                     ) {
                         Icon(
-                            imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
+                            painter = if (selected) item.selectedIcon else item.unselectedIcon,
                             contentDescription = item.label,
                             tint = if (selected) selectedColor else unselectedColor,
                         )

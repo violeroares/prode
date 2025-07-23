@@ -45,7 +45,8 @@ fun MatchStatusCard(
         when (match.statusMatchId) {
             1 -> Color(0xFF9E9E9E) // No inicia (gris)
             3 -> Color(0xFF4CAF50) // En juego (verde)
-            2 -> Color(0xFFF44336) // Finalizado (rojo)
+            2 -> Color(0xFFEA622C) // Finalizado (rojo)
+            // 2 -> Color(0xFFF44336)
             4 -> Color(0xFF4CAF50)
             else -> Color(0xFF9E9E9E)
         }

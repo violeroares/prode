@@ -31,6 +31,7 @@ sealed interface MatchesUiState {
         val matches: List<Match>,
         val currentPage: Int,
         val totalPages: Int,
+        val totalMatches: Int,
     ) : MatchesUiState
 
     data class Error(
@@ -78,22 +79,16 @@ class MatchesViewModel
         var isPaginating by mutableStateOf(false)
             private set
 
-        /**
-         * Define el contexto del torneo sobre el cual se van a buscar partidos
-         */
-        fun setContext(tournamentId: Int?) {
-            this.tournamentId = tournamentId
-        }
-
         var selectedDateId by mutableStateOf<Int?>(null)
             private set
 
         var searchQuery by mutableStateOf("")
             private set
 
-        /**
-         * Permite cambiar la fecha seleccionada desde la UI
-         */
+        fun setContext(tournamentId: Int?) {
+            this.tournamentId = tournamentId
+        }
+
         fun setSelectedDate(dateId: Int?) {
             selectedDateId = dateId
             getMatches(teamName = searchQuery, dateId = selectedDateId)
@@ -101,16 +96,10 @@ class MatchesViewModel
 
         fun onSearchQueryChanged(newQuery: String) {
             searchQuery = newQuery
-//            if (searchQuery.length >= 3 || searchQuery.isEmpty()) {
-//                getMatches(teamName = searchQuery, dateId = selectedDateId)
-//            }
         }
 
-//        private val _searchResults = MutableStateFlow<List<Match>>(emptyList())
-//        val searchResults: StateFlow<List<Match>> = _searchResults
-
         init {
-            // Debounce para evitar demasiadas llamadas
+            // Búsqueda con debounce
             viewModelScope.launch {
                 snapshotFlow { searchQuery }
                     .debounce(400)
@@ -123,29 +112,6 @@ class MatchesViewModel
             }
         }
 
-//        fun onSearchQueryChanged(newQuery: String) {
-//            searchQuery = newQuery
-//            viewModelScope.launch {
-//                if (searchQuery.length >= 3) {
-//                    val filter =
-//                        MatchFilter(
-//                            tournamentId = tournamentId?.toString(),
-//                            teamName = searchQuery,
-//                            dateId = selectedDateId?.toString(),
-//                        )
-//                    // val result = repo.getMatchesToPage(filter, 0, 5, "") // Solo 5 sugerencias
-//                    // Log.d("MatchesViewModel", "$result")
-//                    // _searchResults.value = result.result
-//                    getMatches(teamName = searchQuery, dateId = selectedDateId)
-//                } else {
-//                    _searchResults.value = emptyList()
-//                }
-//            }
-//        }
-
-        /**
-         * Obtiene la primera página de partidos
-         */
         fun getMatches(
             teamName: String? = null,
             dateId: Int? = selectedDateId,
@@ -168,13 +134,10 @@ class MatchesViewModel
                             teamName = teamName,
                             dateId = dateId?.toString(),
                         )
-
-                    val offset = (currentPage - 1) * pageSize
-
                     val result =
                         repo.getMatchesToPage(
                             filter = filter,
-                            pageIndex = offset,
+                            pageIndex = 0,
                             pageSize = pageSize,
                             sort = "",
                         )
@@ -185,9 +148,10 @@ class MatchesViewModel
                         it.copy(
                             uiState =
                                 MatchesUiState.Success(
-                                    matches = result.result,
+                                    matches = result.result.distinctBy { match -> match.matchId },
                                     currentPage = currentPage,
                                     totalPages = totalPages,
+                                    totalMatches = result.totalCount,
                                 ),
                             isRefreshing = false,
                         )
@@ -204,16 +168,13 @@ class MatchesViewModel
             }
         }
 
-        /**
-         * Carga la siguiente página (scroll infinito)
-         */
         fun loadNextPage(
             teamName: String? = null,
             dateId: Int? = selectedDateId,
         ) {
             val state = _screenState.value.uiState
             if (state !is MatchesUiState.Success) return
-            if (currentPage > totalPages || isPaginating) return
+            if (currentPage >= totalPages || isPaginating) return
             if (dateId != selectedDateId) return
 
             viewModelScope.launch {
@@ -237,6 +198,9 @@ class MatchesViewModel
                             sort = "",
                         )
 
+                    // Evitar duplicados
+                    val updatedMatches = (state.matches + result.result).distinctBy { it.matchId }
+
                     currentPage = nextPage
                     totalPages = result.totalPages
 
@@ -244,9 +208,10 @@ class MatchesViewModel
                         it.copy(
                             uiState =
                                 MatchesUiState.Success(
-                                    matches = state.matches + result.result,
+                                    matches = updatedMatches,
                                     currentPage = currentPage,
                                     totalPages = totalPages,
+                                    totalMatches = result.totalCount,
                                 ),
                         )
                     }
@@ -263,14 +228,4 @@ class MatchesViewModel
                 _eventFlow.emit(MatchesUiEvent.Navigate("matchDetail/${match.matchId}"))
             }
         }
-
-        /**
-         * Navega al detalle del partido
-
-         fun onBackPressed() {
-         viewModelScope.launch {
-         _eventFlow.emit(MatchesUiEvent.PopBackStack)
-         }
-         }
-         */
     }

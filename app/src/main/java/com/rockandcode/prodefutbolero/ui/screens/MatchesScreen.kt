@@ -36,7 +36,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,6 +84,29 @@ fun MatchesScreen(
         }
     }
 
+    // --- CARGAR PARTIDOS AL CAMBIAR TORNEO O FECHAS ---
+    LaunchedEffect(tournament?.id, dates) {
+        val currentTournament = tournament
+        val activeDateId = dates.firstOrNull { it.active }?.id
+        if (currentTournament != null && activeDateId != null) {
+            viewModel.setContext(currentTournament.id)
+            viewModel.setSelectedDate(activeDateId)
+        }
+    }
+
+    // --- SCROLL INFINITO ---
+    LaunchedEffect(listState, state.uiState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .distinctUntilChanged()
+            .collect { index ->
+                val matches = (state.uiState as? MatchesUiState.Success)?.matches ?: return@collect
+                val shouldLoadMore = index + listState.layoutInfo.visibleItemsInfo.size >= matches.size - 3
+                if (shouldLoadMore && !isBusy && viewModel.currentPage < viewModel.totalPages) {
+                    viewModel.loadNextPage(viewModel.searchQuery, viewModel.selectedDateId)
+                }
+            }
+    }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -119,60 +141,25 @@ fun MatchesScreen(
                     searchQuery = viewModel.searchQuery,
                     onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
                     onFilterClick = { isFilterSheetOpen = true },
-                    filtersActive = 1,
+                    filtersActive = if (viewModel.selectedDateId != null) 1 else 0,
                 )
             },
-//        bottomBar = {
-//            BottomAppBar(
-//                actions = {
-//                    IconButton(onClick = { /* do something */ }) {
-//                        Icon(Icons.Filled.Check, contentDescription = "Localized description")
-//                    }
-//                    IconButton(onClick = { /* do something */ }) {
-//                        Icon(
-//                            Icons.Filled.Edit,
-//                            contentDescription = "Localized description",
-//                        )
-//                    }
-//                    IconButton(onClick = { /* do something */ }) {
-//                        Icon(
-//                            Icons.Filled.Mic,
-//                            contentDescription = "Localized description",
-//                        )
-//                    }
-//                    IconButton(onClick = { /* do something */ }) {
-//                        Icon(
-//                            Icons.Filled.Image,
-//                            contentDescription = "Localized description",
-//                        )
-//                    }
-//                },
-//                floatingActionButton = {
-//                    FloatingActionButton(
-//                        onClick = { /* do something */ },
-//                        containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-//                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-//                    ) {
-//                        Icon(Icons.Filled.Add, "Localized description")
-//                    }
-//                },
-//            )
-//        },
-            // contentWindowInsets = WindowInsets(0),
         ) { paddingValues ->
             when (val uiState = state.uiState) {
-                is MatchesUiState.Loading -> {
-                    LoadingView()
-                }
+                is MatchesUiState.Loading -> LoadingView()
 
-                is MatchesUiState.Error -> {
+                is MatchesUiState.Error ->
                     ErrorView(
                         message = uiState.message,
                         onRetry = { tournament?.id?.let { viewModel.getMatches() } },
                     )
-                }
 
                 is MatchesUiState.Success -> {
+                    // Reset scroll al cambiar la lista
+                    LaunchedEffect(uiState.matches) {
+                        listState.scrollToItem(0)
+                    }
+
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),
@@ -183,45 +170,71 @@ fun MatchesScreen(
                         item {
                             Spacer(Modifier.height(8.dp))
                         }
-//                        item {
-//                            AppHeader(
-//                                title = "Calendario",
-//                                onBack = { viewModel.onBackPressed() },
-//                                showBackButton = true,
-//                            )
-//                        }
 
-                        viewModel.selectedDateId?.let { selectedId ->
-                            val selectedDate = dates.find { it.id == selectedId }
-                            selectedDate?.let {
-                                item {
-                                    Row(
-                                        modifier =
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 8.dp, horizontal = 24.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Event,
-                                            contentDescription = "Fecha actual",
-                                            modifier = Modifier.size(20.dp),
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = selectedDate.name,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "(${uiState.matches.size} partidos)",
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    }
-                                }
+                        item {
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp, horizontal = 24.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Event,
+                                    contentDescription = "Fecha actual",
+                                    modifier = Modifier.size(20.dp),
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                val selectedDate = dates.find { it.id == viewModel.selectedDateId }
+                                val dateText = selectedDate?.name ?: "Todas las fechas"
+
+                                Text(
+                                    text = dateText,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "(${uiState.totalMatches} partidos)",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
                             }
                         }
+
+                        // Info de fecha seleccionada
+//                        viewModel.selectedDateId?.let { selectedId ->
+//                            val selectedDate = dates.find { it.id == selectedId }
+//                            selectedDate?.let {
+//                                item {
+//                                    Row(
+//                                        modifier =
+//                                            Modifier
+//                                                .fillMaxWidth()
+//                                                .padding(vertical = 8.dp, horizontal = 24.dp),
+//                                        verticalAlignment = Alignment.CenterVertically,
+//                                    ) {
+//                                        Icon(
+//                                            imageVector = Icons.Default.Event,
+//                                            contentDescription = "Fecha actual",
+//                                            modifier = Modifier.size(20.dp),
+//                                        )
+//                                        Spacer(modifier = Modifier.width(8.dp))
+//                                        Text(
+//                                            text = selectedDate.name,
+//                                            style = MaterialTheme.typography.labelLarge,
+//                                            fontWeight = FontWeight.Bold,
+//                                        )
+//                                        Spacer(modifier = Modifier.width(8.dp))
+//                                        Text(
+//                                            text = "(${uiState.matches.size} partidos)",
+//                                            style = MaterialTheme.typography.bodySmall,
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        }
 
                         if (uiState.matches.isEmpty() && !isBusy) {
                             item {
@@ -234,8 +247,14 @@ fun MatchesScreen(
                             }
                         }
 
-                        items(uiState.matches) { match ->
-                            MatchStatusCard(match = match, onClick = { viewModel.onMatchClick(match) })
+                        items(
+                            uiState.matches,
+                            key = { match -> match.matchId },
+                        ) { match ->
+                            MatchStatusCard(
+                                match = match,
+                                onClick = { viewModel.onMatchClick(match) },
+                            )
                         }
 
                         if (viewModel.isPaginating) {
@@ -247,34 +266,6 @@ fun MatchesScreen(
                     }
                 }
             }
-        }
-
-        LaunchedEffect(tournament?.id, dates) {
-            val currentTournament = tournament
-            val activeDateId = dates.firstOrNull { it.active }?.id
-
-            if (currentTournament != null && activeDateId != null) {
-                viewModel.setContext(tournamentId = currentTournament.id)
-                viewModel.setSelectedDate(activeDateId)
-            }
-        }
-
-        // Scroll infinito
-        LaunchedEffect(
-            remember { derivedStateOf { listState.firstVisibleItemIndex } },
-            state.uiState,
-        ) {
-            snapshotFlow { listState.firstVisibleItemIndex }
-                .distinctUntilChanged()
-                .collect { index ->
-                    val matches =
-                        (state.uiState as? MatchesUiState.Success)?.matches ?: return@collect
-                    val shouldLoadMore =
-                        index + listState.layoutInfo.visibleItemsInfo.size >= matches.size - 3
-                    if (shouldLoadMore && !isBusy && viewModel.currentPage <= viewModel.totalPages) {
-                        viewModel.loadNextPage()
-                    }
-                }
         }
 
         // BottomSheet para filtro por fecha

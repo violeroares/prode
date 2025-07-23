@@ -225,10 +225,10 @@ fun RankingScreen(
             snapshotFlow { listState.firstVisibleItemIndex }
                 .distinctUntilChanged()
                 .collect { index ->
-                    val matches =
+                    val rankings =
                         (state.uiState as? RankingUiState.Success)?.rankings ?: return@collect
                     val shouldLoadMore =
-                        index + listState.layoutInfo.visibleItemsInfo.size >= matches.size - 3
+                        index + listState.layoutInfo.visibleItemsInfo.size >= rankings.size - 3
                     if (shouldLoadMore && !isBusy && viewModel.currentPage <= viewModel.totalPages) {
                         viewModel.loadNextPage()
                     }

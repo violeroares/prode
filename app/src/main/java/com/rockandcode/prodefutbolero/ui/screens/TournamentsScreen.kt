@@ -50,7 +50,6 @@ fun TournamentsScreen(
     viewModel: MainViewModel,
     tournamentsViewModel: TournamentsViewModel = hiltViewModel(),
     onTournamentSelected: () -> Unit,
-    modifier: Modifier,
 ) {
     val state by tournamentsViewModel.uiState.collectAsState()
 
@@ -68,7 +67,7 @@ fun TournamentsScreen(
 
         is TournamentsUiState.Success -> {
             Scaffold(
-                modifier = modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentWindowInsets = WindowInsets(0),
                 containerColor = Color.Transparent,
             ) { paddingValues ->
