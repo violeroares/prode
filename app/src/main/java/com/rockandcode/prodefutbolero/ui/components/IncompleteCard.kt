@@ -1,6 +1,5 @@
 package com.rockandcode.prodefutbolero.ui.components
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,17 +8,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.rockandcode.prodefutbolero.utils.AppConstants
 
 @Composable
 fun IncompleteCard(
@@ -28,22 +26,16 @@ fun IncompleteCard(
     dateName: String,
     onClick: () -> Unit = {},
 ) {
-    val isDark = isSystemInDarkTheme()
-    // val cardColor = if (isDark) Color(0xFF27292D) else Color.White
-    val shadowAmbient = if (isDark) Color(0x22FFFFFF) else Color(0x22000000)
+    val cardColor = Color(0xFFF1FD72)
+
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(36.dp),
-                    ambientColor = shadowAmbient,
-                    spotColor = shadowAmbient,
-                ),
+                .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp, vertical = 4.dp),
         shape = RoundedCornerShape(36.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1FD72)),
+        // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
     ) {
         Column(
             modifier =
@@ -51,10 +43,10 @@ fun IncompleteCard(
                     .padding(bottom = 8.dp),
         ) {
             HeaderCardInverted(
-                leftIcon = Icons.Outlined.CalendarToday,
+                // leftIcon = Icons.Outlined.CalendarToday,
                 // rightIcon = Icons.AutoMirrored.Filled.ArrowForward,
                 rightIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                title = "Fecha en juego",
+                title = "¡Comenzó la fecha!",
                 subTitle = dateName,
                 onClick = onClick,
             )

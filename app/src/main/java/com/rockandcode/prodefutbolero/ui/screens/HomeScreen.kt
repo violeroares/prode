@@ -1,12 +1,10 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
@@ -28,8 +26,6 @@ import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
 import com.rockandcode.prodefutbolero.ui.components.IncompleteCard
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.MatchesTodayCard
-import com.rockandcode.prodefutbolero.ui.components.MoistureGaugeFull
-import com.rockandcode.prodefutbolero.ui.components.TestCard
 import com.rockandcode.prodefutbolero.ui.components.TournamentStatsCard
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
@@ -131,7 +127,7 @@ fun HomeScreen(
 
                     if (incompletas > 0) {
                         item {
-                            IncompleteCard(value = incompletas, dateName = "Fecha 02")
+                            predictionSummary?.dateName?.let { IncompleteCard(value = incompletas, dateName = it) }
                         }
                     }
 
@@ -151,24 +147,24 @@ fun HomeScreen(
                     item {
                         TournamentStatsCard(title = "Mi progreso", predictionSummary = predictionSummary, onMoreClick = {})
                     }
-                    if (incompletas > 0) {
-                        item {
-                            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                MoistureGaugeFull()
-                            }
-                        }
-                    }
+//                    if (incompletas > 0) {
+//                        item {
+//                            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+//                                MoistureGaugeFull()
+//                            }
+//                        }
+//                    }
 //                    item {
 //                        HomeCalendarCard(
 //                            matches = uiState.data.matches,
 //                            onMoreClick = { },
 //                        )
 //                    }
-                    if (incompletas > 0) {
-                        item {
-                            TestCard(user = displayedUser)
-                        }
-                    }
+//                    if (incompletas > 0) {
+//                        item {
+//                            TestCard(user = displayedUser)
+//                        }
+//                    }
 
 //                    item {
 //                        TournamentStatsCard(

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -67,12 +68,12 @@ fun HeaderCardInverted(
                 text = title,
                 style = MaterialTheme.typography.headlineSmall,
                 // fontSize = 22.sp,
-                // fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Medium,
                 color = if (isDark) Color(0xFF27300A) else Color.Black,
             )
             if (subTitle.isNotEmpty()) {
                 Text(
-                    text = subTitle.toString(),
+                    text = subTitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isDark) Color(0xFF565F1E) else Color.DarkGray,
                 )
@@ -86,7 +87,7 @@ fun HeaderCardInverted(
                         .clip(CircleShape)
                         .clickable(onClick = onClick)
                         .background(
-                            if (isDark) Color(0xFFDDE869) else MaterialTheme.colorScheme.background,
+                            if (isDark) Color(0xFFDDE869) else Color(0xFFDDE869),
                             shape = CircleShape,
                         ),
                 contentAlignment = Alignment.Center,
