@@ -75,7 +75,7 @@ fun HeaderCard(
             Spacer(Modifier.height(2.dp))
             if (subTitle.isNotEmpty()) {
                 Text(
-                    text = subTitle.toString(),
+                    text = subTitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isDark) Color(0xFFB3B3B3) else Color.DarkGray,
                 )
