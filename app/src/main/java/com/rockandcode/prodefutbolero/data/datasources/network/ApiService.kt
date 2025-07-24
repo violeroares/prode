@@ -11,6 +11,7 @@ import com.rockandcode.prodefutbolero.data.models.MatchDto
 import com.rockandcode.prodefutbolero.data.models.MatchRequest
 import com.rockandcode.prodefutbolero.data.models.PageResult
 import com.rockandcode.prodefutbolero.data.models.Pagination
+import com.rockandcode.prodefutbolero.data.models.PredictionDto
 import com.rockandcode.prodefutbolero.data.models.PredictionSummaryDto
 import com.rockandcode.prodefutbolero.data.models.RankingDto
 import com.rockandcode.prodefutbolero.data.models.RankingRequest
@@ -76,4 +77,11 @@ interface ApiService {
         @Query("userId") userId: String,
         @Query("dateId") dateId: String,
     ): Response<PredictionSummaryDto>
+
+    @GET("api/Predictions/GetPredictionsApp")
+    suspend fun getPredictionsApp(
+        @Query("userId") userId: String?,
+        @Query("tournamentId") tournamentId: String?,
+        @Query("dateId") dateId: String?,
+    ): List<PredictionDto>
 }

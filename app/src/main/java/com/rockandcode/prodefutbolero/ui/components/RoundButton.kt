@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun RoundButton(
-    icon: ImageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+    icon: ImageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
     onClick: () -> Unit,
 ) {
     val isDark = isSystemInDarkTheme()

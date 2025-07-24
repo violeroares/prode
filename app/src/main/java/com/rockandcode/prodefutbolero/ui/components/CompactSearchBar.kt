@@ -128,7 +128,7 @@ fun CompactSearchBar(
     onQueryChange: (String) -> Unit,
     onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Buscar equipo",
+    placeholder: String,
 ) {
     val focusRequester = remember { FocusRequester() }
     // val focusManager = LocalFocusManager.current

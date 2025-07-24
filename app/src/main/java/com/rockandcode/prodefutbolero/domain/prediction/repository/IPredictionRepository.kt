@@ -3,6 +3,7 @@ package com.rockandcode.prodefutbolero.domain.prediction.repository
 import com.rockandcode.prodefutbolero.domain.pagination.PageResult
 import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
+import com.rockandcode.prodefutbolero.domain.prediction.models.Prediction
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
 import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
@@ -35,4 +36,10 @@ interface IPredictionRepository {
         pageSize: Int,
         sort: String,
     ): PageResult<Ranking>
+
+    suspend fun getPredictionsApp(
+        userId: String,
+        tournamentId: String,
+        dateId: String?,
+    ): List<Prediction>
 }

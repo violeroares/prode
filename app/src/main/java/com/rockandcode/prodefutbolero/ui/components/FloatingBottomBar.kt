@@ -136,7 +136,7 @@ fun FloatingBottomNavigationBar(
                 ) {
                     BadgedBox(
                         badge = {
-                            if (incompleteCount > 0 && item.route == Routes.Matches.route) {
+                            if (incompleteCount > 0 && item.route == Routes.MyPredictions.route) {
                                 Badge {
                                     Text(incompleteCount.toString())
                                 }

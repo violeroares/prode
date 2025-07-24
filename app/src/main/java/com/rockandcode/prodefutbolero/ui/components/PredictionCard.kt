@@ -23,21 +23,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.rockandcode.prodefutbolero.domain.match.models.Match
+import com.rockandcode.prodefutbolero.domain.prediction.models.Prediction
 import com.rockandcode.prodefutbolero.utils.formatFechaHora
 import com.rockandcode.prodefutbolero.utils.statusName
 
 @Composable
-fun MatchStatusCard(
+fun PredictionCard(
     modifier: Modifier = Modifier,
-    match: Match,
+    prediction: Prediction,
     onClick: () -> Unit,
 ) {
     val isDark = isSystemInDarkTheme()
     val cardColor = if (isDark) Color(0xFF27292D) else Color.White
 
     val chipColor =
-        when (match.statusMatchId) {
+        when (prediction.statusMatchId) {
             1 -> Color(0xFF9E9E9E) // No inicia (gris)
             3 -> Color(0xFF4CAF50) // En juego (verde)
             2 -> Color(0xFFEA622C) // Finalizado (rojo)
@@ -74,11 +74,11 @@ fun MatchStatusCard(
                 ) {
                     // Local
                     TeamLogoAndNameColumn(
-                        name = match.localName,
-                        imageUrl = match.localPictureUrl,
+                        name = prediction.localName,
+                        imageUrl = prediction.localPictureUrl,
                     )
                     Text(
-                        text = "${match.localGoals ?: ""}",
+                        text = "${prediction.localGoals ?: ""}",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -88,14 +88,14 @@ fun MatchStatusCard(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = "${match.visitorGoals ?: ""}",
+                        text = "${prediction.visitorGoals ?: ""}",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                     )
                     // Visitante
                     TeamLogoAndNameColumn(
-                        name = match.visitorName,
-                        imageUrl = match.visitorPictureUrl,
+                        name = prediction.visitorName,
+                        imageUrl = prediction.visitorPictureUrl,
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -117,12 +117,12 @@ fun MatchStatusCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = match.groupName,
+                            text = prediction.groupName,
                             // color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
                         )
                         Text(
-                            text = formatFechaHora(match.date),
+                            text = formatFechaHora(prediction.date),
                             // color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
                         )
@@ -141,7 +141,7 @@ fun MatchStatusCard(
             shadowElevation = 4.dp,
         ) {
             Text(
-                text = statusName(match.statusMatchId),
+                text = statusName(prediction.statusMatchId),
                 modifier =
                     Modifier
                         .padding(horizontal = 12.dp, vertical = 4.dp),

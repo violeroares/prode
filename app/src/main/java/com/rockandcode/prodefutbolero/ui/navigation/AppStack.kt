@@ -100,7 +100,7 @@ fun AppStack(
                 }
 
                 composable(Routes.MyPredictions.route) {
-                    MyPredictionsScreen()
+                    MyPredictionsScreen(navController = navController, mainViewModel = mainViewModel)
                 }
 
                 composable(Routes.Matches.route) {
