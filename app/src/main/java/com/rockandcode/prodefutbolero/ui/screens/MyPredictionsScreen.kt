@@ -31,18 +31,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
 import com.rockandcode.prodefutbolero.ui.components.ErrorView
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.PredictionCard
+import com.rockandcode.prodefutbolero.ui.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPredictionsScreen(
     mainViewModel: MainViewModel,
-    viewModel: MyPredictionsViewModel = hiltViewModel(),
+    viewModel: MyPredictionsViewModel,
     navController: NavHostController,
 ) {
     val state by viewModel.screenState.collectAsState()
@@ -143,7 +143,7 @@ fun MyPredictionsScreen(
                     if (uiState.predictions.isEmpty() && !isBusy) {
                         item {
                             Box(
-                                modifier = Modifier.fillParentMaxSize(),
+                                modifier = Modifier.fillParentMaxWidth().padding(top = 24.dp),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text("No hay partidos disponibles")
@@ -154,7 +154,10 @@ fun MyPredictionsScreen(
                     items(uiState.predictions) { prediction ->
                         PredictionCard(
                             prediction = prediction,
-                            onClick = { },
+                            onClick = {
+                                viewModel.selectPrediction(prediction)
+                                navController.navigate(Routes.PredictionEdit.route)
+                            },
                         )
                     }
                 }

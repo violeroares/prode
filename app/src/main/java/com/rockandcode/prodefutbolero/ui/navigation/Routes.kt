@@ -15,8 +15,6 @@ sealed class Routes(
 
     data object Home : Routes("home")
 
-    data object MyPredictions : Routes("predictions")
-
     data object MyTournaments : Routes("mytournaments")
 
     data object Profile : Routes("profile")
@@ -32,4 +30,8 @@ sealed class Routes(
     data object ChangePassword : Routes("change-password")
 
     data object Instructions : Routes("instructions")
+
+    data object MyPredictions : Routes("predictions")
+
+    data object PredictionEdit : Routes("prediction_edit")
 }
