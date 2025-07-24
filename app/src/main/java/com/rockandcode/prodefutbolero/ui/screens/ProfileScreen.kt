@@ -68,47 +68,6 @@ fun ProfileScreen(
     }
 
     Scaffold(
-        //       topBar = {
-//            AppHeader(
-//                title = "Mi perfil",
-//                onBack = { controller.popBackStack() },
-//                showBackButton = true,
-//            )
-//        },
-        // contentWindowInsets = WindowInsets(0),
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Text("Mi perfil", maxLines = 1, overflow = TextOverflow.Ellipsis)
-//                },
-//                subtitle = { Text("Datos personales", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-//                navigationIcon = {
-//                    TooltipBox(
-//                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-//                        tooltip = { PlainTooltip { Text("Menu") } },
-//                        state = rememberTooltipState(),
-//                    ) {
-//                        IconButton(onClick = { controller.popBackStack() }) {
-//                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Menu")
-//                        }
-//                    }
-//                },
-//                actions = {
-//                    TooltipBox(
-//                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-//                        tooltip = { PlainTooltip { Text("Add to favorites") } },
-//                        state = rememberTooltipState(),
-//                    ) {
-//                        IconButton(onClick = { /* doSomething() */ }) {
-//                            Icon(
-//                                imageVector = Icons.Filled.Favorite,
-//                                contentDescription = "Add to favorites",
-//                            )
-//                        }
-//                    }
-//                },
-//            )
-//        },
         topBar = {
             AppHeader(
                 title = "Mi perfil",

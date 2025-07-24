@@ -1,6 +1,7 @@
 package com.rockandcode.prodefutbolero.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +25,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,13 +44,13 @@ fun AppHeader(
     val isDarkTheme = isSystemInDarkTheme()
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = Color.Transparent, // fondo se da en el Box
+        color = MaterialTheme.colorScheme.background, // fondo se da en el Box
         shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
     ) {
         Box(
             modifier =
                 Modifier
-                    .padding(start = 8.dp, end = 8.dp),
+                    .padding(16.dp),
         ) {
             CenterAlignedTopAppBar(
                 title = {
@@ -74,33 +75,24 @@ fun AppHeader(
                 },
                 navigationIcon = {
                     if (showBackButton) {
-                        IconButton(onClick = onBack) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .size(36.dp)
-                                        .background(
-                                            if (!isDarkTheme) {
-                                                MaterialTheme.colorScheme.primaryContainer
-                                            } else {
-                                                Color(0xFFFAFAFA)
-                                            },
-                                            shape = CircleShape,
-                                        ),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Volver",
-                                    tint =
-                                        if (!isDarkTheme) {
-                                            Color.Black
-                                        } else {
-                                            // MaterialTheme.colorScheme.onSecondaryContainer
-                                            Color.Black
-                                        },
-                                )
-                            }
+                        Box(
+                            modifier =
+                                Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .clickable(onClick = onBack)
+                                    .background(
+                                        if (isDarkTheme) Color(0xFF2E3134) else Color.White,
+                                        shape = CircleShape,
+                                    ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                                contentDescription = null,
+                                tint = if (isDarkTheme) Color.White else Color.Black,
+                                modifier = Modifier.size(24.dp),
+                            )
                         }
                     }
                 },

@@ -5,6 +5,7 @@ import com.rockandcode.prodefutbolero.data.mappers.toRequest
 import com.rockandcode.prodefutbolero.data.models.Pagination
 import com.rockandcode.prodefutbolero.domain.prediction.models.Hit
 import com.rockandcode.prodefutbolero.domain.prediction.models.HitFilter
+import com.rockandcode.prodefutbolero.domain.prediction.models.Prediction
 import com.rockandcode.prodefutbolero.domain.prediction.models.PredictionSummary
 import com.rockandcode.prodefutbolero.domain.prediction.models.Ranking
 import com.rockandcode.prodefutbolero.domain.prediction.models.RankingFilter
@@ -126,4 +127,13 @@ class PredictionRepository(
             throw HttpException(response)
         }
     }
+
+    override suspend fun getPredictionsApp(
+        userId: String,
+        tournamentId: String,
+        dateId: String?,
+    ): List<Prediction> =
+        apiService.getPredictionsApp(userId, tournamentId, dateId).map {
+            it.toDomain()
+        }
 }

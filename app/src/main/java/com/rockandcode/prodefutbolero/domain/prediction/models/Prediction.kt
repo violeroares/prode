@@ -1,24 +1,25 @@
-package com.rockandcode.prodefutbolero.domain.match.models
+package com.rockandcode.prodefutbolero.domain.prediction.models
 
-data class Match(
+class Prediction(
     val matchId: Int,
     val groupId: Int,
     val localId: Int,
     val visitorId: Int,
     val statusMatchId: Int,
-    val localGoals: Int?,
-    val visitorGoals: Int?,
     val date: String,
     val dateId: Int,
     val localName: String,
+    // val localPictureId: Int,
     val visitorName: String,
-    val displayOrder: Int,
+    // val visitorPictureId: Int,
     val groupName: String,
+    val tournamentId: Int,
+    // val tournamentName: String,
     val dateName: String,
-    val localPictureId: Int,
-    val visitorPictureId: Int,
-    val tournamentName: String,
-    val predictions: Int,
+    val localGoals: Int?,
+    val visitorGoals: Int?,
+    // val predictionId: Int?,
+    val userId: Int?,
     val localPictureUrl: String,
     val visitorPictureUrl: String,
 )

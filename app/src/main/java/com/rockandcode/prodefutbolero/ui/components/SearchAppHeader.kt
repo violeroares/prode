@@ -43,6 +43,7 @@ fun SearchAppHeader(
     filtersActive: Int,
     onSearchQueryChanged: (String) -> Unit,
     onFilterClick: () -> Unit,
+    placeholder: String,
 ) {
     val isDarkTheme = isSystemInDarkTheme()
     Surface(
@@ -118,6 +119,7 @@ fun SearchAppHeader(
                     filtersActive = filtersActive,
                     onQueryChange = { onSearchQueryChanged(it) },
                     onFilterClick = onFilterClick,
+                    placeholder = placeholder,
                 )
             }
         }

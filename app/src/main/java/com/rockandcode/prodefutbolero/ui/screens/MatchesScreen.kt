@@ -142,6 +142,7 @@ fun MatchesScreen(
                     onSearchQueryChanged = { s -> viewModel.onSearchQueryChanged(s) },
                     onFilterClick = { isFilterSheetOpen = true },
                     filtersActive = if (viewModel.selectedDateId != null) 1 else 0,
+                    placeholder = "Buscar equipo",
                 )
             },
         ) { paddingValues ->
