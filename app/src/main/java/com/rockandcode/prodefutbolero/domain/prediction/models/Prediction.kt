@@ -1,6 +1,6 @@
 package com.rockandcode.prodefutbolero.domain.prediction.models
 
-class Prediction(
+data class Prediction(
     val matchId: Int,
     val groupId: Int,
     val localId: Int,
@@ -9,16 +9,16 @@ class Prediction(
     val date: String,
     val dateId: Int,
     val localName: String,
-    // val localPictureId: Int,
+    val localPictureId: Int,
     val visitorName: String,
-    // val visitorPictureId: Int,
+    val visitorPictureId: Int,
     val groupName: String,
     val tournamentId: Int,
-    // val tournamentName: String,
+    val tournamentName: String,
     val dateName: String,
     val localGoals: Int?,
     val visitorGoals: Int?,
-    // val predictionId: Int?,
+    val predictionId: Int?,
     val userId: Int?,
     val localPictureUrl: String,
     val visitorPictureUrl: String,

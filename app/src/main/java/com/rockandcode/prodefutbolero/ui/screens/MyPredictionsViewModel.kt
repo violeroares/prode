@@ -82,6 +82,33 @@ class MyPredictionsViewModel
             getPredictions(dateId = selectedDateId)
         }
 
+        private val _selectedPrediction = MutableStateFlow<Prediction?>(null)
+        val selectedPrediction: StateFlow<Prediction?> = _selectedPrediction.asStateFlow()
+
+        private val _localGoals = MutableStateFlow<Int?>(null)
+        val localGoals: StateFlow<Int?> = _localGoals
+
+        private val _visitorGoals = MutableStateFlow<Int?>(null)
+        val visitorGoals: StateFlow<Int?> = _visitorGoals
+
+        fun selectPrediction(prediction: Prediction) {
+            _selectedPrediction.value = prediction
+            _localGoals.value = prediction.localGoals
+            _visitorGoals.value = prediction.visitorGoals
+        }
+
+        fun setLocalGoals(goals: Int?) {
+            _localGoals.value = goals
+        }
+
+        fun setVisitorGoals(goals: Int?) {
+            _visitorGoals.value = goals
+        }
+
+        fun clearSelectedPrediction() {
+            _selectedPrediction.value = null
+        }
+
         fun getPredictions(
             // teamName: String? = null,
             dateId: Int? = selectedDateId,
@@ -113,12 +140,48 @@ class MyPredictionsViewModel
         }
 
 //        fun onPredictionClick(prediction: Prediction) {
+//            selectPrediction(prediction) // 👉 ahora selecciona antes de navegar
 //            viewModelScope.launch {
-//                _eventFlow.emit(PredictionsUiEvent.Navigate("predictionEdit/${prediction.predictionId}"))
+//                _eventFlow.emit(PredictionsUiEvent.Navigate("edit_prediction"))
 //            }
 //        }
-//
+
+        fun updatePredictionGoals(
+            predictionId: Int?,
+            localGoals: Int,
+            visitorGoals: Int,
+        ) {
+            if (predictionId == null) return
+
+            val currentState = _screenState.value
+            if (currentState.uiState is PredictionsUiState.Success) {
+                val updatedList =
+                    currentState.uiState.predictions.map {
+                        if (it.predictionId == predictionId) {
+                            it.copy(localGoals = localGoals, visitorGoals = visitorGoals)
+                        } else {
+                            it
+                        }
+                    }
+
+                _screenState.value =
+                    currentState.copy(
+                        uiState = PredictionsUiState.Success(updatedList),
+                    )
+
+                // También actualizamos la predicción seleccionada si coincide
+                if (_selectedPrediction.value?.predictionId == predictionId) {
+                    _selectedPrediction.value =
+                        _selectedPrediction.value?.copy(
+                            localGoals = localGoals,
+                            visitorGoals = visitorGoals,
+                        )
+                }
+            }
+        }
+
         fun onBackPressed() {
+            clearSelectedPrediction() // 👉 limpiamos cuando se vuelve
             viewModelScope.launch {
                 _eventFlow.emit(PredictionsUiEvent.PopBackStack)
             }

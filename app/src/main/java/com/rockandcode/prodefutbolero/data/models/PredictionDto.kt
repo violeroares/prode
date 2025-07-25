@@ -3,7 +3,7 @@ package com.rockandcode.prodefutbolero.data.models
 import com.google.gson.annotations.SerializedName
 import com.rockandcode.prodefutbolero.domain.prediction.models.Prediction
 
-class PredictionDto(
+data class PredictionDto(
     @SerializedName("MatchId")
     val matchId: Int,
     @SerializedName("GroupId")
@@ -20,26 +20,26 @@ class PredictionDto(
     val dateId: Int,
     @SerializedName("LocalName")
     val localName: String,
-    // @SerializedName("LocalPictureId")
-    // val localPictureId: Int,
+    @SerializedName("LocalPictureId")
+    val localPictureId: Int,
     @SerializedName("VisitorName")
     val visitorName: String,
-    // @SerializedName("VisitorPictureId")
-    // val visitorPictureId: Int,
+    @SerializedName("VisitorPictureId")
+    val visitorPictureId: Int,
     @SerializedName("GroupName")
     val groupName: String,
     @SerializedName("TournamentId")
     val tournamentId: Int,
-    // @SerializedName("TournamentName")
-    // val tournamentName: String,
+    @SerializedName("TournamentName")
+    val tournamentName: String,
     @SerializedName("DateName")
     val dateName: String,
     @SerializedName("LocalGoals")
     val localGoals: Int?,
     @SerializedName("VisitorGoals")
     val visitorGoals: Int?,
-    // @SerializedName("PredictionId")
-    // val predictionId: Int?,
+    @SerializedName("PredictionId")
+    val predictionId: Int?,
     @SerializedName("UserId")
     val userId: Int?,
     @SerializedName("LocalPictureUrl")
@@ -57,16 +57,16 @@ class PredictionDto(
             date = date,
             dateId = dateId,
             localName = localName,
-            // localPictureId = localPictureId,
+            localPictureId = localPictureId,
             visitorName = visitorName,
-            // visitorPictureId = visitorPictureId,
+            visitorPictureId = visitorPictureId,
             groupName = groupName,
             tournamentId = tournamentId,
-            // tournamentName = tournamentName,
+            tournamentName = tournamentName,
             dateName = dateName,
             localGoals = localGoals,
             visitorGoals = visitorGoals,
-            // predictionId = predictionId,
+            predictionId = predictionId,
             userId = userId,
             localPictureUrl = localPictureUrl,
             visitorPictureUrl = visitorPictureUrl,

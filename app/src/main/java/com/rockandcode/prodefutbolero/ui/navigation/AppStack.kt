@@ -13,12 +13,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rockandcode.prodefutbolero.ui.components.FloatingBottomNavigationBar
 import com.rockandcode.prodefutbolero.ui.screens.ChangePasswordScreen
+import com.rockandcode.prodefutbolero.ui.screens.EditPredictionScreen
 import com.rockandcode.prodefutbolero.ui.screens.HomeScreen
 import com.rockandcode.prodefutbolero.ui.screens.InboxScreen
 import com.rockandcode.prodefutbolero.ui.screens.InstructionsScreen
@@ -26,6 +28,7 @@ import com.rockandcode.prodefutbolero.ui.screens.MainViewModel
 import com.rockandcode.prodefutbolero.ui.screens.MatchesScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyHitsScreen
 import com.rockandcode.prodefutbolero.ui.screens.MyPredictionsScreen
+import com.rockandcode.prodefutbolero.ui.screens.MyPredictionsViewModel
 import com.rockandcode.prodefutbolero.ui.screens.MyTournamentsScreen
 import com.rockandcode.prodefutbolero.ui.screens.ProfileScreen
 import com.rockandcode.prodefutbolero.ui.screens.RankingScreen
@@ -41,6 +44,7 @@ fun AppStack(
     val currentRoute = currentBackStackEntry.value?.destination?.route
 
     val incompletas by mainViewModel.prediccionesIncompletas.collectAsState()
+    val predictionsViewModel: MyPredictionsViewModel = hiltViewModel()
 
     val bottomBarRoutes =
         listOf(
@@ -99,10 +103,6 @@ fun AppStack(
                     MyTournamentsScreen(navController = navController)
                 }
 
-                composable(Routes.MyPredictions.route) {
-                    MyPredictionsScreen(navController = navController, mainViewModel = mainViewModel)
-                }
-
                 composable(Routes.Matches.route) {
                     MatchesScreen(mainViewModel = mainViewModel, navController = navController)
                 }
@@ -128,6 +128,28 @@ fun AppStack(
 
                 composable(Routes.Instructions.route) {
                     InstructionsScreen(navController = navController)
+                }
+
+                composable(Routes.MyPredictions.route) {
+                    MyPredictionsScreen(
+                        navController = navController,
+                        mainViewModel = mainViewModel,
+                        viewModel = predictionsViewModel,
+                    )
+                }
+
+                composable(Routes.PredictionEdit.route) {
+                    val prediction by predictionsViewModel.selectedPrediction.collectAsState()
+
+                    prediction?.let {
+                        EditPredictionScreen(
+                            prediction = it,
+                            onBack = { navController.popBackStack() },
+                            onSave = { localGoals, visitorGoals ->
+                                predictionsViewModel.updatePredictionGoals(it.predictionId, localGoals, visitorGoals)
+                            },
+                        )
+                    }
                 }
             }
         }
