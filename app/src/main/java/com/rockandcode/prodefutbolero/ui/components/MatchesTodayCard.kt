@@ -34,11 +34,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.domain.match.models.Match
 import com.rockandcode.prodefutbolero.utils.AppConstants
+import com.rockandcode.prodefutbolero.utils.formatFechaHora
 import com.rockandcode.prodefutbolero.utils.statusName
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -170,12 +169,7 @@ fun PartidoRow(match: Match) {
         if (match.statusMatchId != 1) {
             StatusChip(statusName(match.statusMatchId))
         } else {
-            val time =
-                Instant
-                    .parse(match.date)
-                    .atZone(ZoneId.systemDefault())
-                    .format(DateTimeFormatter.ofPattern("HH:mm"))
-            Text(time, style = MaterialTheme.typography.bodyMedium)
+            Text(formatFechaHora(match.date), style = MaterialTheme.typography.bodyMedium)
         }
 
         // Local

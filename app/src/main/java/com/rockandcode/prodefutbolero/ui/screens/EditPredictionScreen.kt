@@ -33,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.domain.prediction.models.Prediction
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
@@ -43,7 +42,7 @@ fun EditPredictionScreen(
     prediction: Prediction,
     onBack: () -> Unit,
     onSave: (Int, Int) -> Unit, // callback para guardar los goles
-    viewModel: MyPredictionsViewModel = hiltViewModel(),
+    viewModel: MyPredictionsViewModel,
 ) {
     // var localGoals by remember { mutableStateOf(prediction.localGoals) }
     // var visitorGoals by remember { mutableStateOf(prediction.visitorGoals) }
