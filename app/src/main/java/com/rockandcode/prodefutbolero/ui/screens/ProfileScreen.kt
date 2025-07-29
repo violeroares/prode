@@ -49,6 +49,7 @@ import coil.compose.AsyncImage
 import com.rockandcode.prodefutbolero.ui.components.AppHeader
 import com.rockandcode.prodefutbolero.ui.components.RoundButton
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
+import com.rockandcode.prodefutbolero.utils.AppConstants
 
 @Composable
 fun ProfileScreen(
@@ -163,7 +164,7 @@ fun ProfileScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                            .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp + 8.dp, vertical = 8.dp),
                 ) {
                     Button(
                         modifier =
@@ -206,7 +207,7 @@ fun ProfileOptionCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp),
         shape = RoundedCornerShape(36.dp),
         // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),

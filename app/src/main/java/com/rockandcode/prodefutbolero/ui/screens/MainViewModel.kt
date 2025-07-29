@@ -67,6 +67,18 @@ class MainViewModel
             _selectedTournament.value = tournament
             viewModelScope.launch {
                 _dates.value = tournamentRepository.getDates(tournament.id.toString())
+
+                val filter =
+                    MatchFilter(
+                        tournamentId = tournament.id.toString(),
+                        dateId =
+                            _dates.value
+                                .find { it.active }
+                                ?.id
+                                .toString(),
+                    )
+                _matchesDate.value = matchesRepository.getMatchesToPage(filter, 0, 999, "").result
+
                 _prediccionesIncompletas.value =
                     predictionRepository.getPrediccionesIncompletas(
                         userId = _user.value?.id?.toInt() ?: 0,
@@ -82,16 +94,6 @@ class MainViewModel
                                 ?.id
                                 .toString(),
                     )
-                val filter =
-                    MatchFilter(
-                        tournamentId = tournament.id.toString(),
-                        dateId =
-                            _dates.value
-                                .find { it.active }
-                                ?.id
-                                .toString(),
-                    )
-                _matchesDate.value = matchesRepository.getMatchesToPage(filter, 0, 999, "").result
             }
         }
 

@@ -144,6 +144,7 @@ fun AppStack(
                     prediction?.let {
                         EditPredictionScreen(
                             prediction = it,
+                            viewModel = predictionsViewModel,
                             onBack = { navController.popBackStack() },
                             onSave = { localGoals, visitorGoals ->
                                 predictionsViewModel.updatePredictionGoals(it.predictionId, localGoals, visitorGoals)

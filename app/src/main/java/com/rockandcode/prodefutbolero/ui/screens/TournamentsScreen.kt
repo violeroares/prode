@@ -43,6 +43,7 @@ import com.rockandcode.prodefutbolero.ui.components.AppHeader
 import com.rockandcode.prodefutbolero.ui.components.ErrorView
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
 import com.rockandcode.prodefutbolero.ui.components.RoundButton
+import com.rockandcode.prodefutbolero.utils.AppConstants
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -135,7 +136,7 @@ fun TournamentCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp),
         shape = RoundedCornerShape(36.dp),
         // elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),

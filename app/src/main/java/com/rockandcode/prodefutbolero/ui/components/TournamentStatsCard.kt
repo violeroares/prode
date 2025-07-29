@@ -106,7 +106,7 @@ fun TournamentStatsCard(
         Column(
             modifier =
                 Modifier
-                    .padding(bottom = 4.dp),
+                    .padding(bottom = 8.dp),
         ) {
             HeaderCard(
                 rightIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -273,7 +273,7 @@ fun TournamentStatsCard(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 4.dp, end = 4.dp, top = 32.dp),
+                        .padding(start = 8.dp, end = 8.dp, top = 32.dp),
                 // .offset(y = (-70).dp),
             ) {
                 Column(

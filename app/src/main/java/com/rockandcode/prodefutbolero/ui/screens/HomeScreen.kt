@@ -1,13 +1,22 @@
 package com.rockandcode.prodefutbolero.ui.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,9 +34,14 @@ import com.rockandcode.prodefutbolero.ui.components.HeaderWelcome
 import com.rockandcode.prodefutbolero.ui.components.HomeAverageByDateCard
 import com.rockandcode.prodefutbolero.ui.components.IncompleteCard
 import com.rockandcode.prodefutbolero.ui.components.LoadingView
-import com.rockandcode.prodefutbolero.ui.components.MatchesTodayCard
+import com.rockandcode.prodefutbolero.ui.components.MatchHomeCard
 import com.rockandcode.prodefutbolero.ui.components.TournamentStatsCard
 import com.rockandcode.prodefutbolero.ui.navigation.Routes
+import com.rockandcode.prodefutbolero.utils.AppConstants
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 // data class StatItem(
 //    val icon: ImageVector,
@@ -87,6 +101,21 @@ fun HomeScreen(
             val averageByDate = uiState.averageByDate
             // val topRanking = uiState.topRanking
 
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+            val partidosDeHoy =
+                remember(matchesDate) {
+                    matchesDate.filter { match ->
+                        val matchZoned =
+                            LocalDateTime
+                                .parse(match.date, formatter)
+                                .atZone(ZoneId.of("UTC")) // suponiendo que viene en UTC
+                                .withZoneSameInstant(ZoneId.of("America/Argentina/Buenos_Aires"))
+
+                        matchZoned.toLocalDate() == LocalDate.now(ZoneId.of("America/Argentina/Buenos_Aires"))
+                    }
+                }
+
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 contentWindowInsets = WindowInsets.systemBars,
@@ -111,9 +140,9 @@ fun HomeScreen(
 //                    }
 
                     item {
-                        user?.let {
+                        displayedUser?.let {
                             HeaderWelcome(
-                                userName = "${user?.firstName}",
+                                userName = "${displayedUser?.firstName}",
                                 userImage = it.avatarUrl,
                                 onNotificationClick = { /* Acción */ },
                                 isDark = isDark,
@@ -131,6 +160,82 @@ fun HomeScreen(
                         }
                     }
 
+//                    item {
+//                        Row(
+//                            Modifier
+//                                .fillMaxWidth()
+//                                .padding(16.dp),
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                        ) {
+//                            Button(onClick = {}) { Text("Partidos de Hoy") }
+//                            Button(onClick = {}) { Text("Próximos Partidos") }
+//                        }
+//                    }
+
+                    if (partidosDeHoy.isNotEmpty()) {
+                        item {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 24.dp, end = 24.dp, top = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    "Partidos de Hoy",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(
+                                    "Ver todos",
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                            }
+                        }
+
+                        item {
+                            LazyRow(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                contentPadding = PaddingValues(horizontal = AppConstants.CARD_HORIZONTAL_PADDING.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                items(partidosDeHoy) { match ->
+                                    MatchHomeCard(match = match, onClick = {})
+                                }
+                            }
+                        }
+                    }
+
+//                    item {
+//                        Row(
+//                            Modifier
+//                                .fillMaxWidth()
+//                                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 4.dp),
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                        ) {
+//                            Text(
+//                                text = ("Torneo " + tournament?.name),
+//                                style = MaterialTheme.typography.titleMedium,
+//                            )
+//                            Text(
+//                                "Cambiar torneo",
+//                                style = MaterialTheme.typography.titleSmall,
+//                            )
+//                        }
+//                    }
+
+                    item {
+                        TournamentStatsCard(
+                            title = "Mi progreso",
+                            predictionSummary = predictionSummary,
+                            onMoreClick = {
+                                navController.navigate(Routes.TournamentSelect.route) {
+                                    popUpTo(Routes.Home.route) { inclusive = true }
+                                }
+                            },
+                        )
+                    }
                     item {
                         HomeAverageByDateCard(
                             title = tournament?.name ?: "",
@@ -144,9 +249,6 @@ fun HomeScreen(
                         )
                     }
 
-                    item {
-                        TournamentStatsCard(title = "Mi progreso", predictionSummary = predictionSummary, onMoreClick = {})
-                    }
 //                    if (incompletas > 0) {
 //                        item {
 //                            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -229,13 +331,13 @@ fun HomeScreen(
 //                        }
 //                    }
 
-                    item {
-                        MatchesTodayCard(
-                            matchesDate = matchesDate, // Tu lista desde la base
-                            isLoading = false,
-                            onClick = { /* Navegar a Matches */ },
-                        )
-                    }
+//                    item {
+//                        MatchesTodayCard(
+//                            matchesDate = matchesDate, // Tu lista desde la base
+//                            isLoading = false,
+//                            onClick = { /* Navegar a Matches */ },
+//                        )
+//                    }
 
                     item {
                         Spacer(Modifier.height(96.dp))
